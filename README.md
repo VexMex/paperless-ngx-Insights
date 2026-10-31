@@ -88,7 +88,7 @@ Netzbeschränkungen des Dateieditors.
 Dashboard-Ressource als **JavaScript-Modul** registrieren:
 
 ```text
-/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.4
+/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.4-r2
 ```
 
 Danach die Karte hinzufügen:
@@ -105,8 +105,9 @@ Bei genau einem geladenen Integrationseintrag wird dieser automatisch gewählt.
 Bei mehreren Servern zusätzlich dessen `entry_id` setzen. `search_mode` ist
 `title` oder `text`; der Suchbereich kann auch direkt in der Karte gewählt werden.
 `open_mode: preview` öffnet PDFs bis 20 MiB in einem Dialog innerhalb von HA.
-Die PDF-Anzeige hängt vom Browser ab; Download und Paperless-Link bleiben als
-Fallback verfügbar. Vorschauen sind nur für aktive HA-Administratoren zugänglich.
+Die PDF-Anzeige hängt vom Browser ab; ohne nativen PDF-Viewer erscheint eine
+geschützte Bildvorschau der ersten Seite. Diese lässt sich auch per Button wählen.
+Download und Paperless-Link bleiben verfügbar. Vorschauen sind nur für aktive HA-Administratoren zugänglich.
 Details und Grenzen: [PDF-Vorschau](docs/pdf-preview.md).
 Mit `open_mode: paperless` (Standard) öffnen Dokumentlinks die normale
 Paperless-Oberfläche in einem neuen Tab. Dafür kann eine Paperless-Anmeldung

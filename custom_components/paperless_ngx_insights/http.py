@@ -28,6 +28,7 @@ class PreviewView(HomeAssistantView):
     url = f"/api/{DOMAIN}/{{entry_id}}/documents/{{document_id}}/preview"
     name = f"api:{DOMAIN}:preview"
     requires_auth = True
+    thumbnail = False
 
     def __init__(self, hass: HomeAssistant) -> None:
         self.hass = hass
@@ -45,7 +46,11 @@ class PreviewView(HomeAssistantView):
         if client is None:
             return web.Response(status=404, headers=HEADERS)
         try:
-            body = await client.preview(number)
+            if self.thumbnail:
+                body, mime = await client.thumbnail(number)
+            else:
+                body = await client.preview(number)
+                mime = "application/pdf"
         except InvalidAuth:
             if entry := self.hass.config_entries.async_get_entry(entry_id):
                 entry.async_start_reauth(self.hass)
@@ -68,6 +73,14 @@ class PreviewView(HomeAssistantView):
             return web.Response(status=403, headers=HEADERS)
         return web.Response(
             body=body,
-            content_type="application/pdf",
-            headers={**HEADERS, "Content-Disposition": 'inline; filename="preview.pdf"'},
+            content_type=mime,
+            headers={**HEADERS, "Content-Disposition": 'inline; filename="preview"'},
         )
+
+
+class ThumbnailView(PreviewView):
+    """The same per-request permission gates apply to raster thumbnails."""
+
+    url = f"/api/{DOMAIN}/{{entry_id}}/documents/{{document_id}}/thumbnail"
+    name = f"api:{DOMAIN}:thumbnail"
+    thumbnail = True

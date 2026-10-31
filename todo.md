@@ -10,7 +10,8 @@ Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Do
 - [x] PDF-Typ und Signatur prüfen; begrenzter Abruf bis 20 MiB mit Timeouts, kein Servercache.
 - [x] Kompakte Karte um `open_mode: preview` mit Dialog, Download und Paperless-Fallback erweitert; bisheriger Standard `paperless` bleibt erhalten.
 - [x] Abbruch, Freigabe von Blob-URLs, Fokus nach Schließen und Verwerfen verspäteter Vorschauantworten implementiert.
-- [x] Lokal 82 Client-Tests und 10 Frontend-Tests bestanden; Ruff, Format und Kompilierung erfolgreich.
+- [x] Lokal 90 Client-Tests und 11 Frontend-Tests bestanden; Ruff, Format und Kompilierung erfolgreich. Größenlimit auch ohne Content-Length geprüft.
+- [x] Geschützte Raster-Bildvorschau der ersten Seite als Fallback ergänzt (PNG/JPEG/WebP, maximal 2 MiB, dieselben Adminrechte); ohne nativen PDF-Viewer automatisch, sonst per Button.
 - [ ] HA-Frameworktests und vollständige GitHub Actions für diese Version erfolgreich abschließen.
 - [ ] Auf ha-test übertragen, neu starten und authentifizierten PDF-Abruf sowie Ablehnung ohne Anmeldung live prüfen.
 - [ ] Test-Dashboard auf Vorschau umstellen und native PDF-Anzeige visuell prüfen.
@@ -107,15 +108,15 @@ Dieser Plan wird mit jedem abgeschlossenen Entwicklungsschritt und jeder relevan
 - [x] Zugriff auf Dokumentliste vor Abschluss der Einrichtung prüfen; mit bereitgestelltem Schlüssel auf ha-test bestätigt.
 - [x] Schlüssel ausschließlich serverseitig verwenden; Karten verwenden die HA-WebSocket-Schnittstelle und enthalten keine Paperless-Zugangsdaten.
 - [ ] Adresse und Schlüssel nachträglich ändern können; erneute Anmeldung bei ungültigem Schlüssel anbieten.
-- [ ] Optional getrennte interne API-Adresse und vom Browser erreichbare Paperless-Adresse unterstützen.
-- [ ] Mehrere Integrationseinträge architektonisch berücksichtigen; Karten wählen den gewünschten Eintrag.
+- [x] Optional getrennte interne API-Adresse und vom Browser erreichbare Paperless-Adresse unterstützen; Links verwenden Browser-Adresse, Vorschau die interne API.
+- [x] Mehrere Integrationseinträge architektonisch berücksichtigen; Karten wählen per entry_id. Paralleler Live-Test mit zwei Servern bleibt offen.
 
 ### Karte A: kompakte Suche
 
 - [x] Eigenständiger Kartentyp mit Suchfeld und Auswahl Titel / Titel und Inhalt.
 - [x] Standardmäßig fünf Titel pro Ergebnisseite, Anzahl pro Karte einstellbar.
 - [x] Vor-/Zurück-Pfeile, korrekt deaktivierte Randpfeile und verständliche Trefferanzeige.
-- [ ] Dokumenttitel anklickbar; Verhalten pro Karte auswählbar: Vorschau in Home Assistant oder Öffnen in Paperless.
+- [x] Dokumenttitel anklickbar; Verhalten pro Karte über open_mode auswählbar: PDF-Vorschau in Home Assistant oder Öffnen in Paperless. Live-Abnahme siehe aktuellen Entwicklungsstand.
 - [x] Ladezustand, keine Treffer, noch keine Suche und Fehler jeweils eindeutig darstellen.
 - [x] Im Normalbetrieb keine Vorschaubilder laden; die Karte soll kompakt bleiben.
 
@@ -168,8 +169,8 @@ Für jede Prüfung festhalten: untersuchte Version, Quelle/Schema, Ergebnis, gew
 ### R3: Dokumentanzeige und Authentifizierung
 
 - [ ] Aktuelle HA-Schnittstellen für eigene WebSocket-Befehle und geschützte HTTP-Antworten prüfen.
-- [ ] PDF-Anzeige als authentifizierter Abruf mit Blob-URL gegen eingebauten PDF-Viewer / PDF.js abwägen.
-- [ ] Prüfen, wie PDF-Viewer und neue Tabs authentifiziert laden: ein iframe oder neuer Tab sendet nicht automatisch den HA-Bearer-Header.
+- [x] PDF-Anzeige als authentifizierter Abruf mit Blob-URL und nativem Viewer gewählt; keine PDF.js-Abhängigkeit. Entscheidung und Grenzen in docs/pdf-preview.md.
+- [x] Authentifizierungsweg implementiert: callApiRaw sendet HA-Bearer, Viewer lädt nur lokale Blob-URL. Keine Anmeldeheader von iframe/neuem Tab voraussetzen.
 - [ ] Falls kurzlebige signierte Links nötig sind: Ablauf, Rechtebindung, Cache-Verhalten und Widerruf untersuchen.
 - [ ] Große PDFs, Byte-Range-Anfragen, Speicherverbrauch und Streaming je gewähltem Anzeigeweg prüfen.
 - [ ] PDF-Anzeige in Chrome/Edge, Firefox, Safari und Companion-WebViews praktisch testen.
@@ -211,7 +212,7 @@ Abhängigkeit: Projektgrundlage, R1 und Zugriffsentscheidung R2.
 - [x] TLS-Prüfung standardmäßig aktivieren; keine Abschaltoption. Lokale eigene CA-Zertifikate noch gesondert prüfen.
 - [ ] Fehlerklassen für ungültige Anmeldung, fehlende Rechte, Nichterreichbarkeit, TLS, inkompatible API und fehlerhafte Antworten vorsehen.
 - [x] Config Flow mit sicherem Schlüsselfeld und aussagekräftigen deutschen/englischen Fehlermeldungen implementieren.
-- [ ] Reauth/Reconfigure und sichere Aktualisierung bestehender Einstellungen ergänzen.
+- [x] Reauth/Reconfigure und sichere Aktualisierung bestehender Einstellungen implementiert und im HA-Framework getestet. Vollständiger Live-Test bleibt offen.
 - [ ] Doppelte Einträge erkennen; mehrere verschiedene Paperless-Server eindeutig verwalten.
 - [ ] Setup, Unload, Reload und Entfernen sauber implementieren; laufende Aufgaben und Sitzungen aufräumen.
 - [x] Diagnosedaten mit redigierten Schlüsseln und ohne Dokumentinhalt bereitstellen.
@@ -247,13 +248,13 @@ Abhängigkeit: Backend-Schnittstellen.
 
 - [ ] Gemeinsamen Client und typisierte Antwort-/Fehlermodelle für beide Karten anlegen.
 - [ ] Suchzustand je Karteninstanz isolieren; Suchtext und Auswahl nicht global speichern.
-- [ ] Suche per Enter/Suchbutton umsetzen; optionale Eingabeverzögerung nur mit klarer Anfragebegrenzung.
+- [x] Suche per Enter/Suchbutton umgesetzt; keine Anfragen bei jeder Eingabe oder jedem HA-Zustandsupdate.
 - [x] Bei neuer Suche Seite auf 1 zurücksetzen und veraltete Antworten verwerfen.
 - [ ] Suchwechsel, schnelles Blättern und Verbindungsabbruch ohne vertauschte Ergebnisse behandeln.
 - [ ] Wiederverwendbare Seitennavigation, Statusanzeige und Vorschaukomponente erstellen.
 - [ ] HA-Themes, Tastaturbedienung, Fokus, Beschriftungen und Screenreader berücksichtigen.
-- [ ] Sichere Textausgabe statt ungeprüftem HTML aus Dokumenttiteln oder Suchtreffern.
-- [ ] Blob-URLs, Eventhandler und laufende Anfragen beim Wechsel/Entfernen aufräumen.
+- [x] Sichere Textausgabe statt ungeprüftem HTML aus Dokumenttiteln oder Suchtreffern; Frontendtests bestanden.
+- [x] Vorschau-Blob-URLs und Frontend-Abrufe bei Wechsel/Entfernen aufräumen; bereits laufende Upstream-Abrufe sind zeitlich begrenzt. Weitere gemeinsame Komponenten für die große Karte bleiben offen.
 
 Tests: verspätete Antwort überschreibt keine neue Suche; zwei Karten beeinflussen sich nicht; Sonderzeichen werden als Text dargestellt; kein wiederholter Request bei jedem HA-Zustandsupdate.
 
@@ -265,7 +266,7 @@ Abhängigkeit: gemeinsame Frontend-Bausteine.
 - [ ] Optionen: Integrationseintrag, Überschrift, Suchmodus, Treffer pro Seite (Standard 5), Klickverhalten.
 - [ ] Titelzeilen ohne dauerhaft geladene Thumbnails umsetzen; lange Titel zugänglich darstellen.
 - [x] Vor-/Zurück-Pfeile und Trefferbereich korrekt berechnen.
-- [ ] Vorschau-Dialog und Öffnen der Paperless-Ansicht per Nutzerklick anbinden.
+- [x] PDF-Vorschau-Dialog und Öffnen der Paperless-Ansicht per Nutzerklick angebunden; Download der geladenen Vorschau verfügbar. Browserabnahme siehe aktuellen Stand.
 - [x] Konfigurationsfehler und entfernten Integrationseintrag verständlich anzeigen.
 
 Tests: 0/1/5/6/10/11 Treffer, erste/letzte Seite, neue Suche von späterer Seite, gelöschtes Dokument, Dialog schließen, Pop-up-Verhalten, Touch und Tastatur.

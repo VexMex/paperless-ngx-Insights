@@ -136,13 +136,25 @@ async def run(action: str, key_file: Path | None) -> None:
                             checks["pdf_only"] = response.content_type == "application/pdf"
                         async with session.get(BASE + path) as response:
                             checks["anonymous_rejected"] = response.status == 401
+                        async with session.get(
+                            BASE + path.replace("/preview", "/thumbnail"), headers=headers
+                        ) as response:
+                            checks["protected_thumbnail"] = (
+                                response.status == 200
+                                and response.content_type
+                                in {"image/webp", "image/png", "image/jpeg"}
+                            )
+                        async with session.get(
+                            BASE + path.replace("/preview", "/thumbnail")
+                        ) as response:
+                            checks["anonymous_thumbnail_rejected"] = response.status == 401
                         break
                     async with session.get(
                         BASE + f"/api/{DOMAIN}/{entry_id}/documents/0/preview", headers=headers
                     ) as response:
                         checks["invalid_id_rejected"] = response.status == 400
                     print(json.dumps({"test_ha": BASE, "checks": checks}))
-                    if len(checks) != 5 or not all(checks.values()):
+                    if len(checks) != 7 or not all(checks.values()):
                         raise RuntimeError("Preview verification failed")
                     return
                 if action == "verify_search":

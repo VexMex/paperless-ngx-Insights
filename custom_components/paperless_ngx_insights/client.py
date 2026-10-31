@@ -161,14 +161,23 @@ class PaperlessClient:
 
     async def preview(self, document_id: int) -> bytes:
         """Fetch only a bounded PDF preview from a fixed, authenticated endpoint."""
+        return (await self._document_file(document_id, thumbnail=False))[0]
+
+    async def thumbnail(self, document_id: int) -> tuple[bytes, str]:
+        """Read a small raster thumbnail; never allow SVG or HTML."""
+        return await self._document_file(document_id, thumbnail=True)
+
+    async def _document_file(self, document_id: int, *, thumbnail: bool) -> tuple[bytes, str]:
         if type(document_id) is not int or not 1 <= document_id <= 2147483647:
             raise ValueError("Invalid document ID")
+        limit = 2 * 1024 * 1024 if thumbnail else MAX_PREVIEW_BYTES
+        endpoint = "thumb" if thumbnail else "preview"
         async with self._semaphore:
             if self._closed:
                 raise CannotConnect("Integration is unloaded")
             try:
                 async with self._session.get(
-                    f"{self.base_url}/api/documents/{document_id}/preview/",
+                    f"{self.base_url}/api/documents/{document_id}/{endpoint}/",
                     # DRF negotiates before the binary FileResponse is built.
                     headers={"Authorization": f"Token {self._token}", "Accept": "*/*"},
                     timeout=aiohttp.ClientTimeout(total=60, connect=5),
@@ -184,18 +193,29 @@ class PaperlessClient:
                         raise RateLimited("Too many requests")
                     if response.status >= 500:
                         raise CannotConnect("Paperless server error")
-                    if response.status != 200 or response.content_type != "application/pdf":
+                    allowed = (
+                        {"image/png", "image/jpeg", "image/webp"}
+                        if thumbnail
+                        else {"application/pdf"}
+                    )
+                    if response.status != 200 or response.content_type not in allowed:
                         raise PreviewUnavailable("No PDF preview available")
-                    if response.content_length and response.content_length > MAX_PREVIEW_BYTES:
+                    if response.content_length and response.content_length > limit:
                         raise PreviewTooLarge("Preview exceeds size limit")
                     data = bytearray()
                     async for chunk in response.content.iter_chunked(65536):
                         data.extend(chunk)
-                        if len(data) > MAX_PREVIEW_BYTES:
+                        if len(data) > limit:
                             raise PreviewTooLarge("Preview exceeds size limit")
-                    if not data.startswith(b"%PDF-"):
+                    signatures = {
+                        "application/pdf": data.startswith(b"%PDF-"),
+                        "image/png": data.startswith(b"\x89PNG\r\n\x1a\n"),
+                        "image/jpeg": data.startswith(b"\xff\xd8\xff"),
+                        "image/webp": data.startswith(b"RIFF") and data[8:12] == b"WEBP",
+                    }
+                    if not signatures.get(response.content_type, False):
                         raise PreviewUnavailable("Invalid PDF preview")
-                    return bytes(data)
+                    return bytes(data), response.content_type
             except (aiohttp.ClientError, asyncio.TimeoutError) as err:
                 raise CannotConnect("Unable to reach Paperless") from err
 

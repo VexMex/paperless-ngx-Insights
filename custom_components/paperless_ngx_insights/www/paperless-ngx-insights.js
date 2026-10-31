@@ -109,6 +109,8 @@ class PaperlessInsightsSearchCard extends HTMLElement {
         .preview-actions { display:flex; gap:16px; flex-wrap:wrap; }
         .preview-actions a { min-height:32px; padding:0; color:var(--primary-color); }
         iframe { flex:1; min-height:120px; width:100%; border:0; background:#eee; }
+        .thumbnail-wrap { flex:1; min-height:0; overflow:auto; text-align:center; }
+        .thumbnail-wrap img { max-width:100%; height:auto; background:white; }
       </style>
       <ha-card><div class="body">
         <h2></h2>
@@ -133,11 +135,14 @@ class PaperlessInsightsSearchCard extends HTMLElement {
         <p class="preview-status" role="status" aria-live="polite"></p>
         <div class="preview-actions"><a class="paperless-link" target="_blank" rel="noopener noreferrer">In Paperless öffnen ↗</a>
           <a class="preview-download" download="dokument.pdf" hidden>PDF herunterladen</a></div>
+        <button class="show-thumbnail">Erste Seite als Bild anzeigen</button>
+        <div class="thumbnail-wrap" hidden><img alt="Vorschaubild der ersten Dokumentseite"></div>
         <iframe title="PDF-Dokumentvorschau" referrerpolicy="no-referrer" hidden></iframe>
       </div></dialog>`;
     const root = this.shadowRoot;
     this._dialog = root.querySelector("dialog");
     root.querySelector(".preview-close").addEventListener("click", () => this._closePreview());
+    root.querySelector(".show-thumbnail").addEventListener("click", () => this._showThumbnail());
     this._dialog.addEventListener("cancel", event => { event.preventDefault(); this._closePreview(); });
     root.querySelector("h2").textContent = this._config.title || "Paperless · Dokumente";
     this._input = root.querySelector("input");
@@ -270,6 +275,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
   _closePreview(restoreFocus = true) {
     this._previewSequence = (this._previewSequence || 0) + 1;
     this._previewAbort?.abort();
+    this._thumbnailAbort?.abort();
     this._previewAbort = null;
     clearTimeout(this._previewTimeout);
     const frame = this._dialog?.querySelector("iframe");
@@ -277,6 +283,10 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     const download = this._dialog?.querySelector(".preview-download");
     if (download) { download.removeAttribute("href"); download.hidden = true; }
     if (this._previewUrl) URL.revokeObjectURL(this._previewUrl);
+    if (this._thumbnailUrl) URL.revokeObjectURL(this._thumbnailUrl);
+    this._thumbnailUrl = null;
+    const image = this._dialog?.querySelector("img");
+    if (image) { image.removeAttribute("src"); image.parentElement.hidden = true; }
     this._previewUrl = null;
     if (this._dialog?.open) this._dialog.close();
     if (restoreFocus && this._previewOpener?.isConnected) this._previewOpener.focus();
@@ -287,6 +297,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     this._closePreview(false);
     this._previewOpener = opener;
     const sequence = this._previewSequence;
+    this._previewDocument = document.id;
     const root = this._dialog;
     root.querySelector(".preview-title").textContent = document.title || "Dokument";
     root.querySelector(".paperless-link").href = opener.href;
@@ -313,6 +324,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       download.href = this._previewUrl;
       download.hidden = false;
       status.textContent = "Falls die PDF-Anzeige hier leer bleibt: PDF herunterladen oder in Paperless öffnen.";
+      if (navigator.pdfViewerEnabled === false) await this._showThumbnail();
     } catch (error) {
       if (sequence !== this._previewSequence) return;
       status.textContent = error.status === 413 ? "PDF größer als 20 MiB. Bitte in Paperless öffnen."
@@ -324,6 +336,41 @@ class PaperlessInsightsSearchCard extends HTMLElement {
         clearTimeout(this._previewTimeout);
         this._previewAbort = null;
       }
+    }
+  }
+
+  async _showThumbnail() {
+    const sequence = this._previewSequence;
+    const root = this._dialog;
+    const button = root.querySelector(".show-thumbnail");
+    if (button.disabled) return;
+    button.disabled = true;
+    const controller = new AbortController();
+    this._thumbnailAbort = controller;
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    const status = root.querySelector(".preview-status");
+    try {
+      if (!this._thumbnailUrl) {
+        const response = await this._hass.callApiRaw("GET",
+          `paperless_ngx_insights/${encodeURIComponent(this._entry)}/documents/${this._previewDocument}/thumbnail`,
+          undefined, undefined, controller.signal);
+        if (!response.ok || !["image/png", "image/jpeg", "image/webp"].includes(response.headers.get("Content-Type")?.split(";")[0])) throw {};
+        const blob = await response.blob();
+        if (sequence !== this._previewSequence || !this.isConnected) return;
+        if (blob.size > 2 * 1024 * 1024) throw {};
+        this._thumbnailUrl = URL.createObjectURL(blob);
+      }
+      root.querySelector("iframe").hidden = true;
+      const image = root.querySelector("img");
+      image.src = this._thumbnailUrl;
+      image.parentElement.hidden = false;
+      status.textContent = "Vorschaubild der ersten Seite. Die vollständige PDF kann heruntergeladen oder in Paperless geöffnet werden.";
+    } catch (_) {
+      if (sequence === this._previewSequence) status.textContent = "Seitenvorschau nicht verfügbar. Bitte PDF herunterladen oder in Paperless öffnen.";
+    } finally {
+      clearTimeout(timeout);
+      if (this._thumbnailAbort === controller) this._thumbnailAbort = null;
+      button.disabled = false;
     }
   }
 

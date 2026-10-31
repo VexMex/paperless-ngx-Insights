@@ -32,6 +32,12 @@ async def server(unused_tcp_port):
     async def handler(request):
         state["requests"].append(request)
         await asyncio.sleep(state["delay"])
+        if state.get("chunked"):
+            response = web.StreamResponse(headers={"Content-Type": "application/pdf"})
+            await response.prepare(request)
+            await response.write(state["raw"])
+            await response.write_eof()
+            return response
         if "raw" in state:
             return web.Response(
                 status=state["status"],
@@ -112,6 +118,42 @@ async def test_preview_size_limit_and_unload(server, monkeypatch):
     server["client"].close()
     with pytest.raises(api.CannotConnect):
         await server["client"].preview(1)
+
+
+async def test_preview_chunked_size_limit(server, monkeypatch):
+    monkeypatch.setattr(api, "MAX_PREVIEW_BYTES", 10)
+    server.update(raw=b"%PDF-1.7" + b"x" * 100, chunked=True)
+    with pytest.raises(api.PreviewTooLarge):
+        await server["client"].preview(1)
+
+
+@pytest.mark.parametrize(
+    ("body", "mime"),
+    [
+        (b"RIFFxxxxWEBPfixture", "image/webp"),
+        (b"\x89PNG\r\n\x1a\nfixture", "image/png"),
+        (b"\xff\xd8\xfffixture", "image/jpeg"),
+    ],
+)
+async def test_thumbnail_raster_types(server, body, mime):
+    server.update(raw=body, type=mime)
+    assert await server["client"].thumbnail(42) == (body, mime)
+    assert server["requests"][-1].path.endswith("/42/thumb/")
+
+
+@pytest.mark.parametrize(
+    ("body", "mime"),
+    [
+        (b"<svg/>", "image/svg+xml"),
+        (b"<html/>", "image/png"),
+        (b"RIFFxxxxHTML", "image/webp"),
+        (b"%PDF-", "application/pdf"),
+    ],
+)
+async def test_thumbnail_rejects_active_content(server, body, mime):
+    server.update(raw=body, type=mime)
+    with pytest.raises(api.PreviewUnavailable):
+        await server["client"].thumbnail(1)
 
 
 @pytest.mark.parametrize(

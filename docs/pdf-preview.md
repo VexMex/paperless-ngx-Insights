@@ -38,6 +38,12 @@ Ein bereits ausgeliefertes Dokument lässt sich durch späteren Rechteentzug nic
 aus dem Browser zurückrufen. Native PDF-Viewer können eine temporäre Kopie halten.
 
 Kein PDF.js wird mitgeliefert. Seitenwahl und Zoom hängen vom nativen Viewer ab.
+Meldet der Browser `navigator.pdfViewerEnabled === false`, wird automatisch eine
+Bildvorschau der ersten Seite geladen. Der Button „Erste Seite als Bild anzeigen“
+ermöglicht dies auch manuell. Der Thumbnail-Endpunkt verlangt dieselben HA-Rechte,
+akzeptiert nur PNG/JPEG/WebP mit passender Signatur und begrenzt Dateien auf 2 MiB.
+SVG und HTML werden abgewiesen; die Bilder laden ebenfalls über HA und Blob-URLs.
+Die Bildvorschau ist keine mehrseitige PDF-Anzeige und kann niedrig aufgelöst sein.
 Ein leeres Viewer-Fenster ist nicht zuverlässig erkennbar; Download und externer
 Link bleiben daher immer angeboten. Firefox, Safari und Companion-WebViews sind
 noch nicht praktisch freigegeben. Nicht-PDF, fehlende Vorschau und Größenlimit

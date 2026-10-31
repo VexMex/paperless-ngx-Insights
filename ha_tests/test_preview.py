@@ -28,10 +28,12 @@ async def install(hass):
     return entry, f"/api/{DOMAIN}/{entry.entry_id}/documents/42/preview"
 
 
+@pytest.mark.parametrize("kind", ["preview", "thumbnail"])
 async def test_preview_authentication_and_admin(
-    hass, hass_client, hass_client_no_auth, hass_read_only_access_token
+    hass, hass_client, hass_client_no_auth, hass_read_only_access_token, kind
 ):
     entry, path = await install(hass)
+    path = path.replace("/preview", f"/{kind}")
     anonymous = await hass_client_no_auth()
     assert (await anonymous.get(path)).status == 401
     client = await hass_client(hass_read_only_access_token)
@@ -55,6 +57,20 @@ async def test_pdf_headers_and_body(hass, hass_client, hass_access_token):
     assert response.headers["Cache-Control"] == "no-store, private"
     assert response.headers["X-Content-Type-Options"] == "nosniff"
     assert "fixture" not in response.headers["Content-Disposition"]
+
+
+async def test_thumbnail_registered_route(hass, hass_client, hass_access_token):
+    entry, path = await install(hass)
+    client = await hass_client(hass_access_token)
+    with patch.object(
+        hass.data[DOMAIN][entry.entry_id],
+        "thumbnail",
+        return_value=(b"RIFFxxxxWEBPfixture", "image/webp"),
+    ):
+        response = await client.get(path.replace("/preview", "/thumbnail"))
+    assert response.status == 200
+    assert response.content_type == "image/webp"
+    assert response.headers["Cache-Control"] == "no-store, private"
 
 
 @pytest.mark.parametrize(

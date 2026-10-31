@@ -72,6 +72,30 @@ test("closing preview aborts requests and ignores late blobs", async () => {
   assert.equal(root.querySelector("iframe").hasAttribute("src"), false);
 });
 
+test("first-page image fallback keeps PDF download and releases both URLs", async () => {
+  const { card, root, submit, window } = await setup(async () => page(1), { open_mode: "preview" });
+  let created = 0;
+  const revoked = [];
+  window.URL.createObjectURL = () => `blob:http://ha-test.local/${++created}`;
+  window.URL.revokeObjectURL = url => revoked.push(url);
+  card.hass = { callWS: async () => page(1), callApiRaw: async (_, path) => ({
+    ok: true,
+    headers: new Map([["Content-Type", path.endsWith("thumbnail") ? "image/webp" : "application/pdf"]]),
+    blob: async () => new window.Blob(["fixture"]),
+  }) };
+  await submit("invoice");
+  root.querySelector("li a").click();
+  await settle();
+  root.querySelector(".show-thumbnail").click();
+  await settle();
+  assert.equal(root.querySelector("img").getAttribute("src"), "blob:http://ha-test.local/2");
+  assert.equal(root.querySelector(".thumbnail-wrap").hidden, false);
+  assert.equal(root.querySelector("iframe").hidden, true);
+  assert.equal(root.querySelector(".preview-download").hidden, false);
+  card.remove();
+  assert.equal(revoked.length, 2);
+});
+
 test("unsupported or oversized previews keep the Paperless fallback", async () => {
   for (const status of [403, 413, 415, 502]) {
     const { card, root, submit } = await setup(async () => page(1), { open_mode: "preview" });
@@ -111,7 +135,7 @@ test("document and configured titles are text, with safe external links", async 
   const malicious = '<img src=x onerror="window.pwned=1">';
   const { root, submit, window } = await setup(async () => page(1, 1, malicious), { title: malicious });
   await submit("test");
-  assert.equal(root.querySelectorAll("img,script").length, 0);
+  assert.equal(root.querySelectorAll("li img,script,h2 img").length, 0);
   assert.equal(root.querySelector("h2").textContent, malicious);
   const link = root.querySelector("a");
   assert.equal(link.target, "_blank");
