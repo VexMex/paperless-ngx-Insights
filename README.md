@@ -2,14 +2,14 @@
 
 Home-Assistant-Integration zum Suchen und Anzeigen von Paperless-ngx-Dokumenten.
 
-**Entwicklungsstand 0.1.0-dev.3:** Backend und kompakte Suchkarte mit Mehrwortsuche sind implementiert:
+**Entwicklungsstand 0.1.0-dev.4:** Backend und kompakte Suchkarte mit Mehrwortsuche und optionaler PDF-Vorschau sind implementiert:
 Einrichtung über die Oberfläche, Verbindungstest, erneute Anmeldung,
 Ändern der Verbindung, getrennte Browser-Adresse und eine administrativ
 geschützte Suchschnittstelle mit serverseitiger Pagination.
 
 Die kompakte Karte zeigt fünf Titel pro Seite, Pfeile zum Blättern und öffnet
-Dokumente in einem neuen Paperless-Tab. Die große Dokumentkarte, Vorschaubilder
-und eingebettete PDF-Anzeige sind noch in Entwicklung. Diese Version ist kein fertiges Release. Der aktuelle
+Dokumente wahlweise in einem neuen Paperless-Tab oder als eingebettete PDF-Vorschau.
+Die große Dokumentkarte und Vorschaubilder sind noch in Entwicklung. Diese Version ist kein fertiges Release. Der aktuelle
 Arbeits- und Teststand steht in [todo.md](todo.md).
 
 ## Entwicklung und Tests
@@ -70,8 +70,8 @@ Folgende Angaben werden abgefragt:
 - **Paperless-Adresse:** vollständige Basisadresse inklusive optionalem Port
   oder Reverse-Proxy-Unterpfad. Ein reiner Hostname/IP wird als HTTP interpretiert.
 - **API-Schlüssel:** Token eines Paperless-Benutzers mit Dokument-Leserechten.
-- **Browser-Adresse:** optional vom Browser erreichbare Paperless-Basisadresse;
-  für spätere Dokumentlinks vorgesehen und noch nicht von Karten verwendet.
+- **Browser-Adresse:** optional vom Browser erreichbare Paperless-Basisadresse
+  für die Dokumentlinks. Die HA-Vorschau verwendet die interne API-Adresse.
 
 TLS-Zertifikate werden geprüft. Eine Abschaltoption ist bewusst nicht vorhanden.
 Bei einer falschen Adresse oder unzureichenden Rechten bleibt der Dialog offen.
@@ -88,7 +88,7 @@ Netzbeschränkungen des Dateieditors.
 Dashboard-Ressource als **JavaScript-Modul** registrieren:
 
 ```text
-/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.3
+/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.4
 ```
 
 Danach die Karte hinzufügen:
@@ -98,14 +98,19 @@ type: custom:paperless-ngx-insights-search
 title: Dokumente suchen
 page_size: 5
 search_mode: title
+open_mode: preview
 ```
 
 Bei genau einem geladenen Integrationseintrag wird dieser automatisch gewählt.
 Bei mehreren Servern zusätzlich dessen `entry_id` setzen. `search_mode` ist
 `title` oder `text`; der Suchbereich kann auch direkt in der Karte gewählt werden.
-Dokumentlinks öffnen die normale Paperless-Oberfläche in einem neuen Tab. Dafür
-kann zusätzlich eine Paperless-Anmeldung erforderlich sein. Eine eingebettete
-Vorschau oder ein visueller Karteneditor ist in diesem Stand noch nicht vorhanden.
+`open_mode: preview` öffnet PDFs bis 20 MiB in einem Dialog innerhalb von HA.
+Die PDF-Anzeige hängt vom Browser ab; Download und Paperless-Link bleiben als
+Fallback verfügbar. Vorschauen sind nur für aktive HA-Administratoren zugänglich.
+Details und Grenzen: [PDF-Vorschau](docs/pdf-preview.md).
+Mit `open_mode: paperless` (Standard) öffnen Dokumentlinks die normale
+Paperless-Oberfläche in einem neuen Tab. Dafür kann eine Paperless-Anmeldung
+erforderlich sein. Ein visueller Karteneditor ist noch nicht vorhanden.
 
 Das eingerichtete Test-Dashboard ist unter
 [Paperless auf ha-test](http://192.168.178.147/paperless-test/suche) erreichbar und

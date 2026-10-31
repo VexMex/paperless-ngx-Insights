@@ -12,6 +12,10 @@ class PaperlessInsightsSearchCard extends HTMLElement {
   }
 
   setConfig(config) {
+    if (config.open_mode && !["preview", "paperless"].includes(config.open_mode)) {
+      throw new Error("open_mode muss preview oder paperless sein.");
+    }
+    this._closePreview(false);
     const size = config.page_size ?? 5;
     if (!Number.isInteger(size) || size < 1 || size > 50) {
       throw new Error("Treffer pro Seite müssen zwischen 1 und 50 liegen.");
@@ -43,6 +47,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this._closePreview(false);
     this._sequence++;
     this._loading = false;
     this._connecting = false;
@@ -94,6 +99,16 @@ class PaperlessInsightsSearchCard extends HTMLElement {
         nav button { background:transparent; color:var(--primary-text-color); font-size:22px; }
         .range { font-size:14px; text-align:center; color:var(--secondary-text-color); }
         [hidden] { display:none !important; }
+        dialog { box-sizing:border-box; width:min(1100px,96vw); max-width:96vw;
+          height:90dvh; max-height:90dvh; border:1px solid var(--divider-color); border-radius:12px;
+          padding:16px; color:var(--primary-text-color); background:var(--card-background-color,#fff); }
+        dialog::backdrop { background:rgba(0,0,0,.55); }
+        .preview-layout { height:100%; display:flex; flex-direction:column; gap:10px; }
+        .preview-header { display:flex; gap:12px; align-items:center; }
+        .preview-title { flex:1; font-size:18px; overflow-wrap:anywhere; margin:0; }
+        .preview-actions { display:flex; gap:16px; flex-wrap:wrap; }
+        .preview-actions a { min-height:32px; padding:0; color:var(--primary-color); }
+        iframe { flex:1; min-height:120px; width:100%; border:0; background:#eee; }
       </style>
       <ha-card><div class="body">
         <h2></h2>
@@ -111,7 +126,19 @@ class PaperlessInsightsSearchCard extends HTMLElement {
           <button class="next" aria-label="Nächste Seite">›</button>
         </nav>
       </div></ha-card>`;
+    this.shadowRoot.innerHTML += `
+      <dialog aria-labelledby="preview-title"><div class="preview-layout">
+        <div class="preview-header"><h3 id="preview-title" class="preview-title"></h3>
+          <button class="preview-close" aria-label="Dokumentvorschau schließen">Schließen</button></div>
+        <p class="preview-status" role="status" aria-live="polite"></p>
+        <div class="preview-actions"><a class="paperless-link" target="_blank" rel="noopener noreferrer">In Paperless öffnen ↗</a>
+          <a class="preview-download" download="dokument.pdf" hidden>PDF herunterladen</a></div>
+        <iframe title="PDF-Dokumentvorschau" referrerpolicy="no-referrer" hidden></iframe>
+      </div></dialog>`;
     const root = this.shadowRoot;
+    this._dialog = root.querySelector("dialog");
+    root.querySelector(".preview-close").addEventListener("click", () => this._closePreview());
+    this._dialog.addEventListener("cancel", event => { event.preventDefault(); this._closePreview(); });
     root.querySelector("h2").textContent = this._config.title || "Paperless · Dokumente";
     this._input = root.querySelector("input");
     this._mode = root.querySelector("select");
@@ -160,6 +187,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
 
   async _search(page, fresh = false) {
     if (!this._hass || !this._entry || page < 1 || (!fresh && this._loading)) return;
+    this._closePreview();
     if (fresh) this._query = this._input.value.trim();
     const sequence = ++this._sequence;
     this._loading = true;
@@ -198,11 +226,22 @@ class PaperlessInsightsSearchCard extends HTMLElement {
         arrow.textContent = "↗";
         arrow.setAttribute("aria-hidden", "true");
         link.setAttribute("aria-label", `${document.title || "Dokument"} in Paperless öffnen (neuer Tab)`);
+        if (this._config.open_mode === "preview") {
+          arrow.textContent = "▣";
+          link.setAttribute("aria-label", `${document.title || "Dokument"} als Vorschau öffnen`);
+          link.addEventListener("click", event => {
+            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+            event.preventDefault();
+            this._openPreview(document, link);
+          });
+        }
         link.append(icon, title, arrow);
         row.append(link);
         this._list.append(row);
       }
-      this._message(result.count ? "Dokument antippen, um es in Paperless zu öffnen." : "Keine Dokumente gefunden.");
+      this._message(result.count ? (this._config.open_mode === "preview"
+        ? "Dokument antippen, um die Vorschau zu öffnen."
+        : "Dokument antippen, um es in Paperless zu öffnen.") : "Keine Dokumente gefunden.");
     } catch (error) {
       if (sequence !== this._sequence) return;
       this._documents = [];
@@ -226,6 +265,66 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     if (!this._status) return;
     this._status.textContent = text;
     this._status.classList.toggle("error", error);
+  }
+
+  _closePreview(restoreFocus = true) {
+    this._previewSequence = (this._previewSequence || 0) + 1;
+    this._previewAbort?.abort();
+    this._previewAbort = null;
+    clearTimeout(this._previewTimeout);
+    const frame = this._dialog?.querySelector("iframe");
+    if (frame) { frame.removeAttribute("src"); frame.hidden = true; }
+    const download = this._dialog?.querySelector(".preview-download");
+    if (download) { download.removeAttribute("href"); download.hidden = true; }
+    if (this._previewUrl) URL.revokeObjectURL(this._previewUrl);
+    this._previewUrl = null;
+    if (this._dialog?.open) this._dialog.close();
+    if (restoreFocus && this._previewOpener?.isConnected) this._previewOpener.focus();
+    this._previewOpener = null;
+  }
+
+  async _openPreview(document, opener) {
+    this._closePreview(false);
+    this._previewOpener = opener;
+    const sequence = this._previewSequence;
+    const root = this._dialog;
+    root.querySelector(".preview-title").textContent = document.title || "Dokument";
+    root.querySelector(".paperless-link").href = opener.href;
+    const status = root.querySelector(".preview-status");
+    status.textContent = "PDF-Vorschau wird geladen …";
+    root.showModal();
+    const controller = new AbortController();
+    this._previewAbort = controller;
+    this._previewTimeout = setTimeout(() => controller.abort(), 65000);
+    try {
+      const response = await this._hass.callApiRaw("GET",
+        `paperless_ngx_insights/${encodeURIComponent(this._entry)}/documents/${document.id}/preview`,
+        undefined, undefined, controller.signal);
+      if (!response.ok) throw { status: response.status };
+      if (response.headers.get("Content-Type")?.split(";")[0] !== "application/pdf") throw {};
+      const blob = await response.blob();
+      if (sequence !== this._previewSequence || !this.isConnected) return;
+      if (blob.size > 20 * 1024 * 1024) throw { status: 413 };
+      this._previewUrl = URL.createObjectURL(blob);
+      const frame = root.querySelector("iframe");
+      frame.src = this._previewUrl;
+      frame.hidden = false;
+      const download = root.querySelector(".preview-download");
+      download.href = this._previewUrl;
+      download.hidden = false;
+      status.textContent = "Falls die PDF-Anzeige hier leer bleibt: PDF herunterladen oder in Paperless öffnen.";
+    } catch (error) {
+      if (sequence !== this._previewSequence) return;
+      status.textContent = error.status === 413 ? "PDF größer als 20 MiB. Bitte in Paperless öffnen."
+        : error.status === 415 ? "Für dieses Dokument ist keine PDF-Vorschau verfügbar. Bitte in Paperless öffnen."
+          : error.status === 403 ? "Keine Berechtigung für diese Dokumentvorschau."
+            : "Vorschau konnte nicht geladen werden. Verbindung und Anmeldung prüfen oder in Paperless öffnen.";
+    } finally {
+      if (sequence === this._previewSequence) {
+        clearTimeout(this._previewTimeout);
+        this._previewAbort = null;
+      }
+    }
   }
 
   _controls() {

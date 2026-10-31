@@ -54,6 +54,65 @@ async def server(unused_tcp_port):
     await runner.cleanup()
 
 
+async def test_pdf_preview_fixed_path_and_auth(server):
+    server.update(raw=b"%PDF-1.7\nsynthetic fixture", type="application/pdf")
+    assert (await server["client"].preview(42)).startswith(b"%PDF-")
+    request = server["requests"][-1]
+    assert request.path == "/paperless/api/documents/42/preview/"
+    assert request.headers["Authorization"] == "Token fixture-token"
+    assert not request.query
+
+
+@pytest.mark.parametrize("number", [True, 0, -1, 2147483648, "../1", "1", None])
+async def test_preview_invalid_ids_never_request(server, number):
+    with pytest.raises(ValueError):
+        await server["client"].preview(number)
+    assert not server["requests"]
+
+
+@pytest.mark.parametrize(
+    ("status", "error"),
+    [
+        (401, api.InvalidAuth),
+        (403, api.Forbidden),
+        (404, api.PreviewUnavailable),
+        (302, api.PreviewUnavailable),
+        (429, api.RateLimited),
+        (500, api.CannotConnect),
+    ],
+)
+async def test_preview_safe_status_errors(server, status, error):
+    server.update(status=status, raw=b"private upstream details", type="text/html")
+    with pytest.raises(error) as caught:
+        await server["client"].preview(1)
+    assert "private" not in str(caught.value)
+    assert len(server["requests"]) == 1
+
+
+@pytest.mark.parametrize(
+    ("body", "mime"),
+    [
+        (b"<script>alert(1)</script>", "application/pdf"),
+        (b"%PDF-1.7", "text/html"),
+        (b"", "application/pdf"),
+    ],
+)
+async def test_preview_rejects_non_pdf(server, body, mime):
+    server.update(raw=body, type=mime)
+    with pytest.raises(api.PreviewUnavailable):
+        await server["client"].preview(1)
+
+
+async def test_preview_size_limit_and_unload(server, monkeypatch):
+    monkeypatch.setattr(api, "MAX_PREVIEW_BYTES", 10)
+    server.update(raw=b"%PDF-1.7" + b"x" * 100, type="application/pdf")
+    with pytest.raises(api.PreviewTooLarge):
+        await server["client"].preview(1)
+    server["client"].close()
+    with pytest.raises(api.CannotConnect):
+        await server["client"].preview(1)
+
+
 @pytest.mark.parametrize(
     ("value", "expected"),
     [

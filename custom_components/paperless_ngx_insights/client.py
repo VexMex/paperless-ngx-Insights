@@ -15,6 +15,7 @@ from .const import MAX_PAGE_SIZE, MAX_SEARCH_LENGTH
 
 MAX_RESPONSE_BYTES = 1024 * 1024
 MAX_SEARCH_TERMS = 32
+MAX_PREVIEW_BYTES = 20 * 1024 * 1024
 
 
 class PaperlessError(Exception):
@@ -43,6 +44,14 @@ class InvalidResponse(PaperlessError):
 
 class RateLimited(PaperlessError):
     """Paperless asked the client to slow down."""
+
+
+class PreviewUnavailable(PaperlessError):
+    """No supported PDF preview exists."""
+
+
+class PreviewTooLarge(PaperlessError):
+    """Preview exceeds the bounded memory budget."""
 
 
 def search_parameters(text: str, mode: str) -> dict[str, str]:
@@ -149,6 +158,45 @@ class PaperlessClient:
     def close(self) -> None:
         """Prevent new requests after the integration has been unloaded."""
         self._closed = True
+
+    async def preview(self, document_id: int) -> bytes:
+        """Fetch only a bounded PDF preview from a fixed, authenticated endpoint."""
+        if type(document_id) is not int or not 1 <= document_id <= 2147483647:
+            raise ValueError("Invalid document ID")
+        async with self._semaphore:
+            if self._closed:
+                raise CannotConnect("Integration is unloaded")
+            try:
+                async with self._session.get(
+                    f"{self.base_url}/api/documents/{document_id}/preview/",
+                    headers={"Authorization": f"Token {self._token}", "Accept": "application/pdf"},
+                    timeout=aiohttp.ClientTimeout(total=60, connect=5),
+                    allow_redirects=False,
+                ) as response:
+                    if response.status == 401:
+                        raise InvalidAuth("API token rejected")
+                    if response.status == 403:
+                        raise Forbidden("Document access denied")
+                    if response.status == 404:
+                        raise PreviewUnavailable("Preview not found")
+                    if response.status == 429:
+                        raise RateLimited("Too many requests")
+                    if response.status >= 500:
+                        raise CannotConnect("Paperless server error")
+                    if response.status != 200 or response.content_type != "application/pdf":
+                        raise PreviewUnavailable("No PDF preview available")
+                    if response.content_length and response.content_length > MAX_PREVIEW_BYTES:
+                        raise PreviewTooLarge("Preview exceeds size limit")
+                    data = bytearray()
+                    async for chunk in response.content.iter_chunked(65536):
+                        data.extend(chunk)
+                        if len(data) > MAX_PREVIEW_BYTES:
+                            raise PreviewTooLarge("Preview exceeds size limit")
+                    if not data.startswith(b"%PDF-"):
+                        raise PreviewUnavailable("Invalid PDF preview")
+                    return bytes(data)
+            except (aiohttp.ClientError, asyncio.TimeoutError) as err:
+                raise CannotConnect("Unable to reach Paperless") from err
 
     async def validate_connection(self) -> None:
         """Check document access while requesting the smallest useful payload."""

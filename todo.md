@@ -4,7 +4,21 @@ Stand: 31.10.2026
 Repository: https://github.com/VexMex/paperless-ngx-Insights
 Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Dokumenten.
 
-## Aktueller Entwicklungsstand – Mehrwortsuche 0.1.0-dev.3
+## Aktueller Entwicklungsstand – PDF-Vorschau 0.1.0-dev.4
+
+- [x] Geschützten PDF-Endpunkt mit HA-Authentifizierung und aktiven Adminrechten implementiert; feste Dokument-IDs, keine Weiterleitungen oder öffentlichen Dokumentlinks.
+- [x] PDF-Typ und Signatur prüfen; begrenzter Abruf bis 20 MiB mit Timeouts, kein Servercache.
+- [x] Kompakte Karte um `open_mode: preview` mit Dialog, Download und Paperless-Fallback erweitert; bisheriger Standard `paperless` bleibt erhalten.
+- [x] Abbruch, Freigabe von Blob-URLs, Fokus nach Schließen und Verwerfen verspäteter Vorschauantworten implementiert.
+- [x] Lokal 82 Client-Tests und 10 Frontend-Tests bestanden; Ruff, Format und Kompilierung erfolgreich.
+- [ ] HA-Frameworktests und vollständige GitHub Actions für diese Version erfolgreich abschließen.
+- [ ] Auf ha-test übertragen, neu starten und authentifizierten PDF-Abruf sowie Ablehnung ohne Anmeldung live prüfen.
+- [ ] Test-Dashboard auf Vorschau umstellen und native PDF-Anzeige visuell prüfen.
+- [ ] Große Dokumentkarte, Thumbnails, große Dateien/Streaming und weitere Browser bleiben offen.
+
+Entscheidung und Grenzen: [PDF-Vorschau](docs/pdf-preview.md).
+
+## Vorheriger Entwicklungsstand – Mehrwortsuche 0.1.0-dev.3
 
 - [x] Mehrere Suchbegriffe werden sicher mit UND verknüpft; Reihenfolge und Groß-/Kleinschreibung verändern die geprüften Treffer nicht.
 - [x] Titelmodus begrenzt jeden Begriff auf den Titel; Inhaltsmodus erlaubt Begriffe über Titel und Dokumenttext verteilt.

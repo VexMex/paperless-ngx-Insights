@@ -27,6 +27,65 @@ function page(count, number = 1, title = "Rechnung") {
   ) };
 }
 
+test("preview fetches with HA auth, downloads and releases blob on close", async () => {
+  const { card, root, submit, window } = await setup(async () => page(1), { open_mode: "preview" });
+  const revoked = [];
+  window.URL.createObjectURL = () => "blob:http://ha-test.local/synthetic";
+  window.URL.revokeObjectURL = url => revoked.push(url);
+  let request;
+  card.hass = { callWS: async () => page(1), callApiRaw: async (...args) => {
+    request = args;
+    return { ok: true, headers: new Map([["Content-Type", "application/pdf"]]),
+      blob: async () => new window.Blob(["%PDF-1.7"], { type: "application/pdf" }) };
+  } };
+  await submit("invoice");
+  const opener = root.querySelector("li a");
+  opener.focus();
+  opener.click();
+  await settle();
+  assert.equal(root.querySelector("dialog").open, true);
+  assert.equal(request[1], "paperless_ngx_insights/entry-1/documents/1/preview");
+  assert.ok(request[4]);
+  assert.equal(root.querySelector("iframe").getAttribute("src"), "blob:http://ha-test.local/synthetic");
+  assert.equal(root.querySelector(".preview-download").hidden, false);
+  root.querySelector(".preview-close").click();
+  assert.equal(root.querySelector("dialog").open, false);
+  assert.deepEqual(revoked, ["blob:http://ha-test.local/synthetic"]);
+  assert.equal(root.querySelector("iframe").hasAttribute("src"), false);
+  assert.equal(root.activeElement, opener);
+});
+
+test("closing preview aborts requests and ignores late blobs", async () => {
+  const { card, root, submit, window } = await setup(async () => page(1), { open_mode: "preview" });
+  let resolve, signal;
+  window.URL.createObjectURL = () => { throw new Error("must not create stale blob URL"); };
+  card.hass = { callWS: async () => page(1), callApiRaw: (...args) => {
+    signal = args[4];
+    return new Promise(done => { resolve = done; });
+  } };
+  await submit("invoice");
+  root.querySelector("li a").click();
+  root.querySelector("dialog").dispatchEvent(new window.Event("cancel", { cancelable: true }));
+  assert.equal(signal.aborted, true);
+  resolve({ ok: true, headers: new Map([["Content-Type", "application/pdf"]]), blob: async () => new window.Blob(["%PDF-"]) });
+  await settle();
+  assert.equal(root.querySelector("iframe").hasAttribute("src"), false);
+});
+
+test("unsupported or oversized previews keep the Paperless fallback", async () => {
+  for (const status of [403, 413, 415, 502]) {
+    const { card, root, submit } = await setup(async () => page(1), { open_mode: "preview" });
+    card.hass = { callWS: async () => page(1), callApiRaw: async () => ({ ok: false, status }) };
+    await submit("invoice");
+    root.querySelector("li a").click();
+    await settle();
+    assert.equal(root.querySelector("iframe").hidden, true);
+    assert.equal(root.querySelector(".paperless-link").href, "http://paperless.test/documents/1/details");
+    assert.ok(root.querySelector(".preview-status").textContent.length > 20);
+    root.querySelector(".preview-close").click();
+  }
+});
+
 test("five titles, arrows and six-result pagination", async () => {
   const queries = [];
   const { root, submit } = await setup(async message => {
