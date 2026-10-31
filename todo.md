@@ -16,7 +16,7 @@ Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Do
 - [x] Neue kompakte Karte mit sicherer Textausgabe, getrenntem Suchzustand, Lade-/Fehlerzuständen und Verwerfen veralteter Antworten implementiert.
 - [x] Lokale Tests: **52 Client-Tests**, **6 Frontend-Tests**, Ruff, Format- und Kompilierungsprüfung bestanden.
 - [x] Dashboard-Ausbaustufe in GitHub Actions vollständig erfolgreich geprüft: [Lauf](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41198510108).
-- [ ] Abschließenden Lauf nach der kleinen Korrektur für Suchmoduswechsel während laufender Anfrage und Wiederverbinden bestätigen.
+- [x] Abschließender [GitHub-Actions-Lauf](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41198644757) vollständig erfolgreich: 52 Client-Tests jeweils unter Python 3.10/3.14, 13 HA-Frameworktests und 6 Frontend-Tests.
 - [x] Lesende Paperless-Live-Tests mit API-Schlüssel: Titel-/Inhaltssuche, rein inhaltlicher Treffer, Pagination, keine Treffer, Textvorschau/-download, Vorschaubild und PDF-Vorschau erfolgreich.
 - [x] HACS-Installationsversuch untersucht: private Repository-Adresse liefert für den HACS-Zugang HTTP 404. Repository blieb privat.
 - [x] Stattdessen offizielle File-editor-App 6.3.0 und regulären angemeldeten Ingress-Zugang für die Übertragung verwendet. Netzwerkbeschränkung unverändert; App anschließend gestoppt und auf manuellen Start gesetzt.
