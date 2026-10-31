@@ -1,0 +1,22 @@
+[project]
+name = "paperless-ngx-insights"
+version = "0.1.0.dev0"
+description = "Read-only Paperless-ngx integration for Home Assistant"
+requires-python = ">=3.10"
+dependencies = ["aiohttp>=3.10,<4", "yarl>=1.17,<2"]
+
+[project.optional-dependencies]
+test = ["pytest==9.2.0", "pytest-asyncio==1.4.1", "ruff==0.17.3"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+extend-exclude = [".uv-cache", ".venv", ".python"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "ASYNC"]

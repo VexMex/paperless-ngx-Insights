@@ -1,0 +1,42 @@
+{
+  "title": "Paperless-ngx Insights",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Paperless-ngx Insights",
+        "description": "Connect Paperless. Document access in this development build is limited to HA administrators. The browser address is reserved for future external document links.",
+        "data": {
+          "url": "Paperless address",
+          "token": "API token",
+          "web_url": "Browser address (optional)"
+        }
+      },
+      "reconfigure": {
+        "title": "Change connection",
+        "data": {
+          "url": "Paperless address",
+          "token": "API token",
+          "web_url": "Browser address (optional)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Renew API token",
+        "data": {
+          "token": "API token"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Enter a valid HTTP(S) address.",
+      "invalid_auth": "The API token was rejected.",
+      "forbidden": "The Paperless user cannot read documents.",
+      "cannot_connect": "Paperless is unreachable or temporarily busy.",
+      "invalid_response": "The response does not match the expected Paperless API."
+    },
+    "abort": {
+      "already_configured": "This Paperless server is already configured.",
+      "reauth_successful": "The API token was updated.",
+      "reconfigure_successful": "The connection was updated."
+    }
+  }
+}

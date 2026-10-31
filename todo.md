@@ -4,6 +4,32 @@ Stand: 31.10.2026
 Repository: https://github.com/VexMex/paperless-ngx-Insights
 Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Dokumenten.
 
+## Aktueller Entwicklungsstand – 31.10.2026
+
+Erster Backend-Schritt: **0.1.0-dev.1**, noch kein fertiges Release.
+
+- [x] Domain paperless_ngx_insights, Grundstruktur, Manifest sowie deutsche/englische Formulardaten angelegt.
+- [x] Einrichtung, Reauth und Reconfigure implementiert; Prüfung auf doppelte Serveradressen vorgesehen.
+- [x] Asynchroner Client und administrativ geschützte WebSocket-Suche mit Pagination implementiert.
+- [x] Zugriff vorerst auf HA-Administratoren beschränkt. Normale Benutzerfreigaben bleiben offen.
+- [x] Lokale Client-Tests: **52 bestanden** unter Python 3.10.6; synthetischer HTTP-Server, keine echten Dokumente.
+- [x] Ruff-Codeprüfung, Formatprüfung und Python-Kompilierungsprüfung lokal bestanden.
+- [x] GitHub-Actions-Workflow für Client-Tests und separate HA-Frameworktests angelegt.
+- [ ] HA-Frameworktests in GitHub Actions gegen **HA 2026.10.4 / Python >=3.14.2** erfolgreich ausführen.
+- [ ] Integration auf ha-test installieren und dort Einrichtung, Reload, Suchrechte und Reauth praktisch testen.
+- [ ] Paperless-Testtoken sicher konfigurieren und tatsächliche Paperless-/API-Version nachweisen.
+- [ ] Beide Karten, PDF-/Thumbnail-Auslieferung, HACS-Paketierung und vollständige Testmatrix umsetzen.
+
+**Live-Nachweise:** ha-test antwortet erneut mit HA 2026.10.4 / RUNNING.
+Paperless auf Port 8810 antwortet mit Weiterleitung auf die Anmeldeseite.
+Das ist keine Bestätigung der authentifizierten Such-API. Ein Paperless-Token wurde noch nicht bereitgestellt.
+Keine Änderungen oder Tests am produktiven Home Assistant.
+
+**Nachvollziehbarkeit:** Architekturentscheidungen und offene Kompatibilitätsnachweise stehen in
+[docs/architecture.md](docs/architecture.md). AGENTS.md verankert die ausschließliche Nutzung von ha-test.
+Die Backend-Grundlage wurde parallel zur Recherche erstellt; das PDF-Authentifizierungs-Gate bleibt vor der Kartenentwicklung bestehen.
+**M0 und M1 bleiben offen**, bis die zugehörigen praktischen Nachweise erbracht sind.
+
 ## 1. Ausgangslage und Arbeitsweise
 
 - [x] Repository und Schreibzugriff identifiziert.
@@ -118,7 +144,7 @@ Freigabekriterium für die folgenden Schritte: Suchvertrag, Benutzerzugriff und 
 
 Abhängigkeit: R1 und erste Entscheidungen aus R4.
 
-- [ ] Domain und öffentliche Kartennamen festlegen, Vorschlag: paperless_ngx_insights.
+- [ ] Öffentliche Kartennamen festlegen; Integrationsdomain paperless_ngx_insights ist implementiert.
 - [ ] Struktur anlegen: custom_components/<domain>/, frontend/, tests/, docs/ und .github/workflows/.
 - [ ] Manifest, Config Flow, Übersetzungen (Deutsch/Englisch), Versionsverwaltung und Entwicklungsanleitung vorbereiten.
 - [ ] Reproduzierbare Python-/Frontend-Abhängigkeiten und Build-Befehle festlegen.
@@ -133,16 +159,16 @@ Abnahme: Eine frische Entwicklungsumgebung kann Backend-Tests und Frontend-Build
 
 Abhängigkeit: Projektgrundlage, R1 und Zugriffsentscheidung R2.
 
-- [ ] Asynchronen Paperless-Client mit verwalteter Sitzung, Timeouts und begrenzter Parallelität implementieren.
-- [ ] Eingabeadresse normalisieren; HTTP/HTTPS, IPv4, Hostname, Port und Unterpfad korrekt behandeln.
-- [ ] TLS-Prüfung standardmäßig aktivieren; Umgang mit lokalen Zertifikaten begründet dokumentieren.
+- [x] Asynchronen Paperless-Client mit verwalteter Sitzung, Timeouts und begrenzter Parallelität implementieren.
+- [x] Eingabeadresse normalisieren; HTTP/HTTPS, IPv4, Hostname, Port und Unterpfad korrekt behandeln.
+- [x] TLS-Prüfung standardmäßig aktivieren; keine Abschaltoption. Lokale eigene CA-Zertifikate noch gesondert prüfen.
 - [ ] Fehlerklassen für ungültige Anmeldung, fehlende Rechte, Nichterreichbarkeit, TLS, inkompatible API und fehlerhafte Antworten vorsehen.
-- [ ] Config Flow mit sicherem Schlüsselfeld und aussagekräftigen deutschen/englischen Fehlermeldungen implementieren.
+- [x] Config Flow mit sicherem Schlüsselfeld und aussagekräftigen deutschen/englischen Fehlermeldungen implementieren.
 - [ ] Reauth/Reconfigure und sichere Aktualisierung bestehender Einstellungen ergänzen.
 - [ ] Doppelte Einträge erkennen; mehrere verschiedene Paperless-Server eindeutig verwalten.
 - [ ] Setup, Unload, Reload und Entfernen sauber implementieren; laufende Aufgaben und Sitzungen aufräumen.
-- [ ] Diagnosedaten mit redigierten Schlüsseln und ohne Dokumentinhalt bereitstellen.
-- [ ] Keine Dokumentlisten, Suchbegriffe oder Volltexte als globale Sensorattribute oder Recorder-Daten ablegen.
+- [x] Diagnosedaten mit redigierten Schlüsseln und ohne Dokumentinhalt bereitstellen.
+- [x] Keine Dokumentlisten, Suchbegriffe oder Volltexte als globale Sensorattribute oder Recorder-Daten ablegen.
 
 Tests: gültige/ungültige Adresse, falscher/abgelaufener Schlüssel, 401/403, Timeout, DNS-/TLS-Fehler, fehlerhaftes JSON, inkompatible API, Reload und zwei Einträge.
 
@@ -152,9 +178,9 @@ Abnahme: Einrichtung gelingt mit gültigem Zugriff; Fehler bleiben verständlich
 
 Abhängigkeit: Backend-Verbindung, verifizierter Suchvertrag und R3.
 
-- [ ] Authentifizierten Suchbefehl mit Integrationseintrag, Suchmodus, Suchtext, Seite und Seitengröße implementieren.
-- [ ] Eingaben validieren und begrenzen; Seitengröße und parallele Abfragen begrenzen.
-- [ ] Nur benötigte Antwortfelder übertragen; Dokumentinhalt standardmäßig nicht an Karten senden.
+- [x] Authentifizierten Suchbefehl mit Integrationseintrag, Suchmodus, Suchtext, Seite und Seitengröße implementieren.
+- [x] Eingaben validieren und begrenzen; Seitengröße und parallele Abfragen begrenzen.
+- [x] Nur benötigte Antwortfelder übertragen; Dokumentinhalt standardmäßig nicht an Karten senden.
 - [ ] Stabile Seitennavigation und definiertes Verhalten für leere Suche und verschwundene Treffer implementieren.
 - [ ] Dokumentmetadaten und geschützte Endpunkte für Thumbnail, Vorschau und Download implementieren.
 - [ ] Zugriff in jeder Anfrage anhand des HA-Benutzers und des Integrationseintrags prüfen.
@@ -289,8 +315,9 @@ Vor den Live-Integrationstests aus einer autorisierten Testumgebung ermitteln:
 
 - [x] Test-Home-Assistant vom Benutzer bereitgestellt; ha-test erreichbar, HA 2026.10.4 (31.10.2026).
 - [ ] Paperless-Version und Paperless-Testzugang ermitteln; unterstützte Mindestversionen bleiben offen.
-- [ ] Interne Paperless-Adresse, gegebenenfalls externe Browser-Adresse und URL-Unterpfad.
+- [x] Paperless-Adresse vom Benutzer erhalten: http://192.168.178.10:8810; Anmeldeseite erreichbar. Externe Adresse/Unterpfad noch nicht benötigt bzw. ungeprüft.
 - [ ] Eingeschränkter Testzugang und gewünschter Kreis berechtigter HA-Benutzer.
 - [ ] Relevante Browser/Companion-Geräte und typische Dokumentformate/-größen.
 
 Zugangsschlüssel ausschließlich über sichere Konfiguration bereitstellen; niemals in diese Datei, Fixtures oder das Repository schreiben.
+

@@ -1,0 +1,42 @@
+{
+  "title": "Paperless-ngx Insights",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Paperless-ngx Insights",
+        "description": "Verbinde Paperless. Der Dokumentzugriff ist in diesem Entwicklungsstand auf HA-Administratoren beschränkt. Die Browser-Adresse ist nur für spätere externe Dokumentlinks vorgesehen.",
+        "data": {
+          "url": "Paperless-Adresse",
+          "token": "API-Schlüssel",
+          "web_url": "Browser-Adresse (optional)"
+        }
+      },
+      "reconfigure": {
+        "title": "Verbindung ändern",
+        "data": {
+          "url": "Paperless-Adresse",
+          "token": "API-Schlüssel",
+          "web_url": "Browser-Adresse (optional)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "API-Schlüssel erneuern",
+        "data": {
+          "token": "API-Schlüssel"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Bitte eine gültige HTTP(S)-Adresse eingeben.",
+      "invalid_auth": "Der API-Schlüssel wurde abgelehnt.",
+      "forbidden": "Der Paperless-Benutzer darf keine Dokumente lesen.",
+      "cannot_connect": "Paperless ist nicht erreichbar oder vorübergehend ausgelastet.",
+      "invalid_response": "Die Antwort entspricht nicht der erwarteten Paperless-API."
+    },
+    "abort": {
+      "already_configured": "Dieser Paperless-Server ist bereits eingerichtet.",
+      "reauth_successful": "Der API-Schlüssel wurde aktualisiert.",
+      "reconfigure_successful": "Die Verbindung wurde aktualisiert."
+    }
+  }
+}
