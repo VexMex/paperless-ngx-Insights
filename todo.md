@@ -4,6 +4,18 @@ Stand: 31.10.2026
 Repository: https://github.com/VexMex/paperless-ngx-Insights
 Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Dokumenten.
 
+## Prioritäten nach Nutzerentscheidung
+
+Benutzerfreigaben und persönliche Paperless-API-Schlüssel werden ausdrücklich ganz
+ans Ende der Agenda verschoben und nur bei tatsächlichem Bedarf umgesetzt.
+Der Eigentümer nutzt das System normalerweise allein. Die bestehende serverseitige
+Beschränkung auf HA-Administratoren sowie die Prüfung der Paperless-Dokumentrechte
+bleiben erhalten; diese Sicherheitsprüfungen werden nicht zurückgestellt.
+
+Nächste Prioritäten: todo bereinigen, Einrichtung/Schlüsselwechsel/Reauth und Updates
+live absichern, danach HACS-Auslieferung und Release-Vorbereitung. Erweiterte
+Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
+
 ## Aktueller Entwicklungsstand – Große Karte und Editor 0.1.0-dev.5
 
 - [x] Große Karte `custom:paperless-ngx-insights-documents` mit gemeinsamer Suche, Pagination, Datum und geschützten Vorschaubildern implementiert.
@@ -178,6 +190,11 @@ Für jede Prüfung festhalten: untersuchte Version, Quelle/Schema, Ergebnis, gew
 - [ ] Request-/Response-Beispiele anonymisiert als Test-Fixtures und API-Vertrag dokumentieren.
 
 ### R2: Zugriffsmodell
+
+**Zurückgestellt:** Erweiterte Freigaben und unterschiedliche Benutzerzugänge stehen
+am Ende der Agenda (Abschnitt 14). Nachweise für den bestehenden Adminzugriff bleiben
+Teil der normalen Sicherheitsprüfung. Die folgenden offenen Mehrbenutzerpunkte
+blockieren die erste Veröffentlichung nicht.
 
 - [ ] Festlegen, welche HA-Benutzer welchen Integrationseintrag benutzen dürfen; serverseitige Prüfung pro Anfrage.
 - [ ] Gemeinsamer Paperless-Schlüssel bedeutet gemeinsame Paperless-Rechte: Auswirkungen dokumentieren.
@@ -392,3 +409,15 @@ Vor den Live-Integrationstests aus einer autorisierten Testumgebung ermitteln:
 Zugangsschlüssel ausschließlich über sichere Konfiguration bereitstellen; niemals in diese Datei, Fixtures oder das Repository schreiben.
 
 
+
+## 14. Ganz zuletzt – optionale Mehrbenutzerfunktionen
+
+Auf ausdrücklichen Nutzerwunsch nach allen übrigen Arbeitspaketen, nur falls benötigt:
+
+- [ ] Freigabe einzelner Paperless-Verbindungen für ausgewählte normale HA-Benutzer.
+- [ ] Persönlicher Paperless-API-Schlüssel je HA-Benutzer, damit dessen eigene Paperless-Dokumentrechte gelten.
+- [ ] Bei Umsetzung: Benutzerzuordnung, sichere Schlüsselverwaltung und -entfernung, Isolation sowie Rechteentzug und Benutzerwechsel testen.
+
+Kein eigener Modus „nur ansehen, nicht herunterladen“ geplant. Die PDF-Vorschau
+überträgt die Datei bereits an den Browser; ein versteckter Download-Button würde
+das Speichern nicht zuverlässig verhindern.
