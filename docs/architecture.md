@@ -44,6 +44,21 @@ Stand: 31.10.2026. Dieses Dokument beschreibt die erste Backend-Ausbaustufe.
 - HACS-Paketierung und versionierte Bereitstellung beider Karten entscheiden.
 - Frontend-Framework und mögliche PDF-Bibliothek einschließlich Lizenzen wählen.
 
+## Beobachtung am vorgesehenen Paperless-Server
+
+Am 31.10.2026 war das OpenAPI-Schema unter
+`http://192.168.178.10:8810/api/schema/?format=json` lesbar (HTTP 200).
+Es meldet `info.version: 6.0.0 (10)`. Das ist zunächst die vom Schema gemeldete
+Versionsangabe; eine separate Bestätigung der installierten Anwendung bleibt offen.
+
+Das Dokumentlisten-Schema führt `title__icontains`, `title_content`, `text`,
+`title_search`, `query`, `ordering`, `fields`, `page` und `page_size` auf.
+Auch die Pfade für `preview`, `thumb` und `download` sind vorhanden.
+Der Dokumentlisten-Aufruf ohne Token antwortet mit HTTP 401.
+Die Filterparameter sind damit im Ziel-Schema nachgewiesen, ihr Verhalten mit
+echten Dokumenten und Rechten jedoch noch nicht getestet. Es wurden keine
+Dokumente abgerufen und keine Anmeldung vorgenommen.
+
 Das PDF-Authentifizierungs-Gate aus todo.md bleibt vor der Kartenentwicklung
 bestehen. Die separat testbare Verbindung/Suche kann bereits entwickelt werden;
 M0 und M1 sind dadurch noch nicht insgesamt abgeschlossen.

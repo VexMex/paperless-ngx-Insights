@@ -14,8 +14,10 @@ Erster Backend-Schritt: **0.1.0-dev.1**, noch kein fertiges Release.
 - [x] Zugriff vorerst auf HA-Administratoren beschränkt. Normale Benutzerfreigaben bleiben offen.
 - [x] Lokale Client-Tests: **52 bestanden** unter Python 3.10.6; synthetischer HTTP-Server, keine echten Dokumente.
 - [x] Ruff-Codeprüfung, Formatprüfung und Python-Kompilierungsprüfung lokal bestanden.
+- [x] GitHub Actions: jeweils 52 Client-Tests unter Python 3.10 und 3.14 bestanden ([Lauf 1](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41196381297)).
+- [x] API-Schema des vorgesehenen Paperless-Servers gelesen: Suchfilter, Seitennavigation und Vorschau-Endpunkte vorhanden; Schema meldet 6.0.0 (10). Dokumentliste ohne Token antwortet HTTP 401.
 - [x] GitHub-Actions-Workflow für Client-Tests und separate HA-Frameworktests angelegt.
-- [ ] HA-Frameworktests in GitHub Actions gegen **HA 2026.10.4 / Python >=3.14.2** erfolgreich ausführen.
+- [ ] HA-Frameworktests in GitHub Actions gegen **HA 2026.10.4 / Python >=3.14.2** erfolgreich ausführen. Erster Lauf: 10 bestanden, 1 fehlerhafter Reconfigure-Testablauf; korrigiert, erneuter Lauf folgt.
 - [ ] Integration auf ha-test installieren und dort Einrichtung, Reload, Suchrechte und Reauth praktisch testen.
 - [ ] Paperless-Testtoken sicher konfigurieren und tatsächliche Paperless-/API-Version nachweisen.
 - [ ] Beide Karten, PDF-/Thumbnail-Auslieferung, HACS-Paketierung und vollständige Testmatrix umsetzen.

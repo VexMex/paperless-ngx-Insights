@@ -95,7 +95,9 @@ async def test_reauth_and_reconfigure(hass, source):
     entry = MockConfigEntry(domain=DOMAIN, unique_id=DATA["url"], data=DATA)
     entry.add_to_hass(hass)
     result = await hass.config_entries.flow.async_init(
-        DOMAIN, context={"source": source, "entry_id": entry.entry_id}, data=DATA
+        DOMAIN,
+        context={"source": source, "entry_id": entry.entry_id},
+        data=DATA if source == SOURCE_REAUTH else None,
     )
     assert result["type"] is FlowResultType.FORM
     new_data = {**DATA, "token": "replacement-token"}
