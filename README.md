@@ -2,13 +2,14 @@
 
 Home-Assistant-Integration zum Suchen und Anzeigen von Paperless-ngx-Dokumenten.
 
-**Entwicklungsstand 0.1.0-dev.1:** Die erste Backend-Grundlage ist implementiert:
+**Entwicklungsstand 0.1.0-dev.2:** Backend und erste kompakte Suchkarte sind implementiert:
 Einrichtung über die Oberfläche, Verbindungstest, erneute Anmeldung,
 Ändern der Verbindung, getrennte Browser-Adresse und eine administrativ
 geschützte Suchschnittstelle mit serverseitiger Pagination.
 
-Die kompakte Suchkarte, die große Dokumentkarte, Vorschaubilder und PDF-Anzeige
-sind noch in Entwicklung. Diese Version ist kein fertiges Release. Der aktuelle
+Die kompakte Karte zeigt fünf Titel pro Seite, Pfeile zum Blättern und öffnet
+Dokumente in einem neuen Paperless-Tab. Die große Dokumentkarte, Vorschaubilder
+und eingebettete PDF-Anzeige sind noch in Entwicklung. Diese Version ist kein fertiges Release. Der aktuelle
 Arbeits- und Teststand steht in [todo.md](todo.md).
 
 ## Entwicklung und Tests
@@ -20,8 +21,9 @@ Arbeits- und Teststand steht in [todo.md](todo.md).
   Python 3.10; das bedeutet keine HA-Unterstützung auf Python 3.10.
 - Paperless-Testadresse: **http://192.168.178.10:8810**. Die Anmeldeseite wurde
   erreicht. Erste authentifizierte Such-/Dateiprüfungen sind bestanden; siehe
-  [Live-Testbericht](docs/live-tests.md). Installation und Browseranzeige auf
-  ha-test sowie die separate Bestätigung der Anwendungsversion bleiben offen.
+  [Live-Testbericht](docs/live-tests.md). Die Integration und Suchkarte sind auf
+  ha-test installiert und im Browser geprüft. Die separate Bestätigung der
+  Paperless-Anwendungsversion bleibt offen.
 - Zugriff auf die Suchschnittstelle haben zunächst nur HA-Administratoren.
   Der Paperless-Schlüssel bestimmt zusätzlich die Paperless-Dokumentrechte.
 - API-Schlüssel werden ausschließlich im HA-Konfigurationseintrag gehalten.
@@ -37,6 +39,8 @@ ruff check .
 ruff format --check .
 python -m compileall -q custom_components
 python -m pytest -q
+npm ci --ignore-scripts --no-audit --no-fund
+npm test
 ```
 
 Die HTTP-Tests starten ausschließlich einen lokalen synthetischen Server; sie
@@ -73,8 +77,39 @@ TLS-Zertifikate werden geprüft. Eine Abschaltoption ist bewusst nicht vorhanden
 Bei einer falschen Adresse oder unzureichenden Rechten bleibt der Dialog offen.
 Ein Server kann einmal pro normalisierter Basisadresse eingerichtet werden.
 
-Diese Anleitung beschreibt den Installationsweg, bestätigt aber noch keine
-durchgeführte Installation. Der erforderliche HA-Neustart wurde nicht ausgeführt.
+Auf ha-test wurde dieser Entwicklungsstand am 31.10.2026 über den regulären
+Dateieditor-Zugang installiert, HA neu gestartet und die Integration über ihren
+Config Flow eingerichtet. HACS auf ha-test konnte das private Repository nicht
+lesen; der Testinstallationsweg ändert keine Repository-Sichtbarkeit und keine
+Netzbeschränkungen des Dateieditors.
+
+## Kompakte Karte
+
+Dashboard-Ressource als **JavaScript-Modul** registrieren:
+
+```text
+/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.2
+```
+
+Danach die Karte hinzufügen:
+
+```yaml
+type: custom:paperless-ngx-insights-search
+title: Dokumente suchen
+page_size: 5
+search_mode: title
+```
+
+Bei genau einem geladenen Integrationseintrag wird dieser automatisch gewählt.
+Bei mehreren Servern zusätzlich dessen `entry_id` setzen. `search_mode` ist
+`title` oder `text`; der Suchbereich kann auch direkt in der Karte gewählt werden.
+Dokumentlinks öffnen die normale Paperless-Oberfläche in einem neuen Tab. Dafür
+kann zusätzlich eine Paperless-Anmeldung erforderlich sein. Eine eingebettete
+Vorschau oder ein visueller Karteneditor ist in diesem Stand noch nicht vorhanden.
+
+Das eingerichtete Test-Dashboard ist unter
+[Paperless auf ha-test](http://192.168.178.147/paperless-test/suche) erreichbar und
+auf HA-Administratoren beschränkt.
 
 ## Suchschnittstelle für die folgenden Karten
 

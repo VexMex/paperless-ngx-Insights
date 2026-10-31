@@ -59,9 +59,12 @@ Die Filterparameter sind damit im Ziel-Schema nachgewiesen, ihr Verhalten mit
 echten Dokumenten und Rechten jedoch noch nicht getestet. Es wurden keine
 Dokumente abgerufen und keine Anmeldung vorgenommen.
 
-Das PDF-Authentifizierungs-Gate aus todo.md bleibt vor der Kartenentwicklung
-bestehen. Die separat testbare Verbindung/Suche kann bereits entwickelt werden;
-M0 und M1 sind dadurch noch nicht insgesamt abgeschlossen.
+Das PDF-Authentifizierungs-Gate aus todo.md bleibt vor der eingebetteten
+Dokumentvorschau bestehen. Die kompakte Karte in 0.1.0-dev.2 verwendet zunächst
+normale Paperless-Links für neue Tabs. Das Modul liegt im Integrationsordner
+unter www/ und wird über einen eigenen statischen HA-Pfad ausgeliefert. Die
+Karte ruft ausschließlich HA-WebSocket-Befehle auf und erhält keinen API-Schlüssel.
+M0 und M1 sind durch die erste Testinstallation noch nicht insgesamt abgeschlossen.
 
 ## Quellen zur API-Prüfung
 

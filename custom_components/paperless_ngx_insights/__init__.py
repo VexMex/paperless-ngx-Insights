@@ -1,5 +1,8 @@
 """Set up the read-only Paperless-ngx Insights integration."""
 
+from pathlib import Path
+
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryError, ConfigEntryNotReady
@@ -17,6 +20,9 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Register API commands once; all requests still require a loaded entry."""
     hass.data.setdefault(DOMAIN, {})
+    await hass.http.async_register_static_paths(
+        [StaticPathConfig(f"/{DOMAIN}/frontend", str(Path(__file__).parent / "www"), True)]
+    )
     async_register_commands(hass)
     return True
 

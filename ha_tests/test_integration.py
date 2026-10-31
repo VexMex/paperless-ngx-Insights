@@ -17,7 +17,7 @@ from custom_components.paperless_ngx_insights.client import (
 )
 from custom_components.paperless_ngx_insights.const import DOMAIN
 from custom_components.paperless_ngx_insights.diagnostics import async_get_config_entry_diagnostics
-from custom_components.paperless_ngx_insights.websocket import websocket_entries
+from custom_components.paperless_ngx_insights.websocket import websocket_entries, websocket_search
 
 DATA = {"url": "http://paperless.test:8810", "token": "fixture-token", "web_url": ""}
 VALIDATE = f"custom_components.{DOMAIN}.client.PaperlessClient.validate_connection"
@@ -85,9 +85,10 @@ async def test_setup_unload_and_diagnostics(hass):
 
 
 @pytest.mark.parametrize("user", [None, SimpleNamespace(is_admin=False)])
-def test_entries_reject_non_admin(user):
+@pytest.mark.parametrize("handler", [websocket_entries, websocket_search])
+def test_commands_reject_non_admin(user, handler):
     with pytest.raises(Unauthorized):
-        websocket_entries(None, SimpleNamespace(user=user), {"id": 1})
+        handler(None, SimpleNamespace(user=user), {"id": 1})
 
 
 @pytest.mark.parametrize("source", [SOURCE_REAUTH, SOURCE_RECONFIGURE])

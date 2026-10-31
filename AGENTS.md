@@ -1,8 +1,10 @@
 # Development rules
 
-- Live Home Assistant development and testing must use only MCP server `ha-test`,
-  assigned by the owner to `192.168.178.147`. Never use the production Home
-  Assistant connection for this project, including as a fallback.
+- Live Home Assistant development and testing must target only `192.168.178.147`,
+  assigned by the owner to MCP server `ha-test`. Prefer that connector; the normal
+  authenticated HA/File editor ingress APIs and browser may supplement it for
+  installation and visual verification on this same test instance. Never use
+  the production Home Assistant connection, including as a fallback.
 - Local builds and tests using synthetic data are allowed.
 - Never commit passwords, API tokens, real documents, or private OCR text.
 - Update `todo.md` after each completed work package, recording actual test

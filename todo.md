@@ -6,35 +6,28 @@ Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Do
 
 ## Aktueller Entwicklungsstand – 31.10.2026
 
-Erster Backend-Schritt: **0.1.0-dev.1**, noch kein fertiges Release.
+**0.1.0-dev.2: Backend und erste kompakte Suchkarte auf ha-test eingerichtet.**
 
-- [x] Domain paperless_ngx_insights, Grundstruktur, Manifest sowie deutsche/englische Formulardaten angelegt.
-- [x] Einrichtung, Reauth und Reconfigure implementiert; Prüfung auf doppelte Serveradressen vorgesehen.
-- [x] Asynchroner Client und administrativ geschützte WebSocket-Suche mit Pagination implementiert.
-- [x] Zugriff vorerst auf HA-Administratoren beschränkt. Normale Benutzerfreigaben bleiben offen.
-- [x] Lokale Client-Tests: **52 bestanden** unter Python 3.10.6; synthetischer HTTP-Server, keine echten Dokumente.
-- [x] Ruff-Codeprüfung, Formatprüfung und Python-Kompilierungsprüfung lokal bestanden.
-- [x] GitHub Actions: jeweils 52 Client-Tests unter Python 3.10 und 3.14 bestanden ([Lauf 1](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41196381297)).
-- [x] API-Schema des vorgesehenen Paperless-Servers gelesen: Suchfilter, Seitennavigation und Vorschau-Endpunkte vorhanden; Schema meldet 6.0.0 (10). Dokumentliste ohne Token antwortet HTTP 401.
-- [x] GitHub-Actions-Workflow für Client-Tests und separate HA-Frameworktests angelegt.
-- [x] HA-Frameworktests gegen **HA 2026.10.4 / Python 3.14.9**: **11 bestanden**. Zusammen mit beiden Client-Jobs ist [Lauf 2 vollständig erfolgreich](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41196569682). Der anfängliche Reconfigure-Testfehler wurde korrigiert.
-- [ ] Integration auf ha-test installieren und dort Einrichtung, Reload, Suchrechte und Reauth praktisch testen.
-- [x] Bereitgestellten Paperless-Testtoken lokal für lesende API-Prüfungen verwendet; Schlüssel nicht ausgegeben oder ins Repository übernommen.
-- [ ] Paperless-Token auf ha-test in der Integration konfigurieren; Anwendungsversion unabhängig bestätigen.
-- [ ] Beide Karten, PDF-/Thumbnail-Auslieferung, HACS-Paketierung und vollständige Testmatrix umsetzen.
+- [x] Integrationsdateien und Suchkarten-Modul auf **192.168.178.147** übertragen und vollständig zurückgelesen/per Hash geprüft.
+- [x] HA-Konfiguration geprüft, ausschließlich ha-test neu gestartet und Paperless über den regulären Config Flow eingerichtet.
+- [x] Integration meldet **loaded**. Der bereitgestellte Schlüssel ist im HA-Konfigurationseintrag hinterlegt, nicht im Repository.
+- [x] Dashboard **Paperless** mit Ansicht **Suche** und versionierter JavaScript-Ressource angelegt: [Test-Dashboard](http://192.168.178.147/paperless-test/suche).
+- [x] Im Browser geprüft: Karte lädt, fünf Titel pro Seite, Weiterblättern auf Treffer 6–10, neue Titelsuche setzt Seite auf 1 zurück, Auswahl Titel/Inhalt und Links für neue Tabs vorhanden.
+- [x] Neue kompakte Karte mit sicherer Textausgabe, getrenntem Suchzustand, Lade-/Fehlerzuständen und Verwerfen veralteter Antworten implementiert.
+- [x] Lokale Tests: **52 Client-Tests**, **5 Frontend-Tests**, Ruff, Format- und Kompilierungsprüfung bestanden.
+- [ ] Aktualisierte GitHub-Actions-Tests inklusive HA-Frameworktests und Frontend-Tests bestätigen; letzter bestätigter HA-Stand davor: 11 Tests bestanden.
+- [x] Lesende Paperless-Live-Tests mit API-Schlüssel: Titel-/Inhaltssuche, rein inhaltlicher Treffer, Pagination, keine Treffer, Textvorschau/-download, Vorschaubild und PDF-Vorschau erfolgreich.
+- [x] HACS-Installationsversuch untersucht: private Repository-Adresse liefert für den HACS-Zugang HTTP 404. Repository blieb privat.
+- [x] Stattdessen offizielle File-editor-App 6.3.0 und regulären angemeldeten Ingress-Zugang für die Übertragung verwendet. Netzwerkbeschränkung unverändert; App anschließend gestoppt und auf manuellen Start gesetzt.
+- [ ] Eingebettete Dokumentvorschau, große Dokumentkarte, visueller Karteneditor und HACS-Auslieferung fertigstellen.
+- [ ] Reload/Reauth, differenzierte Benutzer-/Dokumentrechte, große Dateien und weitere Browser vollständig live prüfen.
 
-**Live-Nachweise:** ha-test antwortet erneut mit HA 2026.10.4 / RUNNING.
-Paperless auf Port 8810 antwortet mit Weiterleitung auf die Anmeldeseite.
-Mit dem inzwischen bereitgestellten Schlüssel wurden Titel-/Inhaltssuche, rein inhaltlicher Treffer, Seitennavigation, leere Suche, Vorschaubild, Textvorschau/-download und PDF-Vorschau erfolgreich geprüft.
-Die Datei-Endpunkte ignorierten die getestete Range-Anfrage (HTTP 200 statt 206). Einzelheiten: [docs/live-tests.md](docs/live-tests.md).
-Diese Prüfungen nutzten den Integrationsclient direkt; Installation und Browseranzeige auf ha-test bleiben offen.
-Keine Änderungen oder Tests am produktiven Home Assistant.
+Dokumentlinks öffnen derzeit die Paperless-Oberfläche im neuen Tab; dort kann eine eigene Anmeldung nötig sein.
+Es gibt noch keine eingebettete PDF-Vorschau. **M0, M1 und M3 sind insgesamt noch nicht abgeschlossen**:
+PDF-Authentifizierung, vollständige Verbindungs-/Reauth-Prüfung und verbleibende Kartenfunktionen fehlen.
 
-**Nachvollziehbarkeit:** Architekturentscheidungen und offene Kompatibilitätsnachweise stehen in
-[docs/architecture.md](docs/architecture.md). AGENTS.md verankert die ausschließliche Nutzung von ha-test.
-Die Backend-Grundlage wurde parallel zur Recherche erstellt; das PDF-Authentifizierungs-Gate bleibt vor der Kartenentwicklung bestehen.
-Implementierung: [5108a3e](https://github.com/VexMex/paperless-ngx-Insights/commit/5108a3eb094420753b78c6eadc6e06b22742ef6e); Testkorrektur und Schema-Nachweis: [7b2c41d](https://github.com/VexMex/paperless-ngx-Insights/commit/7b2c41de21bab90042ceb684297174f7d12e4b00).
-**M0 und M1 bleiben offen**, bis die zugehörigen praktischen Nachweise erbracht sind.
+Details: [Live-Testbericht](docs/live-tests.md), [Architektur](docs/architecture.md).
+Alle Live-HA-Arbeiten fanden ausschließlich auf dem vom Benutzer freigegebenen Testsystem statt.
 
 ## 1. Ausgangslage und Arbeitsweise
 
@@ -57,27 +50,27 @@ Dieser Plan wird mit jedem abgeschlossenen Entwicklungsschritt und jeder relevan
 - [x] 31.10.2026: Verbindung über ha-test erfolgreich geprüft (ha_get_overview, success=true).
 - Gemeldeter Stand: Home Assistant **2026.10.4**, Zustand **RUNNING**, ha-mcp **9.0.0**.
 - Die vom MCP-Server gemeldete interne Basisadresse ist http://supervisor/core. Die IP-Zuordnung stammt aus der Benutzerangabe und ist dadurch nicht unabhängig bestätigt.
-- Bisher ausschließlich lesende Verbindungsprüfung; keine Integration installiert und keine Funktionstests durchgeführt.
+- Integration und Suchkarte inzwischen installiert und im Browser geprüft; siehe aktuellen Entwicklungsstand und Live-Testbericht.
 
 ## 2. Vereinbarter Funktionsumfang
 
 ### Integration
 
-- [ ] Einrichtung über Einstellungen > Geräte & Dienste: Paperless-Adresse (IP oder Hostname, Protokoll, optional Port und URL-Unterpfad) und API-Schlüssel.
-- [ ] Verbindung und Berechtigung vor erfolgreichem Abschluss der Einrichtung prüfen.
-- [ ] Schlüssel ausschließlich serverseitig in der Integration verwenden; niemals in Kartenkonfiguration, Dokumentlinks oder Browser-Speicher übertragen.
+- [x] Einrichtung über Config Flow mit Paperless-Adresse und API-Schlüssel implementiert und auf ha-test erfolgreich ausgeführt.
+- [x] Zugriff auf Dokumentliste vor Abschluss der Einrichtung prüfen; mit bereitgestelltem Schlüssel auf ha-test bestätigt.
+- [x] Schlüssel ausschließlich serverseitig verwenden; Karten verwenden die HA-WebSocket-Schnittstelle und enthalten keine Paperless-Zugangsdaten.
 - [ ] Adresse und Schlüssel nachträglich ändern können; erneute Anmeldung bei ungültigem Schlüssel anbieten.
 - [ ] Optional getrennte interne API-Adresse und vom Browser erreichbare Paperless-Adresse unterstützen.
 - [ ] Mehrere Integrationseinträge architektonisch berücksichtigen; Karten wählen den gewünschten Eintrag.
 
 ### Karte A: kompakte Suche
 
-- [ ] Eigenständiger Kartentyp mit Suchfeld und Auswahl Titel / Titel und Inhalt.
-- [ ] Standardmäßig fünf Titel pro Ergebnisseite, Anzahl pro Karte einstellbar.
-- [ ] Vor-/Zurück-Pfeile, korrekt deaktivierte Randpfeile und verständliche Trefferanzeige.
+- [x] Eigenständiger Kartentyp mit Suchfeld und Auswahl Titel / Titel und Inhalt.
+- [x] Standardmäßig fünf Titel pro Ergebnisseite, Anzahl pro Karte einstellbar.
+- [x] Vor-/Zurück-Pfeile, korrekt deaktivierte Randpfeile und verständliche Trefferanzeige.
 - [ ] Dokumenttitel anklickbar; Verhalten pro Karte auswählbar: Vorschau in Home Assistant oder Öffnen in Paperless.
-- [ ] Ladezustand, keine Treffer, noch keine Suche und Fehler jeweils eindeutig darstellen.
-- [ ] Im Normalbetrieb keine Vorschaubilder laden; die Karte soll kompakt bleiben.
+- [x] Ladezustand, keine Treffer, noch keine Suche und Fehler jeweils eindeutig darstellen.
+- [x] Im Normalbetrieb keine Vorschaubilder laden; die Karte soll kompakt bleiben.
 
 ### Karte B: Dokumentübersicht für einen ganzen Dashboard-Tab
 
@@ -208,7 +201,7 @@ Abhängigkeit: Backend-Schnittstellen.
 - [ ] Gemeinsamen Client und typisierte Antwort-/Fehlermodelle für beide Karten anlegen.
 - [ ] Suchzustand je Karteninstanz isolieren; Suchtext und Auswahl nicht global speichern.
 - [ ] Suche per Enter/Suchbutton umsetzen; optionale Eingabeverzögerung nur mit klarer Anfragebegrenzung.
-- [ ] Bei neuer Suche Seite auf 1 zurücksetzen und veraltete Antworten verwerfen.
+- [x] Bei neuer Suche Seite auf 1 zurücksetzen und veraltete Antworten verwerfen.
 - [ ] Suchwechsel, schnelles Blättern und Verbindungsabbruch ohne vertauschte Ergebnisse behandeln.
 - [ ] Wiederverwendbare Seitennavigation, Statusanzeige und Vorschaukomponente erstellen.
 - [ ] HA-Themes, Tastaturbedienung, Fokus, Beschriftungen und Screenreader berücksichtigen.
@@ -224,9 +217,9 @@ Abhängigkeit: gemeinsame Frontend-Bausteine.
 - [ ] Kartentyp, Kartenauswahl-Eintrag und visuelle Konfiguration bereitstellen.
 - [ ] Optionen: Integrationseintrag, Überschrift, Suchmodus, Treffer pro Seite (Standard 5), Klickverhalten.
 - [ ] Titelzeilen ohne dauerhaft geladene Thumbnails umsetzen; lange Titel zugänglich darstellen.
-- [ ] Vor-/Zurück-Pfeile und Trefferbereich korrekt berechnen.
+- [x] Vor-/Zurück-Pfeile und Trefferbereich korrekt berechnen.
 - [ ] Vorschau-Dialog und Öffnen der Paperless-Ansicht per Nutzerklick anbinden.
-- [ ] Konfigurationsfehler und entfernten Integrationseintrag verständlich anzeigen.
+- [x] Konfigurationsfehler und entfernten Integrationseintrag verständlich anzeigen.
 
 Tests: 0/1/5/6/10/11 Treffer, erste/letzte Seite, neue Suche von späterer Seite, gelöschtes Dokument, Dialog schließen, Pop-up-Verhalten, Touch und Tastatur.
 

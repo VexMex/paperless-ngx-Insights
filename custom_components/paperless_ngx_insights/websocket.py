@@ -7,7 +7,7 @@ from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant, callback
 
 from .client import InvalidAuth, PaperlessError
-from .const import DOMAIN, MAX_PAGE_SIZE, MAX_SEARCH_LENGTH
+from .const import CONF_URL, CONF_WEB_URL, DOMAIN, MAX_PAGE_SIZE, MAX_SEARCH_LENGTH
 
 
 @callback
@@ -71,4 +71,7 @@ async def websocket_search(
     if hass.data.get(DOMAIN, {}).get(msg["entry_id"]) is not client:
         connection.send_error(msg["id"], "not_loaded", "Paperless integration was reloaded")
         return
-    connection.send_result(msg["id"], result.as_dict())
+    payload = result.as_dict()
+    entry = hass.config_entries.async_get_entry(msg["entry_id"])
+    payload["web_url"] = entry.data.get(CONF_WEB_URL) or entry.data[CONF_URL]
+    connection.send_result(msg["id"], payload)

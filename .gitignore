@@ -7,3 +7,5 @@ __pycache__/
 .env
 *[Aa][Pp][Ii]*[Kk][Ee][Yy]*.txt
 dist/
+node_modules/
+.tools/

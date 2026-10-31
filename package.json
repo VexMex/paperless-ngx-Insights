@@ -1,0 +1,6 @@
+{
+  "name": "paperless-ngx-insights-frontend",
+  "private": true,
+  "scripts": { "test": "node --test frontend_tests/*.test.cjs" },
+  "devDependencies": { "happy-dom": "21.0.4" }
+}
