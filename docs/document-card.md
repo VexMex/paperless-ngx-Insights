@@ -75,3 +75,30 @@ mit tatsächlich ausgeführten Ergebnissen ergänzt.
 
 Weiter offen: Companion-/Safari-/Firefox-Matrix, Screenreader-Abnahme, große PDFs
 mit Streaming und Originaldatei-Download. Diese Version ist kein fertiges Release.
+
+## Live-Abnahme auf ha-test
+
+Am 31.10.2026 ausschließlich auf 192.168.178.147 installiert und im bestehenden
+Paperless-Dashboard die Panel-Ansicht `/paperless-test/dokumente` ergänzt. Versionierte
+Ressource dev.5 geladen. Dateiinhalte nach Übertragung vollständig zurückgelesen
+und geprüft; HA-Konfiguration vor Neustart validiert. File editor anschließend
+wieder gestoppt; manueller Start bleibt erhalten.
+
+Im eingebauten Browser bei 1280×720 und 390×844 sichtbar geprüft: zehn Treffer
+mit Datum und geladenen Bildern, Auswahl mit eingebetteter Bildvorschau,
+Umblättern auf Treffer 11–20 und Entfernen der bisherigen Vorschau sowie mobile
+Rücknavigation zur unveränderten Liste mit Fokusrückgabe. Native PDF-Anzeige hat
+weiterhin die bekannte Einschränkung des eingebauten Browsers; Bildfallback geprüft.
+
+Beide visuellen Editoren wurden im regulären HA-Kartendialog geöffnet. Die große
+Karte erhielt über den Editor den Titel „Dokumentübersicht“; Speichern erfolgreich,
+Dashboard-Konfiguration anschließend per MCP zurückgelesen. Verbindung, Seitengröße,
+Suchmodus, Höhe und Bildoption blieben erhalten. Die kompakte Karte zeigte ihre
+bestehenden Werte einschließlich Vorschau-Klickverhalten korrekt. Lokale Tests
+belegen den Erhalt zusätzlicher Layout-/Sichtbarkeitsoptionen und ungültige Zahlen.
+
+Suchregression sowie PDF-/Thumbnail-Abruf mit Anmeldung und Ablehnung ohne Anmeldung
+erneut erfolgreich. GitHub Actions vollständig grün: 90 Client-Tests je Python-Version,
+23 HA-Frameworktests und 17 Frontendtests. Zusätzliche Live-Prüfung als große Karte
+in einer regulären Sections-Ansicht bleibt offen; Panel und schmale Editorvorschau
+sind geprüft. Keine privaten Dokumente oder Screenshots mit Dokumentinhalt im Repo.

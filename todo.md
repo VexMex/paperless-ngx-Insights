@@ -11,10 +11,13 @@ Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Do
 - [x] Vorschaubilder bedarfsgeladen mit IntersectionObserver, maximal drei Abrufe gleichzeitig; Fehler einzelner Bilder blockieren die Liste nicht. URLs/Abrufe bei Seitenwechsel und Entfernen freigegeben.
 - [x] Visueller Editor für beide Karten: Verbindungsauswahl, Überschrift, Suchbereich, Trefferzahl; kompakt zusätzlich Klickverhalten, groß zusätzlich Höhe und Vorschaubilder. Zusätzliche YAML-/Layoutoptionen bleiben erhalten.
 - [x] Lokale Frontendtests: 17 erfolgreich, einschließlich Vorschauwechsel, Pagination, Bildfehler, begrenzter Parallelität und Editorereignissen/Validierung.
-- [ ] Vollständige CI für diesen Stand erfolgreich abschließen.
-- [ ] Auf ha-test installieren und große Karte als eigene Panel-Ansicht im Paperless-Dashboard hinzufügen.
-- [ ] Große Karte bei Desktop- und schmaler Breite sowie beide visuellen Editoren in der tatsächlichen HA-Oberfläche prüfen.
-- [ ] Bestehende Suche/Vorschau nach Installation auf ha-test erneut prüfen und Ergebnisse dokumentieren.
+- [x] [GitHub Actions](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41249145583) vollständig grün: 90 Client-Tests unter Python 3.10/3.14, 23 HA-Frameworktests und 17 Frontend-Tests.
+- [x] Auf ha-test installiert, Dateien vollständig zurückgelesen geprüft, Konfiguration validiert und ausschließlich Test-HA neu gestartet. Große Karte als Panel-Ansicht [Dokumente](http://192.168.178.147/paperless-test/dokumente) ergänzt; bisherige Suche bleibt erhalten.
+- [x] Live im eingebauten Browser bei 1280×720 und 390×844 geprüft: Suche mit zehn Treffern, geladene Vorschaubilder/Datum, eingebettete Bildvorschau, Umblättern auf 11–20, Auswahl zurücksetzen sowie mobile Rücknavigation mit Fokusrückgabe erfolgreich.
+- [x] Beide visuellen Editoren in der tatsächlichen HA-Oberfläche geöffnet. Große Karte: Überschrift im Editor geändert und gespeichert; neue Konfiguration anschließend über MCP zurückgelesen (Titel Dokumentübersicht, übrige Optionen erhalten). Kompakte Karte zeigt Verbindung/Suchmodus/Seitenzahl/Klickverhalten korrekt.
+- [x] Bestehende Suche und geschützte PDF-/Thumbnail-Endpunkte nach Installation erneut live erfolgreich geprüft; anonyme Abrufe 401, ungültige ID 400. File editor anschließend gestoppt; Start bleibt manuell.
+- [ ] Große Karte zusätzlich in einer regulären Sections-Ansicht live prüfen. Im Panel und in der schmalen Vorschau des Karteneditors bereits geprüft.
+- [ ] Companion-/weitere Browser, Screenreader und große Dateien/Streaming bleiben offen; PDF-Seitenwahl/Zoom hängt weiterhin vom nativen Browser-Viewer ab.
 
 Details: [Große Karte und Editor](docs/document-card.md).
 
@@ -140,12 +143,12 @@ Dieser Plan wird mit jedem abgeschlossenen Entwicklungsschritt und jeder relevan
 
 ### Karte B: Dokumentübersicht für einen ganzen Dashboard-Tab
 
-- [ ] Separater Kartentyp mit gemeinsamer Suchlogik, Trefferliste und Vorschaubildern.
-- [ ] Große Dokumentvorschau nach Auswahl.
-- [ ] Desktop: Treffer und Vorschau nebeneinander; Mobil: sinnvoll zwischen Liste und Dokument wechseln.
-- [ ] Als einzelne große Karte in einer Panel-Ansicht und in regulären Dashboard-Layouts verwendbar.
-- [ ] Buttons für Öffnen in Paperless und Download, soweit für das jeweilige Dokument verfügbar.
-- [ ] Seitennavigation und Seitengröße unabhängig von der kompakten Karte konfigurierbar.
+- [x] Separater Kartentyp mit gemeinsamer Suchlogik, Trefferliste und geschützten Vorschaubildern.
+- [x] Große Dokumentvorschau nach Auswahl; native PDF oder Bildfallback der ersten Seite.
+- [x] Desktop: Treffer und Vorschau nebeneinander; Mobil: Wechsel zwischen Liste und Dokument mit Rückweg.
+- [x] Panel-Ansicht installiert und geprüft; reguläre Layouts über Kartenbreite/Container Query unterstützt. Zusätzliche Live-Abnahme in Sections bleibt oben offen.
+- [x] Öffnen in Paperless und Download der geladenen PDF-Vorschau vorhanden. Originaldatei-Download bleibt gesondert offen.
+- [x] Seitennavigation und Seitengröße unabhängig von der kompakten Karte konfigurierbar (Standard groß 10, kompakt 5).
 
 ### Abgrenzung und spätere Erweiterungen
 
@@ -280,9 +283,9 @@ Tests: verspätete Antwort überschreibt keine neue Suche; zwei Karten beeinflus
 
 Abhängigkeit: gemeinsame Frontend-Bausteine.
 
-- [ ] Kartentyp, Kartenauswahl-Eintrag und visuelle Konfiguration bereitstellen.
-- [ ] Optionen: Integrationseintrag, Überschrift, Suchmodus, Treffer pro Seite (Standard 5), Klickverhalten.
-- [ ] Titelzeilen ohne dauerhaft geladene Thumbnails umsetzen; lange Titel zugänglich darstellen.
+- [x] Kartentyp, Kartenauswahl-Eintrag und visuellen Editor bereitgestellt und auf ha-test geöffnet.
+- [x] Optionen: Integrationseintrag, Überschrift, Suchmodus, Treffer pro Seite (Standard 5), Klickverhalten.
+- [x] Titelzeilen ohne dauerhaft geladene Thumbnails umgesetzt; Titel umbrechen und werden als Text ausgegeben.
 - [x] Vor-/Zurück-Pfeile und Trefferbereich korrekt berechnen.
 - [x] PDF-Vorschau-Dialog und Öffnen der Paperless-Ansicht per Nutzerklick angebunden; Download der geladenen Vorschau verfügbar. Browserabnahme siehe aktuellen Stand.
 - [x] Konfigurationsfehler und entfernten Integrationseintrag verständlich anzeigen.
@@ -295,14 +298,14 @@ Abnahme: Bei 6 Treffern zeigt die Karte zunächst 5 Titel, dann 1 Titel; Navigat
 
 Abhängigkeit: gemeinsame Komponenten und erprobter Vorschauweg.
 
-- [ ] Eigener Kartentyp mit visuellem Editor und gemeinsamem Konfigurationsmodell.
-- [ ] Treffer mit Titel, Datum und bedarfsgeladenen Vorschaubildern anzeigen.
-- [ ] Desktop-Aufteilung und mobile Navigation zwischen Liste/Vorschau implementieren.
-- [ ] Höhe, Scrollbereiche und Größenangaben für Panel- und Sections-Ansichten sauber umsetzen.
+- [x] Eigener Kartentyp mit visuellem Editor und gemeinsamem Konfigurationsmodell.
+- [x] Treffer mit Titel, Datum und bedarfsgeladenen Vorschaubildern anzeigen.
+- [x] Desktop-Aufteilung und mobile Navigation zwischen Liste/Vorschau implementiert und live geprüft.
+- [x] Konfigurierbare Höhe, getrennte Scrollbereiche und Größenangaben implementiert. Panel live geprüft; zusätzliche Sections-Abnahme bleibt offen.
 - [ ] PDF-Seitenanzeige/Zoom entsprechend der gewählten Viewer-Lösung bereitstellen.
-- [ ] Öffnen in Paperless, Download und Fallback für nicht darstellbare Dokumente anbinden.
-- [ ] Auswahl beim Such-/Seitenwechsel eindeutig zurücksetzen; keine alte Vorschau unter neuem Titel anzeigen.
-- [ ] Fehler einzelner Thumbnails dürfen die übrige Trefferliste nicht blockieren.
+- [x] Öffnen in Paperless, Download der geladenen Vorschau-PDF und Bild-/Öffnen-Fallback angebunden.
+- [x] Auswahl beim Such-/Seitenwechsel eindeutig zurücksetzen; veraltete Vorschauantworten verwerfen. Automatisiert und live geprüft.
+- [x] Fehler einzelner Thumbnails blockieren die übrige Trefferliste nicht; automatisiert geprüft.
 
 Tests: mehrere PDF-Seiten, schnelles Dokumentwechseln, fehlerhafte Vorschau, großes Dokument, fehlender Archiv-PDF, Mobil-Rücknavigation, Hoch-/Querformat.
 
@@ -331,7 +334,7 @@ Abnahme: Ein Dashboard-Tab bietet benutzbare Suche, Treffer und Dokumentanzeige 
 | Updates | Frontend-/Backend-Version wechseln, alter Browser-Cache | Kompatible Schnittstellen oder verständlicher Aktualisierungshinweis |
 
 - [ ] Backend-Unit- und Integrationstests für Authentifizierung, Rechte und HTTP-/WebSocket-Pfade schreiben.
-- [ ] Frontend-Komponententests für Suchrennen, Pagination, Auswahl und Fehlerzustände schreiben.
+- [x] Frontend-Komponententests für Suchrennen, Pagination, Auswahl, Thumbnailfehler und Editorvalidierung vorhanden (17 erfolgreich).
 - [ ] Browser-End-to-End-Tests für beide Karten mit kontrollierten Testdaten einrichten.
 - [ ] Manuelle Browser-/Companion-Tests mit Version, Datum und Ergebnis protokollieren.
 - [ ] Leistungsbaseline mit Archivgröße, PDF-Größe, Antwortzeit, Requestanzahl und Speicherverbrauch erfassen; messbare Grenzwerte festlegen.
