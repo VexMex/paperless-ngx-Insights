@@ -1,5 +1,12 @@
 /* Paperless-ngx Insights: compact search card. No credentials in the browser. */
 class PaperlessInsightsSearchCard extends HTMLElement {
+  static getConfigElement() {
+    return document.createElement("paperless-ngx-insights-editor");
+  }
+
+  static getStubConfig() {
+    return { title: "Dokumente suchen", page_size: 5, search_mode: "title", open_mode: "preview" };
+  }
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -193,6 +200,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
   async _search(page, fresh = false) {
     if (!this._hass || !this._entry || page < 1 || (!fresh && this._loading)) return;
     this._closePreview();
+    this._beforeSearch?.();
     if (fresh) this._query = this._input.value.trim();
     const sequence = ++this._sequence;
     this._loading = true;
@@ -243,7 +251,9 @@ class PaperlessInsightsSearchCard extends HTMLElement {
         link.append(icon, title, arrow);
         row.append(link);
         this._list.append(row);
+        this._decorateResult?.(document, row, link);
       }
+      this._afterResults?.();
       this._message(result.count ? (this._config.open_mode === "preview"
         ? "Dokument antippen, um die Vorschau zu öffnen."
         : "Dokument antippen, um es in Paperless zu öffnen.") : "Keine Dokumente gefunden.");
@@ -303,7 +313,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     root.querySelector(".paperless-link").href = opener.href;
     const status = root.querySelector(".preview-status");
     status.textContent = "PDF-Vorschau wird geladen …";
-    root.showModal();
+    this._presentPreview();
     const controller = new AbortController();
     this._previewAbort = controller;
     this._previewTimeout = setTimeout(() => controller.abort(), 65000);
@@ -374,6 +384,10 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     }
   }
 
+  _presentPreview() {
+    this._dialog.showModal();
+  }
+
   _controls() {
     if (!this._submit) return;
     this._submit.disabled = !this._entry || this._loading;
@@ -387,6 +401,309 @@ class PaperlessInsightsSearchCard extends HTMLElement {
   }
 }
 
+class PaperlessInsightsDocumentsCard extends PaperlessInsightsSearchCard {
+  static getStubConfig() {
+    return { title: "Paperless · Dokumentübersicht", page_size: 10, search_mode: "text", height: 800, show_thumbnails: true };
+  }
+
+  setConfig(config) {
+    const height = config.height ?? 800;
+    if (!Number.isInteger(height) || height < 400 || height > 1400) throw new Error("Höhe muss zwischen 400 und 1400 Pixel liegen.");
+    if (config.show_thumbnails !== undefined && typeof config.show_thumbnails !== "boolean") throw new Error("show_thumbnails muss true oder false sein.");
+    this._releaseThumbnails();
+    super.setConfig({ ...config, height, page_size: config.page_size ?? 10, search_mode: config.search_mode ?? "text", open_mode: "preview" });
+  }
+
+  getCardSize() { return 12; }
+  getGridOptions() { return { columns: "full", rows: "auto", min_columns: 12 }; }
+
+  _build() {
+    super._build();
+    const root = this.shadowRoot;
+    const body = root.querySelector(".body");
+    body.classList.add("browser");
+    body.style.setProperty("--paperless-height", `${this._config.height}px`);
+    const workspace = document.createElement("div");
+    workspace.className = "workspace";
+    const results = document.createElement("section");
+    results.className = "results";
+    results.setAttribute("aria-label", "Dokumentensuche und Treffer");
+    for (const node of [...body.children].filter(node => node.tagName !== "H2")) results.append(node);
+    const pane = document.createElement("section");
+    pane.className = "document-pane";
+    pane.setAttribute("aria-label", "Ausgewähltes Dokument");
+    const empty = document.createElement("p");
+    empty.className = "preview-empty";
+    empty.textContent = "Dokument aus der Trefferliste auswählen, um die Vorschau zu öffnen.";
+    const oldDialog = this._dialog;
+    const inline = document.createElement("div");
+    inline.className = "inline-preview";
+    inline.hidden = true;
+    inline.append(oldDialog.querySelector(".preview-layout"));
+    oldDialog.remove();
+    this._dialog = inline;
+    this._emptyPreview = empty;
+    const close = inline.querySelector(".preview-close");
+    close.textContent = "← Zur Trefferliste";
+    close.setAttribute("aria-label", "Zur Trefferliste zurückkehren");
+    pane.append(empty, inline);
+    workspace.append(results, pane);
+    body.append(workspace);
+    const style = document.createElement("style");
+    style.textContent = `
+      :host { container-type:inline-size; }
+      .workspace { display:grid; grid-template-columns:minmax(270px,.8fr) minmax(0,1.6fr);
+        height:min(var(--paperless-height),calc(100dvh - 180px)); min-height:400px; gap:20px; }
+      .results { overflow:auto; padding:3px 10px 3px 3px; min-width:0; }
+      .document-pane { border-left:1px solid var(--divider-color); padding:4px 0 4px 20px; min-width:0; min-height:0; }
+      .preview-empty { color:var(--secondary-text-color); padding:24px; text-align:center; }
+      .inline-preview { height:100%; }
+      .preview-status { font-size:13px; margin:0; }
+      .preview-close { background:transparent; color:var(--primary-color); }
+      .preview-header { flex-wrap:wrap; }
+      .preview-title { min-width:180px; }
+      .show-thumbnail { background:transparent; color:var(--primary-color); border:1px solid var(--divider-color); }
+      .result-image { width:56px; height:76px; object-fit:contain; flex-shrink:0; background:var(--secondary-background-color); }
+      li a { border-radius:8px; padding:10px 6px; }
+      li a[aria-current="true"] { background:var(--secondary-background-color); outline:2px solid var(--primary-color); outline-offset:-2px; }
+      time { display:block; font-size:12px; color:var(--secondary-text-color); margin-top:6px; }
+      @container (max-width:760px) {
+        .workspace { grid-template-columns:minmax(0,1fr); }
+        .browser:not(.selected) .document-pane { display:none; }
+        .browser.selected .results { display:none; }
+        .document-pane { border-left:0; padding:0; }
+      }
+    `;
+    root.append(style);
+    this._pendingThumbs = [];
+  }
+
+  _presentPreview() {
+    this._dialog.hidden = false;
+    this._emptyPreview.hidden = true;
+    this.shadowRoot.querySelector(".browser").classList.add("selected");
+    this._dialog.querySelector(".preview-close").focus();
+  }
+
+  _closePreview(restoreFocus = true) {
+    const opener = this._previewOpener;
+    super._closePreview(false);
+    if (this._dialog && this._emptyPreview) {
+      this._dialog.hidden = true;
+      this._emptyPreview.hidden = false;
+      this.shadowRoot.querySelector(".browser")?.classList.remove("selected");
+      this._list?.querySelectorAll("a[aria-current]").forEach(link => link.removeAttribute("aria-current"));
+    }
+    if (restoreFocus && opener?.isConnected) opener.focus();
+  }
+
+  async _openPreview(item, opener) {
+    const promise = super._openPreview(item, opener);
+    opener.setAttribute("aria-current", "true");
+    await promise;
+  }
+
+  _beforeSearch() { this._releaseThumbnails(); this._list.replaceChildren(); }
+
+  _decorateResult(item, row, link) {
+    const date = new Date(item.created);
+    if (item.created && !Number.isNaN(date.getTime())) {
+      const time = document.createElement("time");
+      time.dateTime = item.created;
+      time.textContent = date.toLocaleDateString(this._hass?.locale?.language || "de");
+      link.querySelector(".title").append(time);
+    }
+    if (this._config.show_thumbnails === false) return;
+    const image = document.createElement("img");
+    image.className = "result-image";
+    image.alt = "";
+    image.width = 56;
+    image.height = 76;
+    image.addEventListener("error", () => { image.hidden = true; });
+    link.querySelector(".doc-icon").replaceWith(image);
+    this._pendingThumbs.push({ item, image });
+  }
+
+  _releaseThumbnails() {
+    this._thumbGeneration = (this._thumbGeneration || 0) + 1;
+    this._thumbObserver?.disconnect();
+    this._thumbRequests?.forEach(controller => controller.abort());
+    this._thumbRequests = new Set();
+    this._thumbUrls?.forEach(url => URL.revokeObjectURL(url));
+    this._thumbUrls = new Set();
+    this._pendingThumbs = [];
+  }
+
+  _afterResults() {
+    const generation = this._thumbGeneration;
+    const queue = [];
+    let active = 0;
+    const run = () => {
+      if (generation !== this._thumbGeneration) return;
+      while (active < 3 && queue.length) {
+        const job = queue.shift();
+        active++;
+        this._loadResultThumbnail(job, generation).finally(() => { active--; run(); });
+      }
+    };
+    const jobs = this._pendingThumbs;
+    if (typeof IntersectionObserver === "function") {
+      const byImage = new Map(jobs.map(job => [job.image, job]));
+      this._thumbObserver = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          this._thumbObserver?.unobserve(entry.target);
+          const job = byImage.get(entry.target);
+          if (job) { queue.push(job); byImage.delete(entry.target); }
+        }
+        run();
+      }, { root: this.shadowRoot.querySelector(".results"), rootMargin: "120px" });
+      jobs.forEach(job => this._thumbObserver.observe(job.image));
+    } else {
+      queue.push(...jobs);
+      run();
+    }
+  }
+
+  async _loadResultThumbnail({ item, image }, generation) {
+    const controller = new AbortController();
+    this._thumbRequests.add(controller);
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    try {
+      const response = await this._hass.callApiRaw("GET",
+        `paperless_ngx_insights/${encodeURIComponent(this._entry)}/documents/${item.id}/thumbnail`,
+        undefined, undefined, controller.signal);
+      if (!response.ok || !["image/png", "image/jpeg", "image/webp"].includes(response.headers.get("Content-Type")?.split(";")[0])) throw {};
+      const blob = await response.blob();
+      if (generation !== this._thumbGeneration || !this.isConnected) return;
+      if (blob.size > 2 * 1024 * 1024) throw {};
+      const url = URL.createObjectURL(blob);
+      this._thumbUrls.add(url);
+      image.src = url;
+    } catch (_) {
+      if (generation === this._thumbGeneration) { image.hidden = true; image.parentElement?.setAttribute("data-thumbnail-unavailable", "true"); }
+    } finally {
+      clearTimeout(timeout);
+      this._thumbRequests.delete(controller);
+    }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (this._documents.length) {
+      this._releaseThumbnails();
+      this._list.querySelectorAll("li").forEach((row, index) => {
+        const image = row.querySelector(".result-image");
+        if (image) { image.hidden = false; this._pendingThumbs.push({ item: this._documents[index], image }); }
+      });
+      this._afterResults();
+    }
+  }
+
+  disconnectedCallback() { this._releaseThumbnails(); super.disconnectedCallback(); }
+}
+
+class PaperlessInsightsEditor extends HTMLElement {
+  constructor() { super(); this.attachShadow({ mode: "open" }); }
+
+  setConfig(config) {
+    this._config = { ...config };
+    this._large = config.type === "custom:paperless-ngx-insights-documents";
+    this._build();
+    this._fillEntries();
+    this._loadEntries();
+  }
+
+  set hass(value) { this._hass = value; this._loadEntries(); }
+  connectedCallback() { this._loadEntries(); }
+  disconnectedCallback() { this._entriesRequest = null; }
+
+  _build() {
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host { display:block; } .fields { display:grid; gap:16px; padding:8px 0; }
+        label { display:grid; gap:6px; color:var(--primary-text-color); font-size:14px; }
+        input,select { font:inherit; width:100%; box-sizing:border-box; padding:12px; min-height:44px;
+          border:1px solid var(--divider-color); border-radius:8px; color:var(--primary-text-color);
+          background:var(--card-background-color); }
+        input[type=checkbox] { width:24px; min-height:24px; margin:0; }
+        .check { display:flex; align-items:center; gap:12px; }
+        p { color:var(--secondary-text-color); font-size:13px; margin:0; line-height:1.5; }
+        .error { color:var(--error-color,#db4437); }
+        [hidden] { display:none !important; }
+      </style>
+      <div class="fields">
+        <label>Überschrift<input name="title" type="text" maxlength="200"></label>
+        <label>Paperless-Verbindung<select name="entry_id"></select></label>
+        <p class="entries-status" role="status"></p>
+        <label>Suchbereich<select name="search_mode"><option value="title">Nur Titel</option><option value="text">Titel und Inhalt</option></select></label>
+        <label>Treffer pro Seite<input name="page_size" type="number" min="1" max="50" step="1"></label>
+        <label class="compact-option">Dokument öffnen<select name="open_mode"><option value="paperless">Paperless im neuen Tab</option><option value="preview">Vorschau in Home Assistant</option></select></label>
+        <label class="large-option">Höhe des Dokumentbereichs (Pixel)<input name="height" type="number" min="400" max="1400" step="1"></label>
+        <label class="large-option check"><input name="show_thumbnails" type="checkbox">Vorschaubilder in der Trefferliste</label>
+        <p class="validation error" role="alert"></p>
+        <p>Der API-Schlüssel wird ausschließlich in der Integration verwaltet. PDF-Vorschauen bis 20 MiB; Anzeige abhängig vom Browser.</p>
+      </div>`;
+    const defaults = this._large ? PaperlessInsightsDocumentsCard.getStubConfig() : PaperlessInsightsSearchCard.getStubConfig();
+    for (const control of this.shadowRoot.querySelectorAll("input,select")) {
+      const value = this._config[control.name] ?? defaults[control.name];
+      if (control.type === "checkbox") control.checked = value !== false;
+      else control.value = value ?? "";
+      control.addEventListener("change", () => this._changed(control));
+    }
+    this.shadowRoot.querySelectorAll(".large-option").forEach(node => { node.hidden = !this._large; });
+    this.shadowRoot.querySelector(".compact-option").hidden = this._large;
+  }
+
+  _changed(control) {
+    const config = { ...this._config };
+    let value = control.type === "checkbox" ? control.checked : control.value;
+    const error = this.shadowRoot.querySelector(".validation");
+    if (control.type === "number") {
+      value = Number(value);
+      if (!Number.isInteger(value) || value < Number(control.min) || value > Number(control.max)) {
+        error.textContent = `Bitte eine ganze Zahl zwischen ${control.min} und ${control.max} eingeben.`;
+        return;
+      }
+    }
+    error.textContent = "";
+    if (value === "") delete config[control.name];
+    else config[control.name] = value;
+    this._config = config;
+    this.dispatchEvent(new CustomEvent("config-changed", { detail: { config: { ...config } }, bubbles: true, composed: true }));
+  }
+
+  _fillEntries() {
+    const select = this.shadowRoot.querySelector('[name="entry_id"]');
+    if (!select) return;
+    select.replaceChildren();
+    const option = (value, title) => { const node = document.createElement("option"); node.value = value; node.textContent = title; select.append(node); };
+    option("", "Automatisch (bei genau einer Verbindung)");
+    for (const entry of this._entries || []) option(entry.entry_id, entry.title);
+    if (this._config.entry_id && !this._entries?.some(entry => entry.entry_id === this._config.entry_id)) option(this._config.entry_id, `${this._config.entry_id} (derzeit nicht geladen)`);
+    select.value = this._config.entry_id || "";
+  }
+
+  async _loadEntries() {
+    if (!this._hass || !this._config || this._entries || this._entriesRequest) return;
+    const request = {};
+    this._entriesRequest = request;
+    try {
+      const entries = await this._hass.callWS({ type: "paperless_ngx_insights/entries" });
+      if (this._entriesRequest !== request) return;
+      this._entries = entries;
+      this._fillEntries();
+      this.shadowRoot.querySelector(".entries-status").textContent = entries.length ? "" : "Keine geladene Paperless-Verbindung gefunden. Bitte zuerst die Integration einrichten.";
+    } catch (_) {
+      if (this._entriesRequest === request) this.shadowRoot.querySelector(".entries-status").textContent = "Verbindungen konnten nicht geladen werden. HA-Administratorrechte und Integration prüfen.";
+    } finally {
+      if (this._entriesRequest === request) this._entriesRequest = null;
+    }
+  }
+}
+
+if (!customElements.get("paperless-ngx-insights-editor")) customElements.define("paperless-ngx-insights-editor", PaperlessInsightsEditor);
+if (!customElements.get("paperless-ngx-insights-documents")) customElements.define("paperless-ngx-insights-documents", PaperlessInsightsDocumentsCard);
 if (!customElements.get("paperless-ngx-insights-search")) {
   customElements.define("paperless-ngx-insights-search", PaperlessInsightsSearchCard);
 }
@@ -395,5 +712,11 @@ window.customCards.push({
   type: "paperless-ngx-insights-search",
   name: "Paperless-ngx Insights · Suche",
   description: "Dokumente suchen, seitenweise anzeigen und in Paperless öffnen.",
+  preview: false,
+});
+window.customCards.push({
+  type: "paperless-ngx-insights-documents",
+  name: "Paperless-ngx Insights · Dokumentübersicht",
+  description: "Dokumente mit Vorschaubildern suchen und direkt im Dashboard ansehen.",
   preview: false,
 });

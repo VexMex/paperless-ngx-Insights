@@ -4,7 +4,21 @@ Stand: 31.10.2026
 Repository: https://github.com/VexMex/paperless-ngx-Insights
 Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Dokumenten.
 
-## Aktueller Entwicklungsstand – PDF-Vorschau 0.1.0-dev.4
+## Aktueller Entwicklungsstand – Große Karte und Editor 0.1.0-dev.5
+
+- [x] Große Karte `custom:paperless-ngx-insights-documents` mit gemeinsamer Suche, Pagination, Datum und geschützten Vorschaubildern implementiert.
+- [x] Eingebettete Dokumentansicht neben der Trefferliste; schmale Kartenbreiten wechseln zwischen Liste und Dokument, mit Rückweg und Fokusrückgabe.
+- [x] Vorschaubilder bedarfsgeladen mit IntersectionObserver, maximal drei Abrufe gleichzeitig; Fehler einzelner Bilder blockieren die Liste nicht. URLs/Abrufe bei Seitenwechsel und Entfernen freigegeben.
+- [x] Visueller Editor für beide Karten: Verbindungsauswahl, Überschrift, Suchbereich, Trefferzahl; kompakt zusätzlich Klickverhalten, groß zusätzlich Höhe und Vorschaubilder. Zusätzliche YAML-/Layoutoptionen bleiben erhalten.
+- [x] Lokale Frontendtests: 17 erfolgreich, einschließlich Vorschauwechsel, Pagination, Bildfehler, begrenzter Parallelität und Editorereignissen/Validierung.
+- [ ] Vollständige CI für diesen Stand erfolgreich abschließen.
+- [ ] Auf ha-test installieren und große Karte als eigene Panel-Ansicht im Paperless-Dashboard hinzufügen.
+- [ ] Große Karte bei Desktop- und schmaler Breite sowie beide visuellen Editoren in der tatsächlichen HA-Oberfläche prüfen.
+- [ ] Bestehende Suche/Vorschau nach Installation auf ha-test erneut prüfen und Ergebnisse dokumentieren.
+
+Details: [Große Karte und Editor](docs/document-card.md).
+
+## Vorheriger Entwicklungsstand – PDF-Vorschau 0.1.0-dev.4
 
 - [x] Nutzerrückmeldung: Vorschau funktioniert im eigenen Browser ohne Probleme. Browsertyp/-version und einzelne Funktionen wie Seitenwahl/Zoom wurden dabei nicht separat benannt; die breitere Browser-/Companion-Prüfung bleibt offen.
 

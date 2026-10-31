@@ -2,14 +2,15 @@
 
 Home-Assistant-Integration zum Suchen und Anzeigen von Paperless-ngx-Dokumenten.
 
-**Entwicklungsstand 0.1.0-dev.4:** Backend und kompakte Suchkarte mit Mehrwortsuche und optionaler PDF-Vorschau sind implementiert:
+**Entwicklungsstand 0.1.0-dev.5:** Backend, kompakte Suchkarte, große Dokumentkarte und visuelle Karteneditoren sind implementiert:
 Einrichtung über die Oberfläche, Verbindungstest, erneute Anmeldung,
 Ändern der Verbindung, getrennte Browser-Adresse und eine administrativ
 geschützte Suchschnittstelle mit serverseitiger Pagination.
 
 Die kompakte Karte zeigt fünf Titel pro Seite, Pfeile zum Blättern und öffnet
 Dokumente wahlweise in einem neuen Paperless-Tab oder als eingebettete PDF-Vorschau.
-Die große Dokumentkarte und Vorschaubilder sind noch in Entwicklung. Diese Version ist kein fertiges Release. Der aktuelle
+Die große Karte zeigt Vorschaubilder, Datum und eine eingebettete Dokumentansicht.
+Beide Karten sind über einen visuellen Editor einstellbar. Diese Version ist kein fertiges Release. Der aktuelle
 Arbeits- und Teststand steht in [todo.md](todo.md).
 
 ## Entwicklung und Tests
@@ -88,7 +89,7 @@ Netzbeschränkungen des Dateieditors.
 Dashboard-Ressource als **JavaScript-Modul** registrieren:
 
 ```text
-/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.4-r2
+/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.5
 ```
 
 Danach die Karte hinzufügen:
@@ -111,7 +112,28 @@ Download und Paperless-Link bleiben verfügbar. Vorschauen sind nur für aktive 
 Details und Grenzen: [PDF-Vorschau](docs/pdf-preview.md).
 Mit `open_mode: paperless` (Standard) öffnen Dokumentlinks die normale
 Paperless-Oberfläche in einem neuen Tab. Dafür kann eine Paperless-Anmeldung
-erforderlich sein. Ein visueller Karteneditor ist noch nicht vorhanden.
+erforderlich sein. Beide Karten bieten jetzt einen visuellen Editor in Home Assistant.
+
+## Große Dokumentkarte
+
+In der Kartenauswahl **Paperless-ngx Insights · Dokumentübersicht** wählen.
+Für einen ganzen Dashboard-Tab eine Panel-Ansicht mit dieser einzelnen Karte anlegen:
+
+```yaml
+type: custom:paperless-ngx-insights-documents
+title: Paperless · Dokumentübersicht
+page_size: 10
+search_mode: text
+height: 800
+show_thumbnails: true
+```
+
+Trefferliste und Dokument liegen bei breiten Karten nebeneinander. Unter 760px
+Kartenbreite wechselt die Ansicht mit einem Zurück-Button. Vorschau, PDF-Download
+und Öffnen in Paperless verwenden den bestehenden geschützten Abruf.
+Verbindung, Überschrift, Suchbereich, Trefferzahl, Höhe und Vorschaubilder lassen
+sich im visuellen Editor ändern. Details und Panel-Beispiel:
+[Große Karte und Editor](docs/document-card.md).
 
 Das eingerichtete Test-Dashboard ist unter
 [Paperless auf ha-test](http://192.168.178.147/paperless-test/suche) erreichbar und
