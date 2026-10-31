@@ -169,7 +169,8 @@ class PaperlessClient:
             try:
                 async with self._session.get(
                     f"{self.base_url}/api/documents/{document_id}/preview/",
-                    headers={"Authorization": f"Token {self._token}", "Accept": "application/pdf"},
+                    # DRF negotiates before the binary FileResponse is built.
+                    headers={"Authorization": f"Token {self._token}", "Accept": "*/*"},
                     timeout=aiohttp.ClientTimeout(total=60, connect=5),
                     allow_redirects=False,
                 ) as response:

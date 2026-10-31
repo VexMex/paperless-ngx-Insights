@@ -60,6 +60,7 @@ async def test_pdf_preview_fixed_path_and_auth(server):
     request = server["requests"][-1]
     assert request.path == "/paperless/api/documents/42/preview/"
     assert request.headers["Authorization"] == "Token fixture-token"
+    assert request.headers["Accept"] == "*/*"
     assert not request.query
 
 
