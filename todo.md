@@ -12,9 +12,11 @@ Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Do
 - [x] Abbruch, Freigabe von Blob-URLs, Fokus nach Schließen und Verwerfen verspäteter Vorschauantworten implementiert.
 - [x] Lokal 90 Client-Tests und 11 Frontend-Tests bestanden; Ruff, Format und Kompilierung erfolgreich. Größenlimit auch ohne Content-Length geprüft.
 - [x] Geschützte Raster-Bildvorschau der ersten Seite als Fallback ergänzt (PNG/JPEG/WebP, maximal 2 MiB, dieselben Adminrechte); ohne nativen PDF-Viewer automatisch, sonst per Button.
-- [ ] HA-Frameworktests und vollständige GitHub Actions für diese Version erfolgreich abschließen.
-- [ ] Auf ha-test übertragen, neu starten und authentifizierten PDF-Abruf sowie Ablehnung ohne Anmeldung live prüfen.
-- [ ] Test-Dashboard auf Vorschau umstellen und native PDF-Anzeige visuell prüfen.
+- [x] [GitHub Actions](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41248280037) vollständig erfolgreich: 90 Client-Tests jeweils unter Python 3.10/3.14, 23 HA-Frameworktests und 11 Frontend-Tests.
+- [x] Dateien auf ha-test übertragen und zurückgelesen geprüft; Konfiguration validiert und ausschließlich Test-HA neu gestartet. PDF und Thumbnail authentifiziert erfolgreich, ohne Anmeldung jeweils 401; ungültige ID 400; no-store bestätigt. Suchregression live bestanden.
+- [x] Test-Dashboard auf open_mode: preview umgestellt; Ressource auf ?v=0.1.0-dev.4-r2 aktualisiert. File editor anschließend gestoppt, Start bleibt manuell.
+- [x] Sichtprüfung im eingebauten Browser bei schmaler Ansicht und 1366×900: Dialog, Bildvorschau der ersten Seite, Schließen mit Fokusrückgabe und erneutes Öffnen eines anderen Dokuments erfolgreich. Keine Dokumentinhalte ins Repository übernommen.
+- [ ] Vollständige native PDF-Anzeige mit Seitenwahl/Zoom in eigenständigen Browsern und Companion praktisch prüfen. Im eingebauten Browser bleibt der native Viewer leer; der manuelle Button zur ersten Bildseite funktioniert. Automatische Umschaltung bei pdfViewerEnabled=false ist implementiert, meldete sich hier aber nicht.
 - [ ] Große Dokumentkarte, Thumbnails, große Dateien/Streaming und weitere Browser bleiben offen.
 
 Entscheidung und Grenzen: [PDF-Vorschau](docs/pdf-preview.md).
@@ -32,7 +34,7 @@ Entscheidung und Grenzen: [PDF-Vorschau](docs/pdf-preview.md).
 - [x] Neue Suche über die tatsächliche HA-WebSocket-Schnittstelle unter dem Testbenutzer geprüft, einschließlich kontrollierter Fehlermeldung bei ungeschlossenen Anführungszeichen.
 - [x] Frontend-Ressource auf ?v=0.1.0-dev.3 aktualisiert; Auslieferung des neuen Moduls geprüft. File editor anschließend wieder gestoppt.
 - [x] [GitHub-Actions-Lauf](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41201471773) vollständig erfolgreich: jeweils 64 Client-Tests unter Python 3.10/3.14, 13 HA-Frameworktests und 7 Frontend-Tests.
-- [ ] Erneute visuelle Browserprüfung nach Wiederherstellung der Browser-Anbindung. Aktuell meldet sie browser.user is unavailable; keine neue visuelle Prüfung behauptet.
+- [x] Browser-Anbindung wieder verfügbar; Mehrwortsuche und Vorschau in 0.1.0-dev.4 erneut visuell geprüft. Der frühere Verbindungsfehler ist behoben.
 - [ ] Eingebettete PDF-Vorschau und große Dokumentkarte weiterentwickeln.
 
 Details und Grenzen: [Mehrwortsuche](docs/multiword-search.md).

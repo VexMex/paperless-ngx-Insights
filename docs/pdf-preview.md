@@ -43,6 +43,8 @@ Bildvorschau der ersten Seite geladen. Der Button „Erste Seite als Bild anzeig
 ermöglicht dies auch manuell. Der Thumbnail-Endpunkt verlangt dieselben HA-Rechte,
 akzeptiert nur PNG/JPEG/WebP mit passender Signatur und begrenzt Dateien auf 2 MiB.
 SVG und HTML werden abgewiesen; die Bilder laden ebenfalls über HA und Blob-URLs.
+Paperless akzeptiert beim binären Abruf `Accept: */*`; ein alleiniger PDF-Accept-
+Header wurde im Live-Test abgewiesen. Die Antwort wird unabhängig davon strikt geprüft.
 Die Bildvorschau ist keine mehrseitige PDF-Anzeige und kann niedrig aufgelöst sein.
 Ein leeres Viewer-Fenster ist nicht zuverlässig erkennbar; Download und externer
 Link bleiben daher immer angeboten. Firefox, Safari und Companion-WebViews sind
@@ -60,3 +62,14 @@ Signatur, Größenlimit, Fehlerstatus und Unload. Frontendtests prüfen Dialog, 
 Download, Fokus, Abbruch, verspätete Antworten und Fallback. HA-Frameworktests
 prüfen den registrierten HTTP-Pfad mit echter Auth-Middleware und Adminrechten.
 Aktuelle CI-/Live-Ergebnisse und noch offene Browserprüfung stehen in todo.md.
+
+Am 31.10.2026: GitHub Actions vollständig grün (90 Client-Tests pro Python-Version,
+23 HA-Frameworktests, 11 Frontendtests). Auf ha-test wurden PDF/Thumbnail mit
+Anmeldung, Ablehnung ohne Anmeldung, ungültige IDs und no-store geprüft. Die
+vorherige Suche bleibt live funktionsfähig. Die Bildvorschau wurde bei schmaler
+Ansicht und 1366×900 sichtbar geprüft; Schließen stellt den Fokus wieder her.
+Der native Viewer bleibt im eingebauten Browser leer, obwohl dieser keinen
+fehlenden PDF-Viewer meldet: der manuelle Bild-Button ist hier erforderlich.
+Eine erfolgreiche vollständige mehrseitige PDF-Anzeige wird daher noch nicht als
+browserübergreifend geprüft ausgewiesen. Download-Link und PDF-Abruf funktionieren;
+der tatsächliche Download-Klick wurde nicht separat live ausgeführt.
