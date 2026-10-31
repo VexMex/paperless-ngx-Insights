@@ -107,6 +107,44 @@ async def run(action: str, key_file: Path | None) -> None:
                 user = await command("auth/current_user")
                 if not user.get("is_admin"):
                     raise RuntimeError("Test user must be an administrator")
+                if action == "verify_preview":
+                    entries = await command(DOMAIN + "/entries")
+                    if len(entries) != 1:
+                        raise RuntimeError("Expected one test entry")
+                    entry_id = entries[0]["entry_id"]
+                    found = await command(
+                        DOMAIN + "/search",
+                        entry_id=entry_id,
+                        text="",
+                        mode="title",
+                        page=1,
+                        page_size=50,
+                    )
+                    checks = {}
+                    for document in found["documents"]:
+                        path = f"/api/{DOMAIN}/{entry_id}/documents/{document['id']}/preview"
+                        async with session.get(BASE + path, headers=headers) as response:
+                            if response.status == 415:
+                                continue
+                            data = await response.read()
+                            checks["authenticated_pdf"] = (
+                                response.status == 200 and data.startswith(b"%PDF-")
+                            )
+                            checks["no_store"] = (
+                                response.headers.get("Cache-Control") == "no-store, private"
+                            )
+                            checks["pdf_only"] = response.content_type == "application/pdf"
+                        async with session.get(BASE + path) as response:
+                            checks["anonymous_rejected"] = response.status == 401
+                        break
+                    async with session.get(
+                        BASE + f"/api/{DOMAIN}/{entry_id}/documents/0/preview", headers=headers
+                    ) as response:
+                        checks["invalid_id_rejected"] = response.status == 400
+                    print(json.dumps({"test_ha": BASE, "checks": checks}))
+                    if len(checks) != 5 or not all(checks.values()):
+                        raise RuntimeError("Preview verification failed")
+                    return
                 if action == "verify_search":
                     entries = await command(DOMAIN + "/entries")
                     if len(entries) != 1:
@@ -243,7 +281,9 @@ async def run(action: str, key_file: Path | None) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["probe", "deploy", "configure", "verify_search"])
+    parser.add_argument(
+        "action", choices=["probe", "deploy", "configure", "verify_search", "verify_preview"]
+    )
     parser.add_argument("--key-file", type=Path)
     args = parser.parse_args()
     try:

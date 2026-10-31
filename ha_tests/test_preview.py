@@ -28,15 +28,16 @@ async def install(hass):
     return entry, f"/api/{DOMAIN}/{entry.entry_id}/documents/42/preview"
 
 
-async def test_preview_authentication_and_admin(hass, hass_client, hass_access_token, hass_user):
+async def test_preview_authentication_and_admin(
+    hass, hass_client, hass_client_no_auth, hass_read_only_access_token
+):
     entry, path = await install(hass)
-    anonymous = await hass_client()
+    anonymous = await hass_client_no_auth()
     assert (await anonymous.get(path)).status == 401
-    client = await hass_client(hass_access_token)
+    client = await hass_client(hass_read_only_access_token)
     with patch.object(
         hass.data[DOMAIN][entry.entry_id], "preview", new_callable=AsyncMock
     ) as fetch:
-        hass_user.groups = []
         assert (await client.get(path)).status == 403
         fetch.assert_not_awaited()
 
