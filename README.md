@@ -19,7 +19,9 @@ Arbeits- und Teststand steht in [todo.md](todo.md).
   sind noch nicht bestätigt. Die portable HTTP-Client-Testsuite läuft auch auf
   Python 3.10; das bedeutet keine HA-Unterstützung auf Python 3.10.
 - Paperless-Testadresse: **http://192.168.178.10:8810**. Die Anmeldeseite wurde
-  erreicht; authentifizierte API-Tests und die Versionsprüfung stehen noch aus.
+  erreicht. Erste authentifizierte Such-/Dateiprüfungen sind bestanden; siehe
+  [Live-Testbericht](docs/live-tests.md). Installation und Browseranzeige auf
+  ha-test sowie die separate Bestätigung der Anwendungsversion bleiben offen.
 - Zugriff auf die Suchschnittstelle haben zunächst nur HA-Administratoren.
   Der Paperless-Schlüssel bestimmt zusätzlich die Paperless-Dokumentrechte.
 - API-Schlüssel werden ausschließlich im HA-Konfigurationseintrag gehalten.

@@ -19,12 +19,15 @@ Erster Backend-Schritt: **0.1.0-dev.1**, noch kein fertiges Release.
 - [x] GitHub-Actions-Workflow für Client-Tests und separate HA-Frameworktests angelegt.
 - [x] HA-Frameworktests gegen **HA 2026.10.4 / Python 3.14.9**: **11 bestanden**. Zusammen mit beiden Client-Jobs ist [Lauf 2 vollständig erfolgreich](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41196569682). Der anfängliche Reconfigure-Testfehler wurde korrigiert.
 - [ ] Integration auf ha-test installieren und dort Einrichtung, Reload, Suchrechte und Reauth praktisch testen.
-- [ ] Paperless-Testtoken sicher konfigurieren und tatsächliche Paperless-/API-Version nachweisen.
+- [x] Bereitgestellten Paperless-Testtoken lokal für lesende API-Prüfungen verwendet; Schlüssel nicht ausgegeben oder ins Repository übernommen.
+- [ ] Paperless-Token auf ha-test in der Integration konfigurieren; Anwendungsversion unabhängig bestätigen.
 - [ ] Beide Karten, PDF-/Thumbnail-Auslieferung, HACS-Paketierung und vollständige Testmatrix umsetzen.
 
 **Live-Nachweise:** ha-test antwortet erneut mit HA 2026.10.4 / RUNNING.
 Paperless auf Port 8810 antwortet mit Weiterleitung auf die Anmeldeseite.
-Das ist keine Bestätigung der authentifizierten Such-API. Ein Paperless-Token wurde noch nicht bereitgestellt.
+Mit dem inzwischen bereitgestellten Schlüssel wurden Titel-/Inhaltssuche, rein inhaltlicher Treffer, Seitennavigation, leere Suche, Vorschaubild, Textvorschau/-download und PDF-Vorschau erfolgreich geprüft.
+Die Datei-Endpunkte ignorierten die getestete Range-Anfrage (HTTP 200 statt 206). Einzelheiten: [docs/live-tests.md](docs/live-tests.md).
+Diese Prüfungen nutzten den Integrationsclient direkt; Installation und Browseranzeige auf ha-test bleiben offen.
 Keine Änderungen oder Tests am produktiven Home Assistant.
 
 **Nachvollziehbarkeit:** Architekturentscheidungen und offene Kompatibilitätsnachweise stehen in
@@ -102,10 +105,11 @@ Für jede Prüfung festhalten: untersuchte Version, Quelle/Schema, Ergebnis, gew
 - [ ] Unterstützte Mindestversionen von Home Assistant, Python und Paperless-ngx ermitteln und begründen.
 - [x] Paperless-API-Schema der vorgesehenen Testinstanz unter /api/schema/?format=json geprüft; Suchfilter und Dokument-Endpunkte vorhanden.
 - [ ] Authentifizierungsheader, API-Versionierung und Kompatibilitätserkennung untersuchen.
-- [ ] Genaue Parameter für Titelsuche, einfache Suche in Titel/Inhalt und optionale erweiterte Volltextsuche verifizieren.
+- [x] Implementierte Teilstringsuche über title__icontains und title_content mit echtem Testzugang erfolgreich geprüft.
+- [ ] Optionale erweiterte Volltextsuche und moderne indexbasierte Suchparameter vergleichend prüfen.
 - [ ] Unterschiede zwischen Teilwort-, Wort-, Phrasen- und Suchsyntax-Verhalten anhand von Testdokumenten belegen.
 - [ ] Pagination, Trefferzahl, maximale Seitengröße, Sortierung und Verhalten bei gleichen Sortierwerten prüfen.
-- [ ] Für Titelsuche und Inhaltssuche die Kombination von Suchparametern und Sortierung separat testen.
+- [x] Titel- und Inhaltssuche mit Sortierung -created,-id live geprüft; auch ausschließlich im Inhalt vorkommender Begriff erfolgreich getestet.
 - [ ] Antwortfelder für Titel, Datum, Vorschau, MIME-Typ und Dokument-ID prüfen; unnötige Inhaltsfelder vermeiden.
 - [ ] Vorschau-, Thumbnail-, Download- und Metadaten-Endpunkte sowie Links auf die Paperless-Dokumentansicht verifizieren.
 - [ ] Originaldatei gegenüber Archiv-PDF, fehlende Archivdatei und gegebenenfalls Dokumentversionen untersuchen.
@@ -317,9 +321,11 @@ Bereits zur Orientierung herangezogen; konkrete Versionskompatibilität bleibt i
 Vor den Live-Integrationstests aus einer autorisierten Testumgebung ermitteln:
 
 - [x] Test-Home-Assistant vom Benutzer bereitgestellt; ha-test erreichbar, HA 2026.10.4 (31.10.2026).
-- [ ] Paperless-Version und Paperless-Testzugang ermitteln; unterstützte Mindestversionen bleiben offen.
+- [x] Bereitgestellter Paperless-Testzugang funktioniert für lesende API-Aufrufe.
+- [ ] Paperless-Anwendungsversion separat bestätigen; unterstützte Mindestversionen bleiben offen.
 - [x] Paperless-Adresse vom Benutzer erhalten: http://192.168.178.10:8810; Anmeldeseite erreichbar. Externe Adresse/Unterpfad noch nicht benötigt bzw. ungeprüft.
 - [ ] Eingeschränkter Testzugang und gewünschter Kreis berechtigter HA-Benutzer.
 - [ ] Relevante Browser/Companion-Geräte und typische Dokumentformate/-größen.
 
 Zugangsschlüssel ausschließlich über sichere Konfiguration bereitstellen; niemals in diese Datei, Fixtures oder das Repository schreiben.
+

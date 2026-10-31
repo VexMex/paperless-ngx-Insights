@@ -5,4 +5,5 @@ __pycache__/
 .ruff_cache/
 *.pyc
 .env
+*[Aa][Pp][Ii]*[Kk][Ee][Yy]*.txt
 dist/
