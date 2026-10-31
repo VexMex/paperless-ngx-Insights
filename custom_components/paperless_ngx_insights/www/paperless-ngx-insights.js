@@ -88,6 +88,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
         .external { color:var(--secondary-text-color); font-size:16px; }
         .status { margin:14px 0 0; font-size:14px; color:var(--secondary-text-color); }
         .error { color:var(--error-color,#db4437); }
+        .hint { font-size:12px; line-height:1.5; color:var(--secondary-text-color); margin:10px 0; }
         nav { display:flex; align-items:center; justify-content:space-between; gap:10px;
           padding-top:12px; margin-top:12px; border-top:1px solid var(--divider-color); }
         nav button { background:transparent; color:var(--primary-text-color); font-size:22px; }
@@ -101,6 +102,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
           <button type="submit">Suchen</button>
         </form>
         <select aria-label="Suchbereich"><option value="title">Nur Titel</option><option value="text">Titel und Inhalt</option></select>
+        <p class="hint">Mehrere Wörter: alle Begriffe, beliebige Reihenfolge. Mit "Anführungszeichen" eine Wortfolge suchen.</p>
         <p class="status" role="status" aria-live="polite"></p>
         <ul aria-label="Gefundene Dokumente"></ul>
         <nav aria-label="Ergebnisseiten" hidden>
@@ -206,7 +208,12 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       this._documents = [];
       this._count = 0;
       this._list.replaceChildren();
-      this._message(error.code === "invalid_auth" ? "Paperless-Schlüssel bitte in der Integration erneuern." : "Suche fehlgeschlagen. Verbindung und Berechtigung prüfen.", true);
+      const message = error.code === "invalid_auth"
+        ? "Paperless-Schlüssel bitte in der Integration erneuern."
+        : error.code === "invalid_search"
+          ? "Anführungszeichen bitte schließen und höchstens 32 Suchbegriffe verwenden."
+          : "Suche fehlgeschlagen. Verbindung und Berechtigung prüfen.";
+      this._message(message, true);
     } finally {
       if (sequence === this._sequence) {
         this._loading = false;

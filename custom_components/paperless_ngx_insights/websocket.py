@@ -64,7 +64,14 @@ async def websocket_search(
             entry.async_start_reauth(hass)
         connection.send_error(msg["id"], "invalid_auth", "Paperless authentication required")
         return
-    except (PaperlessError, ValueError):
+    except ValueError:
+        connection.send_error(
+            msg["id"],
+            "invalid_search",
+            "Check double quotes and use at most 32 search terms",
+        )
+        return
+    except PaperlessError:
         connection.send_error(msg["id"], "search_failed", "Unable to search Paperless documents")
         return
     # A reload/unload during the request must not send a stale entry's results.

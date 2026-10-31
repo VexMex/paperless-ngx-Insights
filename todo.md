@@ -4,7 +4,26 @@ Stand: 31.10.2026
 Repository: https://github.com/VexMex/paperless-ngx-Insights
 Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Dokumenten.
 
-## Aktueller Entwicklungsstand – 31.10.2026
+## Aktueller Entwicklungsstand – Mehrwortsuche 0.1.0-dev.3
+
+- [x] Mehrere Suchbegriffe werden sicher mit UND verknüpft; Reihenfolge und Groß-/Kleinschreibung verändern die geprüften Treffer nicht.
+- [x] Titelmodus begrenzt jeden Begriff auf den Titel; Inhaltsmodus erlaubt Begriffe über Titel und Dokumenttext verteilt.
+- [x] Einwort-/Teilwortsuche erhalten; doppelte Anführungszeichen für Wortfolgen unterstützt.
+- [x] Suchwerte gegen das Einschleusen von Feldern/Operatoren maskiert; ungeschlossene Anführungszeichen und mehr als 32 Begriffe werden kontrolliert abgewiesen.
+- [x] Kartenhinweis und verständliche Fehlermeldung ergänzt.
+- [x] Lokale Regressionstests: **64 Client-Tests**, **7 Frontend-Tests**, Ruff, Formatprüfung und Kompilierung bestanden.
+- [x] Direkte Paperless-Live-Prüfung: **telekom rechnung mai liefert vier Treffer**. Umgestellte Reihenfolge, Großbuchstaben, engere Wortfolge, fehlender Begriff, getrennte Suchbereiche und Pagination erfolgreich geprüft.
+- [x] Version 0.1.0-dev.3 auf **ha-test / 192.168.178.147** übertragen und zurückgelesen geprüft; Konfiguration validiert und ausschließlich das Testsystem neu gestartet.
+- [x] Neue Suche über die tatsächliche HA-WebSocket-Schnittstelle unter dem Testbenutzer geprüft, einschließlich kontrollierter Fehlermeldung bei ungeschlossenen Anführungszeichen.
+- [x] Frontend-Ressource auf ?v=0.1.0-dev.3 aktualisiert; Auslieferung des neuen Moduls geprüft. File editor anschließend wieder gestoppt.
+- [ ] GitHub-Actions-Lauf für diese Ausbaustufe abschließend bestätigen.
+- [ ] Erneute visuelle Browserprüfung nach Wiederherstellung der Browser-Anbindung. Aktuell meldet sie browser.user is unavailable; keine neue visuelle Prüfung behauptet.
+- [ ] Eingebettete PDF-Vorschau und große Dokumentkarte weiterentwickeln.
+
+Details und Grenzen: [Mehrwortsuche](docs/multiword-search.md).
+Keine privaten Dokumentinhalte oder Zugangsdaten wurden in das Repository übernommen.
+
+## Vorheriger Entwicklungsstand – 0.1.0-dev.2
 
 **0.1.0-dev.2: Backend und erste kompakte Suchkarte auf ha-test eingerichtet.**
 
@@ -33,15 +52,15 @@ Alle Live-HA-Arbeiten fanden ausschließlich auf dem vom Benutzer freigegebenen 
 ## Nutzertest und geplante Suchverfeinerung – 31.10.2026
 
 - [x] Benutzer bestätigt: erste Version funktioniert; Seitennavigation und Umblättern verhalten sich wie gewünscht.
-- [ ] Kombinierte Suchbegriffe verbessern: Beispiel **telekom rechnung mai** liefert im Nutzertest keine Treffer.
-- Aktueller Stand: Die implementierten Filter suchen eine zusammenhängende Teilzeichenfolge. Das Beispiel allein belegt noch keinen API-Fehler; passende Dokumente und die gewünschte Mehrwort-Semantik müssen geprüft werden.
-- [ ] Mehrwortsuche über getrennte Begriffe prototypisch prüfen, insbesondere UND-Verknüpfung unabhängig von Position und Reihenfolge.
-- [ ] Moderne indexbasierte Paperless-Suche mit der bestehenden Teilstringsuche vergleichen; Verhalten anhand der tatsächlichen Serverversion belegen.
-- [ ] Festlegen und in der Oberfläche erklären, ob normale Eingaben alle Wörter verlangen und Anführungszeichen eine exakte Wortfolge bedeuten.
+- [x] Kombinierte Suchbegriffe verbessern: Beispiel **telekom rechnung mai** liefert im Nutzertest keine Treffer.
+- Ausgangslage in 0.1.0-dev.2: Die Filter suchten eine zusammenhängende Teilzeichenfolge. In 0.1.0-dev.3 ist die geprüfte UND-Suche umgesetzt; Details stehen im aktuellen Entwicklungsstand.
+- [x] Mehrwortsuche über getrennte Begriffe prototypisch prüfen, insbesondere UND-Verknüpfung unabhängig von Position und Reihenfolge.
+- [x] Moderne indexbasierte Paperless-Suche mit der bestehenden Teilstringsuche vergleichen; Verhalten anhand der tatsächlichen Serverversion belegen.
+- [x] Festlegen und in der Oberfläche erklären, ob normale Eingaben alle Wörter verlangen und Anführungszeichen eine exakte Wortfolge bedeuten.
 - [ ] Groß-/Kleinschreibung, Umlaute, Satzzeichen, Teilwörter, Wortreihenfolge und fehlende Begriffe prüfen.
-- [ ] Regressionstests: Einwortsuche, **telekom rechnung mai**, umgestellte Wortreihenfolge, exakte Phrase und keine Treffer. Trefferzahl, stabile Sortierung und Pagination auch mit mehreren Wörtern überprüfen.
-- [ ] Suchmodus Titel gegenüber Titel/Inhalt getrennt prüfen; Begriffe innerhalb desselben Dokumentes über verschiedene Felder hinweg berücksichtigen.
-- Diese Verfeinerung ist für einen späteren Entwicklungsschritt vorgemerkt; aus diesem Feedback folgt noch keine Änderung am laufenden Test-Dashboard.
+- [x] Regressionstests: Einwortsuche, **telekom rechnung mai**, umgestellte Wortreihenfolge, exakte Phrase und keine Treffer. Trefferzahl, stabile Sortierung und Pagination auch mit mehreren Wörtern überprüfen.
+- [x] Suchmodus Titel gegenüber Titel/Inhalt getrennt prüfen; Begriffe innerhalb desselben Dokumentes über verschiedene Felder hinweg berücksichtigen.
+- Diese Verfeinerung wurde mit 0.1.0-dev.3 auf dem Testsystem umgesetzt. Weitere Suchoptionen bleiben gesonderte Erweiterungen.
 
 ## 1. Ausgangslage und Arbeitsweise
 
@@ -335,4 +354,5 @@ Vor den Live-Integrationstests aus einer autorisierten Testumgebung ermitteln:
 - [ ] Relevante Browser/Companion-Geräte und typische Dokumentformate/-größen.
 
 Zugangsschlüssel ausschließlich über sichere Konfiguration bereitstellen; niemals in diese Datei, Fixtures oder das Repository schreiben.
+
 

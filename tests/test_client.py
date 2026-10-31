@@ -107,7 +107,7 @@ async def test_search_params_and_metadata_only(server):
         ],
         "next": "http://attacker.invalid/steal-token",
     }
-    result = await server["client"].search(" Öl & Gas ", mode="text", page=2)
+    result = await server["client"].search(' "Öl & Gas" ', mode="text", page=2)
     request = server["requests"][0]
     assert request.path == "/paperless/api/documents/"
     assert dict(request.query) == {
@@ -127,9 +127,55 @@ async def test_search_params_and_metadata_only(server):
 
 
 async def test_title_search_is_literal(server):
-    await server["client"].search('invoice: "A*"', mode="title")
-    assert server["requests"][0].query["title__icontains"] == 'invoice: "A*"'
+    await server["client"].search("invoice:A*", mode="title")
+    assert server["requests"][0].query["title__icontains"] == "invoice:A*"
     assert "query" not in server["requests"][0].query
+
+
+@pytest.mark.parametrize("mode", ["title", "text"])
+async def test_multiword_uses_scoped_and_query(server, mode):
+    await server["client"].search("telekom rechnung mai", mode=mode, page=2)
+    query = server["requests"][0].query
+    if mode == "title":
+        assert query["query"] == 'title:"telekom" AND title:"rechnung" AND title:"mai"'
+    else:
+        assert query["query"] == (
+            '(title:"telekom" OR content:"telekom") AND '
+            '(title:"rechnung" OR content:"rechnung") AND '
+            '(title:"mai" OR content:"mai")'
+        )
+    assert query["page"] == "2"
+    assert query["page_size"] == "5"
+    assert query["ordering"] == "-created,-id"
+    assert "title_content" not in query
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ('telekom "rechnung mai"', 'title:"telekom" AND title:"rechnung mai"'),
+        ("Öl & Gas", 'title:"Öl" AND title:"Gas"'),
+        ("Telekom\tRechnung\nMai", 'title:"Telekom" AND title:"Rechnung" AND title:"Mai"'),
+        ("Telekom Telekom Rechnung", 'title:"Telekom" AND title:"Rechnung"'),
+        ("O'Reilly Rechnung", 'title:"O\'Reilly" AND title:"Rechnung"'),
+        ("a OR content:b", 'title:"a" AND title:"OR" AND title:"content:b"'),
+        (r"file\name invoice", r'title:"file\\name" AND title:"invoice"'),
+    ],
+)
+def test_multiword_quotes_punctuation_and_scope(text, expected):
+    assert api.search_parameters(text, "title") == {"query": expected}
+
+
+@pytest.mark.parametrize("text", ['telekom "rechnung', " ".join(f"term{i}" for i in range(33))])
+async def test_invalid_multiword_never_requests(server, text):
+    with pytest.raises(ValueError):
+        await server["client"].search(text)
+    assert not server["requests"]
+
+
+async def test_phrase_keeps_literal_substring_behavior(server):
+    await server["client"].search('"telekom rechnung mai"', mode="text")
+    assert server["requests"][0].query["title_content"] == "telekom rechnung mai"
 
 
 async def test_validate_requests_only_one_document(server):

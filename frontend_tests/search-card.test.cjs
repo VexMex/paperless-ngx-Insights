@@ -107,3 +107,14 @@ test("reconnecting during a search restores usable controls", async () => {
   window.document.body.append(card);
   assert.equal(root.querySelector('button[type="submit"]').disabled, false);
 });
+
+test("invalid search gets actionable guidance without an upstream error body", async () => {
+  const { root, submit } = await setup(async () => {
+    throw { code: "invalid_search", message: "private upstream data" };
+  });
+  await submit('telekom "rechnung');
+  const status = root.querySelector(".status").textContent;
+  assert.match(status, /Anführungszeichen/);
+  assert.match(status, /32/);
+  assert.doesNotMatch(status, /private upstream/);
+});

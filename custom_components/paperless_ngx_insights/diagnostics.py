@@ -11,5 +11,5 @@ async def async_get_config_entry_diagnostics(hass: HomeAssistant, entry: ConfigE
         "loaded": entry.entry_id in hass.data.get(DOMAIN, {}),
         "access": "administrators_only",
         "document_cache": False,
-        "search_mode": "literal_substring",
+        "search_mode": "multiword_and_single_substring",
     }

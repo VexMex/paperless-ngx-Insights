@@ -17,8 +17,10 @@ Stand: 31.10.2026. Dieses Dokument beschreibt die erste Backend-Ausbaustufe.
    gemeinsamen Schlüssels werden dadurch nicht pro HA-Benutzer unterschieden.
 5. Suche auf Anforderung, keine periodische Archiv-Synchronisation. Antworten
    werden auf Metadaten reduziert und nicht als Entitätszustände gespeichert.
-6. Titelsuche über `title__icontains`, Titel/Inhalt über `title_content`.
-   Das ist eine bewusste Kompatibilitätsentscheidung für wörtliche Teilstrings.
+6. Einzelwort-/Wortfolgensuche über `title__icontains` bzw. `title_content`.
+   Seit 0.1.0-dev.3 werden mehrere Begriffe als maskierte UND-Abfrage über `query`
+   gesucht, explizit auf Titel oder Titel/Inhalt begrenzt. Details und geprüfte
+   Grenzen stehen in [multiword-search.md](multiword-search.md).
    Paperless 3.x behält `title_content` im aktuellen Quellcode als veralteten
    Parameter bei. Vor einer zugesicherten Versionsunterstützung muss das
    Schema des tatsächlich betriebenen Servers geprüft werden. Unbekannte

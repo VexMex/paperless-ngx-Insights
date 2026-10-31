@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import shlex
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -13,6 +14,7 @@ from yarl import URL
 from .const import MAX_PAGE_SIZE, MAX_SEARCH_LENGTH
 
 MAX_RESPONSE_BYTES = 1024 * 1024
+MAX_SEARCH_TERMS = 32
 
 
 class PaperlessError(Exception):
@@ -41,6 +43,38 @@ class InvalidResponse(PaperlessError):
 
 class RateLimited(PaperlessError):
     """Paperless asked the client to slow down."""
+
+
+def search_parameters(text: str, mode: str) -> dict[str, str]:
+    """Keep single-term substrings; safely scope AND queries to title/content.
+
+    Double quotes group a phrase. User input is always quoted as data, never
+    passed to the index as user-controlled field names or boolean operators.
+    """
+    lexer = shlex.shlex(text, posix=True)
+    lexer.whitespace_split = True
+    lexer.commenters = ""
+    lexer.quotes = '"'
+    lexer.escape = ""
+    try:
+        terms = list(dict.fromkeys(term for term in lexer if term))
+    except ValueError as err:
+        raise ValueError("Close the double quotes around the phrase") from err
+    if len(terms) > MAX_SEARCH_TERMS:
+        raise ValueError("Use at most 32 search terms")
+    if len(terms) > 1:
+        terms = [term for term in terms if any(char.isalnum() for char in term)]
+    if not terms:
+        return {}
+    if len(terms) == 1:
+        return {"title__icontains" if mode == "title" else "title_content": terms[0]}
+    clauses = []
+    for term in terms:
+        quoted = json.dumps(term, ensure_ascii=False)
+        clauses.append(
+            f"title:{quoted}" if mode == "title" else f"(title:{quoted} OR content:{quoted})"
+        )
+    return {"query": " AND ".join(clauses)}
 
 
 def normalize_url(value: str) -> str:
@@ -123,12 +157,7 @@ class PaperlessClient:
     async def search(
         self, text: str, *, mode: str = "title", page: int = 1, page_size: int = 5
     ) -> SearchPage:
-        """Search using literal, case-insensitive substring filters.
-
-        title_content is available on Paperless 2.x and retained (deprecated) in
-        3.x. Do not silently switch to advanced query syntax or assume unsupported
-        query parameters are rejected by the upstream API.
-        """
+        """Search terms with AND; retain literal substrings for one term/phrase."""
         if not isinstance(text, str) or len(text) > MAX_SEARCH_LENGTH:
             raise ValueError("Invalid search text")
         if mode not in {"title", "text"}:
@@ -143,8 +172,7 @@ class PaperlessClient:
             "ordering": "-created,-id",
             "fields": "id,title,created",
         }
-        if text.strip():
-            params["title__icontains" if mode == "title" else "title_content"] = text.strip()
+        params.update(search_parameters(text, mode))
         payload = await self._get_json("documents/", params)
         count, results = payload.get("count"), payload.get("results")
         if type(count) is not int or count < 0 or not isinstance(results, list):

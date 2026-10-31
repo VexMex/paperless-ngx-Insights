@@ -93,18 +93,73 @@ async def run(action: str, key_file: Path | None) -> None:
                     raise RuntimeError("Test HA websocket login failed")
                 seq = 0
 
-                async def command(kind, **data):
+                async def command(kind, allow_error=False, **data):
                     nonlocal seq
                     seq += 1
                     await ws.send_json({"id": seq, "type": kind, **data})
                     answer = await ws.receive_json()
                     if not answer.get("success"):
+                        if allow_error:
+                            return {"error": answer.get("error", {})}
                         raise RuntimeError("Test HA command failed")
                     return answer["result"]
 
                 user = await command("auth/current_user")
                 if not user.get("is_admin"):
                     raise RuntimeError("Test user must be an administrator")
+                if action == "verify_search":
+                    entries = await command(DOMAIN + "/entries")
+                    if len(entries) != 1:
+                        raise RuntimeError("Expected one loaded Paperless test entry")
+
+                    async def search(text, mode="text", page=1):
+                        return await command(
+                            DOMAIN + "/search",
+                            entry_id=entries[0]["entry_id"],
+                            text=text,
+                            mode=mode,
+                            page=page,
+                            page_size=5,
+                        )
+
+                    found = await search("telekom rechnung mai")
+                    reverse = await search("mai rechnung telekom")
+                    phrase = await search('"telekom rechnung mai"')
+                    titles = await search("telekom rechnung mai", mode="title")
+                    first = await search("telekom rechnung")
+                    second = await search("telekom rechnung", page=2)
+                    async with session.get(
+                        BASE + f"/{DOMAIN}/frontend/paperless-ngx-insights.js?v=0.1.0-dev.3"
+                    ) as response:
+                        asset = await response.text()
+                        asset_ok = response.status == 200 and "Mehrere Wörter" in asset
+                    invalid = await command(
+                        DOMAIN + "/search",
+                        allow_error=True,
+                        entry_id=entries[0]["entry_id"],
+                        text='"telekom',
+                        mode="text",
+                        page=1,
+                        page_size=5,
+                    )
+                    checks = {
+                        "example_nonempty": found["count"] > 0,
+                        "order_independent": found == reverse,
+                        "phrase_is_narrower": phrase["count"] < found["count"],
+                        "title_scope_nonempty": titles["count"] > 0,
+                        "pagination": len(first["documents"]) == len(second["documents"]) == 5
+                        and not (
+                            {d["id"] for d in first["documents"]}
+                            & {d["id"] for d in second["documents"]}
+                        ),
+                        "updated_frontend_served": asset_ok,
+                        "invalid_search_reported": invalid.get("error", {}).get("code")
+                        == "invalid_search",
+                    }
+                    print(json.dumps({"test_ha": BASE, "checks": checks}))
+                    if not all(checks.values()):
+                        raise RuntimeError("Test HA search verification failed")
+                    return
                 info = await command(
                     "supervisor/api", endpoint="/addons/core_configurator/info", method="get"
                 )
@@ -188,7 +243,7 @@ async def run(action: str, key_file: Path | None) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["probe", "deploy", "configure"])
+    parser.add_argument("action", choices=["probe", "deploy", "configure", "verify_search"])
     parser.add_argument("--key-file", type=Path)
     args = parser.parse_args()
     try:

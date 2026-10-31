@@ -2,7 +2,7 @@
 
 Home-Assistant-Integration zum Suchen und Anzeigen von Paperless-ngx-Dokumenten.
 
-**Entwicklungsstand 0.1.0-dev.2:** Backend und erste kompakte Suchkarte sind implementiert:
+**Entwicklungsstand 0.1.0-dev.3:** Backend und kompakte Suchkarte mit Mehrwortsuche sind implementiert:
 Einrichtung über die Oberfläche, Verbindungstest, erneute Anmeldung,
 Ändern der Verbindung, getrennte Browser-Adresse und eine administrativ
 geschützte Suchschnittstelle mit serverseitiger Pagination.
@@ -88,7 +88,7 @@ Netzbeschränkungen des Dateieditors.
 Dashboard-Ressource als **JavaScript-Modul** registrieren:
 
 ```text
-/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.2.1
+/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.3
 ```
 
 Danach die Karte hinzufügen:
@@ -125,9 +125,14 @@ Authentifizierte HA-WebSocket-Befehle, jeweils nur für Administratoren:
 
 `mode` ist `title` (Titel) oder `text` (Titel und Inhalt). Die Antwort enthält
 `count`, `page`, `page_size` und `documents` mit `id`, `title`, `created`.
-Pro Seite sind 1–50 Dokumente erlaubt. Titel und Inhalt werden als wörtliche
-Teilzeichenfolge gesucht; keine erweiterte Suchsyntax. Leere Suche listet die
-erreichbaren Dokumente nach Erstellungsdatum und ID absteigend.
+Pro Seite sind 1–50 Dokumente erlaubt. Mehrere Begriffe werden mit UND
+verknüpft: `telekom rechnung mai` findet Dokumente mit allen drei
+Begriffen unabhängig von der Reihenfolge. Im Titelmodus müssen alle Begriffe im
+Titel stehen; im Inhaltsmodus dürfen sie über Titel und Dokumenttext verteilt
+sein. Eine Wortfolge in doppelten Anführungszeichen bleibt zusammen. Einzelne
+Begriffe finden weiterhin auch Wortteile. Keine benutzerdefinierte erweiterte
+Suchsyntax. Leere Suche listet erreichbare Dokumente nach Erstellungsdatum und ID
+absteigend. Details und Nachweise: [Mehrwortsuche](docs/multiword-search.md).
 
 Keine vollständigen Dokumenttexte oder Geheimnisse werden zurückgegeben.
 Es gibt keinen Dokumentcache und keine Entitäten mit Dokumentdaten im Recorder.
