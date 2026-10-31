@@ -17,7 +17,7 @@ Erster Backend-Schritt: **0.1.0-dev.1**, noch kein fertiges Release.
 - [x] GitHub Actions: jeweils 52 Client-Tests unter Python 3.10 und 3.14 bestanden ([Lauf 1](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41196381297)).
 - [x] API-Schema des vorgesehenen Paperless-Servers gelesen: Suchfilter, Seitennavigation und Vorschau-Endpunkte vorhanden; Schema meldet 6.0.0 (10). Dokumentliste ohne Token antwortet HTTP 401.
 - [x] GitHub-Actions-Workflow für Client-Tests und separate HA-Frameworktests angelegt.
-- [ ] HA-Frameworktests in GitHub Actions gegen **HA 2026.10.4 / Python >=3.14.2** erfolgreich ausführen. Erster Lauf: 10 bestanden, 1 fehlerhafter Reconfigure-Testablauf; korrigiert, erneuter Lauf folgt.
+- [x] HA-Frameworktests gegen **HA 2026.10.4 / Python 3.14.9**: **11 bestanden**. Zusammen mit beiden Client-Jobs ist [Lauf 2 vollständig erfolgreich](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41196569682). Der anfängliche Reconfigure-Testfehler wurde korrigiert.
 - [ ] Integration auf ha-test installieren und dort Einrichtung, Reload, Suchrechte und Reauth praktisch testen.
 - [ ] Paperless-Testtoken sicher konfigurieren und tatsächliche Paperless-/API-Version nachweisen.
 - [ ] Beide Karten, PDF-/Thumbnail-Auslieferung, HACS-Paketierung und vollständige Testmatrix umsetzen.
@@ -30,6 +30,7 @@ Keine Änderungen oder Tests am produktiven Home Assistant.
 **Nachvollziehbarkeit:** Architekturentscheidungen und offene Kompatibilitätsnachweise stehen in
 [docs/architecture.md](docs/architecture.md). AGENTS.md verankert die ausschließliche Nutzung von ha-test.
 Die Backend-Grundlage wurde parallel zur Recherche erstellt; das PDF-Authentifizierungs-Gate bleibt vor der Kartenentwicklung bestehen.
+Implementierung: [5108a3e](https://github.com/VexMex/paperless-ngx-Insights/commit/5108a3eb094420753b78c6eadc6e06b22742ef6e); Testkorrektur und Schema-Nachweis: [7b2c41d](https://github.com/VexMex/paperless-ngx-Insights/commit/7b2c41de21bab90042ceb684297174f7d12e4b00).
 **M0 und M1 bleiben offen**, bis die zugehörigen praktischen Nachweise erbracht sind.
 
 ## 1. Ausgangslage und Arbeitsweise
@@ -99,7 +100,7 @@ Für jede Prüfung festhalten: untersuchte Version, Quelle/Schema, Ergebnis, gew
 ### R1: Versionen und API-Vertrag
 
 - [ ] Unterstützte Mindestversionen von Home Assistant, Python und Paperless-ngx ermitteln und begründen.
-- [ ] Paperless-API-Schema der vorgesehenen Testversion unter /api/schema/view/ prüfen.
+- [x] Paperless-API-Schema der vorgesehenen Testinstanz unter /api/schema/?format=json geprüft; Suchfilter und Dokument-Endpunkte vorhanden.
 - [ ] Authentifizierungsheader, API-Versionierung und Kompatibilitätserkennung untersuchen.
 - [ ] Genaue Parameter für Titelsuche, einfache Suche in Titel/Inhalt und optionale erweiterte Volltextsuche verifizieren.
 - [ ] Unterschiede zwischen Teilwort-, Wort-, Phrasen- und Suchsyntax-Verhalten anhand von Testdokumenten belegen.
@@ -118,7 +119,7 @@ Für jede Prüfung festhalten: untersuchte Version, Quelle/Schema, Ergebnis, gew
 - [ ] Verhalten für HA-Administrator, normalen Benutzer, nicht freigeschalteten Benutzer und abgemeldeten Browser definieren.
 - [ ] Nachweisen, dass auch direkte Dokument-ID-Aufrufe, Thumbnails, Vorschau und Download dieselben Rechte prüfen.
 - [ ] Paperless-seitige Dokumentrechte mit eingeschränktem Testbenutzer prüfen.
-- [ ] Entscheiden, ob Version 1 mit Admin-Zugriff startet oder eine explizite Benutzerfreigabe benötigt; Entscheidung vor Bereitstellung treffen.
+- [x] Entscheidung für die erste Ausbaustufe: nur HA-Administratoren. Benutzerfreigaben werden vor einer späteren Erweiterung gesondert umgesetzt.
 
 ### R3: Dokumentanzeige und Authentifizierung
 
@@ -322,4 +323,3 @@ Vor den Live-Integrationstests aus einer autorisierten Testumgebung ermitteln:
 - [ ] Relevante Browser/Companion-Geräte und typische Dokumentformate/-größen.
 
 Zugangsschlüssel ausschließlich über sichere Konfiguration bereitstellen; niemals in diese Datei, Fixtures oder das Repository schreiben.
-
