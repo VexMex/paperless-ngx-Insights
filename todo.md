@@ -6,6 +6,8 @@ Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Do
 
 ## Aktueller Entwicklungsstand – PDF-Vorschau 0.1.0-dev.4
 
+- [x] Nutzerrückmeldung: Vorschau funktioniert im eigenen Browser ohne Probleme. Browsertyp/-version und einzelne Funktionen wie Seitenwahl/Zoom wurden dabei nicht separat benannt; die breitere Browser-/Companion-Prüfung bleibt offen.
+
 - [x] Geschützten PDF-Endpunkt mit HA-Authentifizierung und aktiven Adminrechten implementiert; feste Dokument-IDs, keine Weiterleitungen oder öffentlichen Dokumentlinks.
 - [x] PDF-Typ und Signatur prüfen; begrenzter Abruf bis 20 MiB mit Timeouts, kein Servercache.
 - [x] Kompakte Karte um `open_mode: preview` mit Dialog, Download und Paperless-Fallback erweitert; bisheriger Standard `paperless` bleibt erhalten.
