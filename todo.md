@@ -30,6 +30,19 @@ PDF-Authentifizierung, vollständige Verbindungs-/Reauth-Prüfung und verbleiben
 Details: [Live-Testbericht](docs/live-tests.md), [Architektur](docs/architecture.md).
 Alle Live-HA-Arbeiten fanden ausschließlich auf dem vom Benutzer freigegebenen Testsystem statt.
 
+## Nutzertest und geplante Suchverfeinerung – 31.10.2026
+
+- [x] Benutzer bestätigt: erste Version funktioniert; Seitennavigation und Umblättern verhalten sich wie gewünscht.
+- [ ] Kombinierte Suchbegriffe verbessern: Beispiel **telekom rechnung mai** liefert im Nutzertest keine Treffer.
+- Aktueller Stand: Die implementierten Filter suchen eine zusammenhängende Teilzeichenfolge. Das Beispiel allein belegt noch keinen API-Fehler; passende Dokumente und die gewünschte Mehrwort-Semantik müssen geprüft werden.
+- [ ] Mehrwortsuche über getrennte Begriffe prototypisch prüfen, insbesondere UND-Verknüpfung unabhängig von Position und Reihenfolge.
+- [ ] Moderne indexbasierte Paperless-Suche mit der bestehenden Teilstringsuche vergleichen; Verhalten anhand der tatsächlichen Serverversion belegen.
+- [ ] Festlegen und in der Oberfläche erklären, ob normale Eingaben alle Wörter verlangen und Anführungszeichen eine exakte Wortfolge bedeuten.
+- [ ] Groß-/Kleinschreibung, Umlaute, Satzzeichen, Teilwörter, Wortreihenfolge und fehlende Begriffe prüfen.
+- [ ] Regressionstests: Einwortsuche, **telekom rechnung mai**, umgestellte Wortreihenfolge, exakte Phrase und keine Treffer. Trefferzahl, stabile Sortierung und Pagination auch mit mehreren Wörtern überprüfen.
+- [ ] Suchmodus Titel gegenüber Titel/Inhalt getrennt prüfen; Begriffe innerhalb desselben Dokumentes über verschiedene Felder hinweg berücksichtigen.
+- Diese Verfeinerung ist für einen späteren Entwicklungsschritt vorgemerkt; aus diesem Feedback folgt noch keine Änderung am laufenden Test-Dashboard.
+
 ## 1. Ausgangslage und Arbeitsweise
 
 - [x] Repository und Schreibzugriff identifiziert.
