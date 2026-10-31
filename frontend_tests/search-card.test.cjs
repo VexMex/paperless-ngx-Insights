@@ -68,9 +68,7 @@ test("mode change discards a delayed older response", async () => {
     : Promise.resolve(page(1, 1, "Aktuell")));
   await submit("test");
   root.querySelector("select").value = "text";
-  // First search isn't yet marked complete: another submitted search still
-  // invalidates the old request, as a reconnect/editor action can do.
-  root.querySelector("form").dispatchEvent(new window.Event("submit", { cancelable: true }));
+  root.querySelector("select").dispatchEvent(new window.Event("change"));
   await settle();
   oldResolve(page(1, 1, "Veraltet"));
   await settle();
@@ -99,4 +97,13 @@ test("HA state updates do not issue another search", async () => {
   card.hass = { callWS, states: { "sensor.unrelated": { state: "1" } } };
   await settle();
   assert.equal(calls, 1);
+});
+
+test("reconnecting during a search restores usable controls", async () => {
+  const { card, root, window, submit } = await setup(() => new Promise(() => {}));
+  await submit("test");
+  assert.equal(root.querySelector('button[type="submit"]').disabled, true);
+  card.remove();
+  window.document.body.append(card);
+  assert.equal(root.querySelector('button[type="submit"]').disabled, false);
 });

@@ -72,6 +72,6 @@ gibt nur Prüfergebnisse und Formatinformationen aus, keine Dokumentdaten.
   funktionieren, nächste Seite zeigt Treffer 6–10, neue Titelsuche startet auf
   Seite eins. Auswahl des Inhaltsmodus und Linkziel neuer Tab geprüft.
 - Die Prüfergebnisse enthalten keine privaten Dokumenttitel, Inhalte oder IDs.
-- Lokale Regressionstests: **52 Client-Tests** und **5 Frontend-Tests bestanden**.
+- Lokale Regressionstests: **52 Client-Tests** und **6 Frontend-Tests bestanden**.
 - Der normale Paperless-Tab kann eine separate Anmeldung verlangen. PDF-Vorschau
   innerhalb von HA, große Dokumentkarte und visueller Editor bleiben offen.

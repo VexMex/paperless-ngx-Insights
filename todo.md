@@ -14,8 +14,9 @@ Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Do
 - [x] Dashboard **Paperless** mit Ansicht **Suche** und versionierter JavaScript-Ressource angelegt: [Test-Dashboard](http://192.168.178.147/paperless-test/suche).
 - [x] Im Browser geprüft: Karte lädt, fünf Titel pro Seite, Weiterblättern auf Treffer 6–10, neue Titelsuche setzt Seite auf 1 zurück, Auswahl Titel/Inhalt und Links für neue Tabs vorhanden.
 - [x] Neue kompakte Karte mit sicherer Textausgabe, getrenntem Suchzustand, Lade-/Fehlerzuständen und Verwerfen veralteter Antworten implementiert.
-- [x] Lokale Tests: **52 Client-Tests**, **5 Frontend-Tests**, Ruff, Format- und Kompilierungsprüfung bestanden.
-- [ ] Aktualisierte GitHub-Actions-Tests inklusive HA-Frameworktests und Frontend-Tests bestätigen; letzter bestätigter HA-Stand davor: 11 Tests bestanden.
+- [x] Lokale Tests: **52 Client-Tests**, **6 Frontend-Tests**, Ruff, Format- und Kompilierungsprüfung bestanden.
+- [x] Dashboard-Ausbaustufe in GitHub Actions vollständig erfolgreich geprüft: [Lauf](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41198510108).
+- [ ] Abschließenden Lauf nach der kleinen Korrektur für Suchmoduswechsel während laufender Anfrage und Wiederverbinden bestätigen.
 - [x] Lesende Paperless-Live-Tests mit API-Schlüssel: Titel-/Inhaltssuche, rein inhaltlicher Treffer, Pagination, keine Treffer, Textvorschau/-download, Vorschaubild und PDF-Vorschau erfolgreich.
 - [x] HACS-Installationsversuch untersucht: private Repository-Adresse liefert für den HACS-Zugang HTTP 404. Repository blieb privat.
 - [x] Stattdessen offizielle File-editor-App 6.3.0 und regulären angemeldeten Ingress-Zugang für die Übertragung verwendet. Netzwerkbeschränkung unverändert; App anschließend gestoppt und auf manuellen Start gesetzt.

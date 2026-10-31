@@ -88,7 +88,7 @@ Netzbeschränkungen des Dateieditors.
 Dashboard-Ressource als **JavaScript-Modul** registrieren:
 
 ```text
-/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.2
+/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.2.1
 ```
 
 Danach die Karte hinzufügen:

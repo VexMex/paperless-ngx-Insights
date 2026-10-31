@@ -38,6 +38,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
   }
 
   connectedCallback() {
+    this._controls();
     this._connect();
   }
 
@@ -124,7 +125,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       this._search(1, true);
     });
     this._mode.addEventListener("change", () => {
-      if (this._searched) this._search(1, true);
+      if (this._searched || this._loading) this._search(1, true);
     });
     this._previous.addEventListener("click", () => this._search(this._page - 1));
     this._next.addEventListener("click", () => this._search(this._page + 1));
