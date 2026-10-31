@@ -16,7 +16,7 @@ Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Do
 - [x] Version 0.1.0-dev.3 auf **ha-test / 192.168.178.147** übertragen und zurückgelesen geprüft; Konfiguration validiert und ausschließlich das Testsystem neu gestartet.
 - [x] Neue Suche über die tatsächliche HA-WebSocket-Schnittstelle unter dem Testbenutzer geprüft, einschließlich kontrollierter Fehlermeldung bei ungeschlossenen Anführungszeichen.
 - [x] Frontend-Ressource auf ?v=0.1.0-dev.3 aktualisiert; Auslieferung des neuen Moduls geprüft. File editor anschließend wieder gestoppt.
-- [ ] GitHub-Actions-Lauf für diese Ausbaustufe abschließend bestätigen.
+- [x] [GitHub-Actions-Lauf](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41201471773) vollständig erfolgreich: jeweils 64 Client-Tests unter Python 3.10/3.14, 13 HA-Frameworktests und 7 Frontend-Tests.
 - [ ] Erneute visuelle Browserprüfung nach Wiederherstellung der Browser-Anbindung. Aktuell meldet sie browser.user is unavailable; keine neue visuelle Prüfung behauptet.
 - [ ] Eingebettete PDF-Vorschau und große Dokumentkarte weiterentwickeln.
 
