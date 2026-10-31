@@ -13,7 +13,19 @@ Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Do
 - [ ] Bei jedem Arbeitspaket Status, Prüfergebnis und gegebenenfalls Beleg/Commit ergänzen.
 - [ ] Nicht durchgeführte Tests ausdrücklich als offen markieren; geplantes Verhalten nicht als bereits implementiert darstellen.
 
-Dieser Commit enthält zunächst die Planung. Anwendungscode, Installation in einem produktiven Home Assistant und Veröffentlichung eines Releases folgen erst in den jeweiligen Entwicklungsschritten.
+Dieser Plan wird mit jedem abgeschlossenen Entwicklungsschritt und jeder relevanten Prüfung aktualisiert. Erledigte Implementierung, tatsächlich bestandene Tests, offene Prüfungen und Einschränkungen getrennt dokumentieren.
+
+### Verbindliche Entwicklungs- und Testumgebung
+
+- Ausschließlich den MCP-Server **ha-test** für Entwicklung, Installation und Live-Tests dieser Integration verwenden.
+- Vom Benutzer zugeordnetes Testsystem: **192.168.178.147**. Der produktive Home Assistant darf für diese Entwicklung und Tests nicht verwendet oder verändert werden.
+- Vor jeder Live-Änderung sicherstellen, dass der Aufruf über ha-test erfolgt; niemals auf den produktiven MCP-Server ausweichen, wenn ha-test nicht verfügbar ist.
+- Lokale Builds und automatisierte Tests mit Mocks sind ergänzend zulässig; alle Live-HA-Tests erfolgen ausschließlich auf dem genannten Testsystem.
+- Zugangsdaten und Tokens weder hier noch in Quellcode, Test-Fixtures oder Commit-Nachrichten speichern.
+- [x] 31.10.2026: Verbindung über ha-test erfolgreich geprüft (ha_get_overview, success=true).
+- Gemeldeter Stand: Home Assistant **2026.10.4**, Zustand **RUNNING**, ha-mcp **9.0.0**.
+- Die vom MCP-Server gemeldete interne Basisadresse ist http://supervisor/core. Die IP-Zuordnung stammt aus der Benutzerangabe und ist dadurch nicht unabhängig bestätigt.
+- Bisher ausschließlich lesende Verbindungsprüfung; keine Integration installiert und keine Funktionstests durchgeführt.
 
 ## 2. Vereinbarter Funktionsumfang
 
@@ -275,7 +287,8 @@ Bereits zur Orientierung herangezogen; konkrete Versionskompatibilität bleibt i
 
 Vor den Live-Integrationstests aus einer autorisierten Testumgebung ermitteln:
 
-- [ ] Tatsächliche HA-/Paperless-Versionen und verfügbare Testumgebung.
+- [x] Test-Home-Assistant vom Benutzer bereitgestellt; ha-test erreichbar, HA 2026.10.4 (31.10.2026).
+- [ ] Paperless-Version und Paperless-Testzugang ermitteln; unterstützte Mindestversionen bleiben offen.
 - [ ] Interne Paperless-Adresse, gegebenenfalls externe Browser-Adresse und URL-Unterpfad.
 - [ ] Eingeschränkter Testzugang und gewünschter Kreis berechtigter HA-Benutzer.
 - [ ] Relevante Browser/Companion-Geräte und typische Dokumentformate/-größen.
