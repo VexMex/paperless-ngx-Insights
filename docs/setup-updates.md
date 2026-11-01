@@ -1,4 +1,4 @@
-# Einrichtung und Updates – 0.1.0-dev.6
+# Einrichtung und Updates
 
 Die Integration richtet ihre gemeinsame Karten-Ressource in HA-Storage-Dashboards
 automatisch ein und aktualisiert den Versionsparameter anhand der Manifestversion.
@@ -8,8 +8,10 @@ Mehrere Verbindungen teilen sich eine Ressource. Neuladen entfernt sie nicht,
 Entfernen der letzten Verbindung entfernt sie über die HA-Ressourcensammlung.
 Keine Bearbeitung interner `.storage`-Dateien. YAML-Ressourcen bleiben manuell.
 
-Ein Update besteht weiterhin aus dem Austausch der Integrationsdateien und einem
-HA-Neustart (HACS-Paketierung folgt später). Anschließend Dashboard neu laden.
+Installation und Updates sind über HACS als benutzerdefiniertes Repository vom
+Typ Integration möglich; die Anleitung steht in der README. HACS übernimmt den
+Austausch der Integrationsdateien. Danach HA neu starten und Dashboard neu laden.
+Alternativ kann der Integrationsordner weiterhin manuell ausgetauscht werden.
 Eine laufende Browserseite behält ihr bereits geladenes Modul bis zum Neuladen;
 die neue URL sorgt dann für die richtige Version. Ein Rollback auf eine ältere
 Manifestversion aktualisiert dieselbe Ressourcen-ID entsprechend zurück.

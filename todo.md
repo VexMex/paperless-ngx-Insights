@@ -13,7 +13,7 @@ Beschränkung auf HA-Administratoren sowie die Prüfung der Paperless-Dokumentre
 bleiben erhalten; diese Sicherheitsprüfungen werden nicht zurückgestellt.
 
 Einrichtung/Schlüsselwechsel, Updates und Downloads sind live abgesichert.
-Aktuell: HACS-Auslieferung und Release-Abnahme abschließen. Erweiterte
+HACS-Auslieferung einschließlich Installations-/Updateprüfung ist abgeschlossen. Erweiterte
 Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
 
 ## Aktueller Entwicklungsstand – HACS und Icon 1.0.1 / 1.0.2
@@ -26,7 +26,8 @@ Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Ve
 - [x] Benutzerdefiniertes Repository auf ha-test hinzugefügt und v1.0.1 tatsächlich über HACS installiert. Alle 15 Laufzeitdateien zurückgelesen: Textinhalt mit normalisierten Zeilenenden, PNG-Icons bytegenau identisch. Keine manuelle Dateiübertragung für diese Installation.
 - [x] Nach Neustart Suche mit mehreren Wörtern, Pagination, geschützte PDF-/Thumbnail-Vorschau und vollständig gestreamte PDF-/Original-Downloads geprüft. Schlüsselwechsel/Reload erfolgreich; genau eine Ressource auf 1.0.1. Dashboard-Konfiguration unverändert (Hash 696d5f569f29e4af). Eigenes Icon und Version in Geräte & Dienste sichtbar.
 - [x] Sichtprüfung fand kaputten relativen README-Bildpfad innerhalb von HACS; vollständige Bildadresse für 1.0.2 eingesetzt.
-- [ ] 1.0.2 veröffentlichen, als Update über HACS installieren und README-Bild sowie Integrationsversion nach Neustart prüfen.
+- [x] [CI für 1.0.2](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41293055466) vollständig grün; [v1.0.2 veröffentlicht](https://github.com/VexMex/paperless-ngx-Insights/releases/tag/v1.0.2). HACS erkannte das Update von v1.0.1 und installierte v1.0.2. Nach Neustart zeigt Geräte & Dienste das eigene Icon und Version 1.0.2; Ressource automatisch auf 1.0.2 aktualisiert, Dashboard-Hash unverändert. Suche, Vorschau, Downloads und Schlüssel-/Reload-Prüfungen erneut erfolgreich. File editor gestoppt, Start bleibt manuell.
+- [x] Korrigiertes README-Bild innerhalb von HACS abschließend visuell geprüft: eigenes Icon geladen, Version v1.0.2 als heruntergeladen angezeigt, HACS-Installationsanleitung lesbar.
 - Hinweis: Geprüft wurde die Übernahme der vorhandenen manuellen Testinstallation in HACS, keine frisch aufgesetzte HA-Instanz. Companion-/Browsermatrix bleibt separat offen.
 
 ## Vorheriger Entwicklungsstand – Dateien und Downloads 0.1.0-dev.7
@@ -402,14 +403,16 @@ Abnahme: Ein Dashboard-Tab bietet benutzbare Suche, Treffer und Dokumentanzeige 
 
 - [ ] Python-Linting, relevante Typprüfung und Backend-Tests in CI einrichten.
 - [ ] Frontend-Linting, Typprüfung, Komponententests und reproduzierbaren Produktionsbuild in CI einrichten.
-- [ ] Manifest-/Übersetzungsprüfung sowie aktuelle Hassfest-/HACS-Anforderungen prüfen und passend integrieren.
-- [ ] Nur veröffentlichbare Dateien paketieren; keine Zugangsdaten, privaten Dokumente oder Entwicklungsartefakte ausliefern.
+- [x] HACS-Validator in CI integriert und für 1.0.1 sowie 1.0.2 bestanden; lokale Markenbilder nach aktuellen HA-Anforderungen eingebunden.
+- [ ] Zusätzliche Hassfest-/Übersetzungsprüfung integrieren.
+- [x] HACS liefert ausschließlich den Integrationsordner mit Backend, Karten, Übersetzungen und Icon aus; tatsächliche Installation zurückgelesen. Keine Zugangsdaten, privaten Dokumente oder Entwicklungsartefakte im Paket.
 - [ ] README um Einrichtung, API-Schlüssel-Erstellung, Berechtigungen und beide Karten erweitern.
 - [ ] Beispiele für kompakte Karte und große Karte in eigenem Dashboard-Tab bereitstellen.
 - [ ] Interne/externe Adresse, Paperless-Anmeldung im neuen Tab, Zertifikate und Vorschau-Fallback erklären.
 - [ ] Unterstützte Versionen, bekannte Einschränkungen und Fehlerdiagnose dokumentieren.
-- [x] Testinstallation über File editor durchgeführt, Config Flow und automatisches Ressourcenupdate live geprüft. HACS-Installation/Update auf sauberer Installation bleibt eigener Release-Schritt.
-- [ ] Versionsnummer, Changelog, Upgrade-/Entfernungsanleitung und Release-Artefakte vorbereiten.
+- [x] Testinstallation über File editor durchgeführt, Config Flow und automatisches Ressourcenupdate live geprüft. Anschließend Übernahme durch HACS sowie Update 1.0.1 → 1.0.2 erfolgreich geprüft. Frisch aufgesetzte HA-Instanz bleibt ungeprüft.
+- [x] Einheitliche Manifest-/Release-Version, Changelog und HACS-Upgradeanleitung vorhanden; Releases werden erst nach erfolgreichen CI-Prüfungen veröffentlicht.
+- [ ] Entfernungsanleitung ergänzen.
 - [ ] Lizenzhinweise für alle mitgelieferten Bibliotheken beifügen.
 - [ ] Vor Release vollständigen Kernablauf auf sauberer Installation durchführen und Ergebnis dokumentieren.
 
