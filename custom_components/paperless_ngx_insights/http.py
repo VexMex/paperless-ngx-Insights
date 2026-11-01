@@ -1,8 +1,12 @@
 """Authenticated PDF previews; no public URLs or upstream credentials in URLs."""
 
-from aiohttp import web
+import asyncio
+import re
+
+from aiohttp import ClientError, web
+from aiohttp.helpers import content_disposition_header
 from homeassistant.components.http import HomeAssistantView
-from homeassistant.components.http.const import KEY_HASS_USER
+from homeassistant.components.http.const import KEY_HASS_REFRESH_TOKEN_ID, KEY_HASS_USER
 from homeassistant.core import HomeAssistant
 
 from .client import (
@@ -84,3 +88,100 @@ class ThumbnailView(PreviewView):
     url = f"/api/{DOMAIN}/{{entry_id}}/documents/{{document_id}}/thumbnail"
     name = f"api:{DOMAIN}:thumbnail"
     thumbnail = True
+
+
+def download_filename(value: str | None, document_id: int, kind: str) -> str:
+    """Keep a useful filename without paths, control characters or header syntax."""
+    value = (value or "").replace("\\", "/").rsplit("/", 1)[-1]
+    value = re.sub(r"[^\w .()-]", "_", value).strip(" .")[:180]
+    if not value:
+        value = f"document-{document_id}.{'pdf' if kind == 'pdf' else 'bin'}"
+    if kind == "pdf" and not value.lower().endswith(".pdf"):
+        value += ".pdf"
+    return value
+
+
+class DownloadView(HomeAssistantView):
+    """A real attachment stream; no whole-file byte array or browser Blob."""
+
+    url = f"/api/{DOMAIN}/{{entry_id}}/documents/{{document_id}}/download/{{kind}}"
+    name = f"api:{DOMAIN}:download"
+    requires_auth = True
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        self.hass = hass
+
+    async def get(self, request: web.Request, entry_id: str, document_id: str, kind: str):
+        user = request.get(KEY_HASS_USER)
+        if user is None or not user.is_admin or not user.is_active:
+            return web.Response(status=403, headers=HEADERS)
+        if (
+            kind not in {"pdf", "original"}
+            or not document_id.isascii()
+            or not document_id.isdecimal()
+            or len(document_id) > 10
+            or not 1 <= int(document_id) <= 2147483647
+        ):
+            return web.Response(status=400, headers=HEADERS)
+        client = self.hass.data.get(DOMAIN, {}).get(entry_id)
+        if client is None:
+            return web.Response(status=404, headers=HEADERS)
+        stream = None
+        try:
+            async with client.download(int(document_id), kind) as (upstream, prefix):
+                if self.hass.data.get(DOMAIN, {}).get(entry_id) is not client:
+                    return web.Response(status=404, headers=HEADERS)
+                disposition = upstream.content_disposition
+                filename = download_filename(
+                    disposition.filename if disposition else None, int(document_id), kind
+                )
+                stream = web.StreamResponse(
+                    headers={
+                        **HEADERS,
+                        "Content-Type": "application/pdf"
+                        if kind == "pdf"
+                        else "application/octet-stream",
+                        "Content-Disposition": content_disposition_header(
+                            "attachment", filename=filename
+                        ),
+                        "Content-Security-Policy": "sandbox",
+                    }
+                )
+                if upstream.content_length is not None:
+                    stream.content_length = upstream.content_length
+                await stream.prepare(request)
+                if prefix:
+                    await stream.write(prefix)
+                refresh_id = request.get(KEY_HASS_REFRESH_TOKEN_ID)
+                async for chunk in upstream.content.iter_chunked(65536):
+                    if (
+                        self.hass.data.get(DOMAIN, {}).get(entry_id) is not client
+                        or not user.is_active
+                        or not user.is_admin
+                        or (
+                            refresh_id
+                            and self.hass.auth.async_get_refresh_token(refresh_id) is None
+                        )
+                    ):
+                        raise ConnectionError("Download access revoked")
+                    await stream.write(chunk)
+                await stream.write_eof()
+                return stream
+        except (PaperlessError, ClientError, ConnectionError, asyncio.TimeoutError) as error:
+            if stream is not None and stream.prepared:
+                if request.transport:
+                    request.transport.close()
+                return stream
+            if isinstance(error, InvalidAuth):
+                if entry := self.hass.config_entries.async_get_entry(entry_id):
+                    entry.async_start_reauth(self.hass)
+            status = (
+                403
+                if isinstance(error, Forbidden)
+                else 404
+                if isinstance(error, PreviewUnavailable)
+                else 429
+                if isinstance(error, RateLimited)
+                else 502
+            )
+            return web.Response(status=status, headers=HEADERS)

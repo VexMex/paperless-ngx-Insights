@@ -107,6 +107,129 @@ async def run(action: str, key_file: Path | None) -> None:
                 user = await command("auth/current_user")
                 if not user.get("is_admin"):
                     raise RuntimeError("Test user must be an administrator")
+                if action == "verify_lifecycle":
+                    entries = await command(DOMAIN + "/entries")
+                    if len(entries) != 1 or key_file is None:
+                        raise RuntimeError("One test entry and key file required")
+                    entry_id = entries[0]["entry_id"]
+                    token = (
+                        await asyncio.to_thread(key_file.read_text, encoding="utf-8-sig")
+                    ).strip()
+                    base_url = "http://192.168.178.10:8810"
+
+                    async def search():
+                        return await command(
+                            DOMAIN + "/search", entry_id=entry_id, text="", page_size=1
+                        )
+
+                    async def reconfigure(values):
+                        flow = await post_json(
+                            "/api/config/config_entries/flow",
+                            {"handler": DOMAIN, "entry_id": entry_id},
+                            headers,
+                        )
+                        if token in json.dumps(flow):
+                            raise RuntimeError("Secret exposed in configuration form")
+                        return await post_json(
+                            "/api/config/config_entries/flow/" + flow["flow_id"], values, headers
+                        )
+
+                    initial = await search()
+                    original_web = initial["web_url"]
+                    checks = {}
+                    try:
+                        invalid = await reconfigure(
+                            {
+                                "url": base_url,
+                                "web_url": original_web,
+                                "token": "invalid-test-fixture",
+                            }
+                        )
+                        checks["invalid_token_rejected"] = (
+                            invalid.get("errors", {}).get("base") == "invalid_auth"
+                        )
+                        if invalid.get("flow_id"):
+                            async with session.delete(
+                                BASE + "/api/config/config_entries/flow/" + invalid["flow_id"],
+                                headers=headers,
+                            ) as response:
+                                response.raise_for_status()
+                        checks["old_connection_preserved"] = (await search())[
+                            "web_url"
+                        ] == original_web
+                        changed = await reconfigure(
+                            {
+                                "url": base_url,
+                                "web_url": base_url + "/temporary-link-check",
+                                "token": "",
+                            }
+                        )
+                        checks["blank_token_kept"] = changed.get("type") == "abort" and (
+                            await search()
+                        )["web_url"].endswith("/temporary-link-check")
+                    finally:
+                        restored = await reconfigure(
+                            {"url": base_url, "web_url": original_web, "token": token}
+                        )
+                        if restored.get("type") != "abort":
+                            raise RuntimeError("Test connection restoration failed")
+                    checks["valid_token_renewal"] = (await search())["web_url"] == original_web
+                    await post_json(
+                        f"/api/config/config_entries/entry/{entry_id}/reload", {}, headers
+                    )
+                    checks["reload_search"] = (await search())["count"] == initial["count"]
+                    resources = await command("lovelace/resources")
+                    owned = [
+                        r
+                        for r in resources
+                        if r["url"].split("?")[0] == f"/{DOMAIN}/frontend/paperless-ngx-insights.js"
+                    ]
+                    version = json.loads(
+                        (PROJECT / "custom_components" / DOMAIN / "manifest.json").read_text()
+                    )["version"]
+                    checks["one_current_resource"] = len(owned) == 1 and owned[0]["url"].endswith(
+                        "?v=" + version
+                    )
+                    print(json.dumps({"test_ha": BASE, "checks": checks}))
+                    if not all(checks.values()):
+                        raise RuntimeError("Lifecycle checks failed")
+                    return
+                if action == "verify_download":
+                    entries = await command(DOMAIN + "/entries")
+                    entry_id = entries[0]["entry_id"]
+                    found = await command(
+                        DOMAIN + "/search", entry_id=entry_id, text="", page_size=1
+                    )
+                    document_id = found["documents"][0]["id"]
+                    checks = {}
+                    for kind in ("pdf", "original"):
+                        result = await command(
+                            DOMAIN + "/download",
+                            entry_id=entry_id,
+                            document_id=document_id,
+                            kind=kind,
+                        )
+                        # Signed links and file names are deliberately never printed.
+                        size = 0
+                        async with session.get(BASE + result["url"]) as response:
+                            checks[kind + "_attachment"] = (
+                                response.status == 200
+                                and response.headers.get("Content-Disposition", "").startswith(
+                                    "attachment;"
+                                )
+                            )
+                            checks[kind + "_no_store"] = (
+                                response.headers.get("Cache-Control") == "no-store, private"
+                            )
+                            async for chunk in response.content.iter_chunked(65536):
+                                size += len(chunk)
+                        checks[kind + "_nonempty"] = size > 0
+                        async with session.get(BASE + result["url"].split("?")[0]) as response:
+                            checks[kind + "_unsigned_rejected"] = response.status == 401
+                    print(json.dumps({"test_ha": BASE, "checks": checks}))
+                    if not all(checks.values()):
+                        raise RuntimeError("Download checks failed")
+                    return
                 if action == "verify_preview":
                     entries = await command(DOMAIN + "/entries")
                     if len(entries) != 1:
@@ -294,7 +417,16 @@ async def run(action: str, key_file: Path | None) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "action", choices=["probe", "deploy", "configure", "verify_search", "verify_preview"]
+        "action",
+        choices=[
+            "probe",
+            "deploy",
+            "configure",
+            "verify_search",
+            "verify_preview",
+            "verify_lifecycle",
+            "verify_download",
+        ],
     )
     parser.add_argument("--key-file", type=Path)
     args = parser.parse_args()

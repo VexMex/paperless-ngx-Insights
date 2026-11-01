@@ -141,7 +141,8 @@ class PaperlessInsightsSearchCard extends HTMLElement {
           <button class="preview-close" aria-label="Dokumentvorschau schließen">Schließen</button></div>
         <p class="preview-status" role="status" aria-live="polite"></p>
         <div class="preview-actions"><a class="paperless-link" target="_blank" rel="noopener noreferrer">In Paperless öffnen ↗</a>
-          <a class="preview-download" download="dokument.pdf" hidden>PDF herunterladen</a></div>
+          <button class="preview-download" hidden>PDF herunterladen</button>
+          <button class="original-download" hidden>Original herunterladen</button></div>
         <button class="show-thumbnail">Erste Seite als Bild anzeigen</button>
         <div class="thumbnail-wrap" hidden><img alt="Vorschaubild der ersten Dokumentseite"></div>
         <iframe title="PDF-Dokumentvorschau" referrerpolicy="no-referrer" hidden></iframe>
@@ -149,6 +150,8 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     const root = this.shadowRoot;
     this._dialog = root.querySelector("dialog");
     root.querySelector(".preview-close").addEventListener("click", () => this._closePreview());
+    root.querySelector(".preview-download").addEventListener("click", () => this._download("pdf"));
+    root.querySelector(".original-download").addEventListener("click", () => this._download("original"));
     root.querySelector(".show-thumbnail").addEventListener("click", () => this._showThumbnail());
     this._dialog.addEventListener("cancel", event => { event.preventDefault(); this._closePreview(); });
     root.querySelector("h2").textContent = this._config.title || "Paperless · Dokumente";
@@ -292,6 +295,8 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     if (frame) { frame.removeAttribute("src"); frame.hidden = true; }
     const download = this._dialog?.querySelector(".preview-download");
     if (download) { download.removeAttribute("href"); download.hidden = true; }
+    const original = this._dialog?.querySelector(".original-download");
+    if (original) original.hidden = true;
     if (this._previewUrl) URL.revokeObjectURL(this._previewUrl);
     if (this._thumbnailUrl) URL.revokeObjectURL(this._thumbnailUrl);
     this._thumbnailUrl = null;
@@ -313,6 +318,9 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     root.querySelector(".paperless-link").href = opener.href;
     const status = root.querySelector(".preview-status");
     status.textContent = "PDF-Vorschau wird geladen …";
+    root.querySelector(".preview-download").hidden = false;
+    root.querySelector(".original-download").hidden = false;
+    root.querySelectorAll(".preview-download,.original-download").forEach(button => { button.disabled = false; });
     this._presentPreview();
     const controller = new AbortController();
     this._previewAbort = controller;
@@ -331,14 +339,14 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       frame.src = this._previewUrl;
       frame.hidden = false;
       const download = root.querySelector(".preview-download");
-      download.href = this._previewUrl;
       download.hidden = false;
       status.textContent = "Falls die PDF-Anzeige hier leer bleibt: PDF herunterladen oder in Paperless öffnen.";
       if (navigator.pdfViewerEnabled === false) await this._showThumbnail();
     } catch (error) {
       if (sequence !== this._previewSequence) return;
-      status.textContent = error.status === 413 ? "PDF größer als 20 MiB. Bitte in Paperless öffnen."
-        : error.status === 415 ? "Für dieses Dokument ist keine PDF-Vorschau verfügbar. Bitte in Paperless öffnen."
+      if (error.status === 415) root.querySelector(".preview-download").hidden = true;
+      status.textContent = error.status === 413 ? "Diese PDF ist größer als 20 MiB und wird zum Schutz von Home Assistant nicht angezeigt. Bitte PDF herunterladen."
+        : error.status === 415 ? "Für dieses Format ist keine PDF-Vorschau verfügbar. Bitte das Original herunterladen oder die erste Seite als Bild anzeigen."
           : error.status === 403 ? "Keine Berechtigung für diese Dokumentvorschau."
             : "Vorschau konnte nicht geladen werden. Verbindung und Anmeldung prüfen oder in Paperless öffnen.";
     } finally {
@@ -386,6 +394,34 @@ class PaperlessInsightsSearchCard extends HTMLElement {
 
   _presentPreview() {
     this._dialog.showModal();
+  }
+
+  async _download(kind) {
+    const sequence = this._previewSequence;
+    const root = this._dialog;
+    const button = root.querySelector(kind === "pdf" ? ".preview-download" : ".original-download");
+    if (button.disabled || button.hidden) return;
+    button.disabled = true;
+    try {
+      const result = await this._hass.callWS({ type:"paperless_ngx_insights/download", entry_id:this._entry, document_id:this._previewDocument, kind });
+      if (sequence !== this._previewSequence || !this.isConnected) return;
+      const url = new URL(result.url, window.location.origin);
+      const path = `/api/paperless_ngx_insights/${encodeURIComponent(this._entry)}/documents/${this._previewDocument}/download/${kind}`;
+      if (url.origin !== window.location.origin || url.pathname !== path || !url.searchParams.has("authSig")) throw {};
+      const anchor = document.createElement("a");
+      anchor.href = url.href;
+      anchor.download = "";
+      anchor.rel = "noreferrer";
+      anchor.hidden = true;
+      root.append(anchor);
+      anchor.click();
+      anchor.remove();
+      root.querySelector(".preview-status").textContent = "Download an den Browser übergeben. Die Datei wird direkt übertragen und nicht als Vorschau geladen.";
+    } catch (_) {
+      if (sequence === this._previewSequence) root.querySelector(".preview-status").textContent = "Download konnte nicht gestartet werden. Anmeldung und Verbindung prüfen.";
+    } finally {
+      if (sequence === this._previewSequence) button.disabled = false;
+    }
   }
 
   _controls() {

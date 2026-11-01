@@ -156,6 +156,62 @@ async def test_thumbnail_rejects_active_content(server, body, mime):
         await server["client"].thumbnail(1)
 
 
+@pytest.mark.parametrize("kind", ["pdf", "original"])
+async def test_large_download_streams_past_preview_limit(server, kind):
+    server.update(raw=b"%PDF-1.7\n" + b"x" * (25 * 1024 * 1024), type="application/pdf")
+    total, largest = 0, 0
+    async with server["client"].download(42, kind) as (response, prefix):
+        total += len(prefix)
+        async for chunk in response.content.iter_chunked(65536):
+            total += len(chunk)
+            largest = max(largest, len(chunk))
+    assert total == len(server["raw"])
+    assert largest <= 65536
+    request = server["requests"][-1]
+    assert request.path.endswith("/42/preview/" if kind == "pdf" else "/42/download/")
+    assert dict(request.query) == ({"original": "true"} if kind == "original" else {})
+    assert not server["client"]._responses
+
+
+@pytest.mark.parametrize(
+    ("status", "error"),
+    [
+        (401, api.InvalidAuth),
+        (403, api.Forbidden),
+        (404, api.PreviewUnavailable),
+        (302, api.InvalidResponse),
+        (429, api.RateLimited),
+        (500, api.CannotConnect),
+    ],
+)
+async def test_download_errors(server, status, error):
+    server.update(status=status, raw=b"private", type="text/html")
+    with pytest.raises(error):
+        async with server["client"].download(1, "original"):
+            pytest.fail("must reject before streaming")
+
+
+async def test_download_pdf_validation_and_unload(server):
+    server.update(raw=b"not a pdf", type="application/pdf")
+    with pytest.raises(api.PreviewUnavailable):
+        async with server["client"].download(1, "pdf"):
+            pytest.fail("invalid signature")
+    server["client"].close()
+    with pytest.raises(api.CannotConnect):
+        async with server["client"].download(1, "original"):
+            pytest.fail("unloaded")
+
+
+@pytest.mark.parametrize(
+    ("number", "kind"), [(True, "pdf"), (0, "pdf"), (1, "../../evil"), ("1", "original")]
+)
+async def test_download_validation_makes_no_request(server, number, kind):
+    with pytest.raises(ValueError):
+        async with server["client"].download(number, kind):
+            pytest.fail("invalid input")
+    assert not server["requests"]
+
+
 @pytest.mark.parametrize(
     ("value", "expected"),
     [

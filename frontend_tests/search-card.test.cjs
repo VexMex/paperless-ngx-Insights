@@ -201,3 +201,47 @@ test("invalid search gets actionable guidance without an upstream error body", a
   assert.match(status, /32/);
   assert.doesNotMatch(status, /private upstream/);
 });
+
+test("oversized PDF offers streamed PDF and original downloads without a blob", async () => {
+  const {card, root, submit, window} = await setup(async message => message.type.endsWith("/download")
+    ? {url:`/api/paperless_ngx_insights/entry-1/documents/1/download/${message.kind}?authSig=fixture`}
+    : page(1), {open_mode:"preview"});
+  const urls = [];
+  window.HTMLAnchorElement.prototype.click = function () { urls.push(this.href); };
+  card._hass.callApiRaw = async () => ({ok:false,status:413});
+  await submit("invoice");
+  // Invoke the existing click listener without using the overridden anchor method.
+  root.querySelector("li a").dispatchEvent(new window.MouseEvent("click", {bubbles:true,cancelable:true}));
+  await settle();
+  assert.match(root.querySelector(".preview-status").textContent, /20 MiB/);
+  assert.equal(root.querySelector(".preview-download").hidden, false);
+  assert.equal(root.querySelector(".original-download").hidden, false);
+  root.querySelector(".preview-download").click(); await settle();
+  root.querySelector(".original-download").click(); await settle();
+  assert.equal(urls.length, 2);
+  assert.ok(urls[0].includes("/download/pdf?authSig="));
+  assert.ok(urls[1].includes("/download/original?authSig="));
+  assert.equal(root.querySelector("iframe").hasAttribute("src"), false);
+  card.remove();
+});
+
+test("download refuses an external URL and discards a late link after closing", async () => {
+  const {card, root, submit, window} = await setup(async message => message.type.endsWith("/download")
+    ? {url:"https://evil.test/file?authSig=fixture"} : page(1), {open_mode:"preview"});
+  let navigations = 0;
+  window.HTMLAnchorElement.prototype.click = function () { navigations++; };
+  card._hass.callApiRaw = async () => ({ok:false,status:413});
+  await submit("invoice");
+  root.querySelector("li a").dispatchEvent(new window.MouseEvent("click", {bubbles:true,cancelable:true}));
+  await settle();
+  root.querySelector(".original-download").click(); await settle();
+  assert.equal(navigations, 0);
+  assert.match(root.querySelector(".preview-status").textContent, /nicht gestartet/);
+  let resolve;
+  card._hass.callWS = () => new Promise(done => {resolve=done;});
+  root.querySelector(".original-download").click();
+  root.querySelector(".preview-close").click();
+  resolve({url:"/api/paperless_ngx_insights/entry-1/documents/1/download/original?authSig=fixture"});
+  await settle();
+  assert.equal(navigations, 0);
+});

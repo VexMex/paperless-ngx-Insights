@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import shlex
+from contextlib import asynccontextmanager
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -154,10 +155,73 @@ class PaperlessClient:
         self._session = session
         self._semaphore = asyncio.Semaphore(4)
         self._closed = False
+        self._responses: set[aiohttp.ClientResponse] = set()
+        self._downloads = asyncio.Semaphore(2)
 
     def close(self) -> None:
         """Prevent new requests after the integration has been unloaded."""
         self._closed = True
+        for response in tuple(self._responses):
+            response.close()
+
+    @asynccontextmanager
+    async def _request(self, *args, **kwargs):
+        async with self._session.get(*args, **kwargs) as response:
+            self._responses.add(response)
+            try:
+                if self._closed:
+                    raise CannotConnect("Integration is unloaded")
+                yield response
+            finally:
+                self._responses.discard(response)
+
+    @asynccontextmanager
+    async def download(self, document_id: int, kind: str):
+        """Stream from a fixed endpoint, with bounded concurrency and no buffering."""
+        if type(document_id) is not int or not 1 <= document_id <= 2147483647:
+            raise ValueError("Invalid document ID")
+        if kind not in {"pdf", "original"}:
+            raise ValueError("Invalid download kind")
+        async with self._downloads:
+            if self._closed:
+                raise CannotConnect("Integration is unloaded")
+            path = "preview" if kind == "pdf" else "download"
+            try:
+                async with self._request(
+                    f"{self.base_url}/api/documents/{document_id}/{path}/",
+                    params={"original": "true"} if kind == "original" else None,
+                    headers={
+                        "Authorization": f"Token {self._token}",
+                        "Accept": "*/*",
+                        "Accept-Encoding": "identity",
+                    },
+                    timeout=aiohttp.ClientTimeout(total=600, connect=5, sock_read=30),
+                    allow_redirects=False,
+                    auto_decompress=False,
+                ) as response:
+                    if response.status == 401:
+                        raise InvalidAuth("API token rejected")
+                    if response.status == 403:
+                        raise Forbidden("Document access denied")
+                    if response.status == 404:
+                        raise PreviewUnavailable("Document unavailable")
+                    if response.status == 429:
+                        raise RateLimited("Too many requests")
+                    if response.status >= 500:
+                        raise CannotConnect("Paperless server error")
+                    if (
+                        response.status != 200
+                        or response.headers.get("Content-Encoding", "identity") != "identity"
+                    ):
+                        raise InvalidResponse("Unexpected download response")
+                    if kind == "pdf" and response.content_type != "application/pdf":
+                        raise PreviewUnavailable("No PDF available")
+                    prefix = await response.content.readexactly(5) if kind == "pdf" else b""
+                    if kind == "pdf" and prefix != b"%PDF-":
+                        raise PreviewUnavailable("Invalid PDF")
+                    yield response, prefix
+            except (aiohttp.ClientError, asyncio.TimeoutError, asyncio.IncompleteReadError) as err:
+                raise CannotConnect("Download interrupted") from err
 
     async def preview(self, document_id: int) -> bytes:
         """Fetch only a bounded PDF preview from a fixed, authenticated endpoint."""
@@ -176,7 +240,7 @@ class PaperlessClient:
             if self._closed:
                 raise CannotConnect("Integration is unloaded")
             try:
-                async with self._session.get(
+                async with self._request(
                     f"{self.base_url}/api/documents/{document_id}/{endpoint}/",
                     # DRF negotiates before the binary FileResponse is built.
                     headers={"Authorization": f"Token {self._token}", "Accept": "*/*"},
@@ -266,7 +330,7 @@ class PaperlessClient:
             if self._closed:
                 raise CannotConnect("Integration is unloaded")
             try:
-                async with self._session.get(
+                async with self._request(
                     f"{self.base_url}/api/{path}",
                     params=params,
                     headers={"Authorization": f"Token {self._token}", "Accept": "application/json"},

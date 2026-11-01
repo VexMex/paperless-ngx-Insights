@@ -16,7 +16,20 @@ Nächste Prioritäten: todo bereinigen, Einrichtung/Schlüsselwechsel/Reauth und
 live absichern, danach HACS-Auslieferung und Release-Vorbereitung. Erweiterte
 Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
 
-## Aktueller Entwicklungsstand – Einrichtung und Updates 0.1.0-dev.6
+## Aktueller Entwicklungsstand – Dateien und Downloads 0.1.0-dev.7
+
+- [x] Vorschaugrenze bleibt bei 20 MiB; größere PDFs erhalten eine ausdrückliche Größenmeldung mit PDF-Download.
+- [x] PDF- und Originaldatei-Download als geschützten Attachment-Stream implementiert: 64-KiB-Blöcke, zwei parallele Downloads je Verbindung, keine vollständigen Datei-Blobs im Browser oder Backend.
+- [x] Kurzlebige HA-Downloadsignatur pro Dokument/Downloadart und aktueller Anmeldung; feste Upstream-Pfade, keine Redirects und sichere Dateinamen.
+- [x] Laufende Upstream-Antworten bei Unload schließen; Anmeldung und Rechte während Streaming prüfen.
+- [x] Lokal 103 Client-Tests und 19 Frontend-Tests bestanden, einschließlich großer synthetischer Dateien, Größenmeldung und Original-Download.
+- [ ] Abschließende HA-Framework-/CI-Prüfungen bestehen und auf ha-test installieren.
+- [ ] Einrichtung/Schlüsselwechsel/Reload zuerst live prüfen, danach Downloads und Darstellung einschließlich Sections auf ha-test.
+- [ ] Companion-/weitere Browser und native PDF-Seitenwahl/Zoom nur mit vorhandenen Geräten praktisch abnehmen; fehlende Abdeckung bleibt offen.
+
+Details: [Dateien und Downloads](docs/downloads.md), [Einrichtung und Updates](docs/setup-updates.md).
+
+## Vorheriger Entwicklungsschritt – Einrichtung und Updates 0.1.0-dev.6
 
 - [x] Automatische versionierte Registrierung/Aktualisierung der eigenen Karten-Ressource für HA-Storage-Dashboards implementiert; doppelte eigene Einträge bereinigen, fremde Ressourcen erhalten.
 - [x] Neuladen erhält die gemeinsame Ressource; Entfernen der letzten Verbindung entfernt nur die eigene Modulressource. YAML-Ressourcen werden nicht verändert.

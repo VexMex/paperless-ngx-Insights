@@ -160,6 +160,7 @@ async def test_invalid_update_preserves_working_connection(hass, source):
 
 async def test_reload_resources_and_remove_last_entry(hass):
     from homeassistant.components.lovelace.const import LOVELACE_DATA
+    from homeassistant.loader import async_get_integration
 
     entries = [
         MockConfigEntry(
@@ -172,13 +173,15 @@ async def test_reload_resources_and_remove_last_entry(hass):
     for entry in entries:
         entry.add_to_hass(hass)
     with patch(VALIDATE, new_callable=AsyncMock):
-        for entry in entries:
-            assert await hass.config_entries.async_setup(entry.entry_id)
+        assert await hass.config_entries.async_setup(entries[0].entry_id)
+        await hass.async_block_till_done()
+        assert entries[1].state.value == "loaded"
         collection = hass.data[LOVELACE_DATA].resources
         own = list(collection.async_items())
         assert len(own) == 1
         resource_id = own[0]["id"]
-        assert own[0]["url"].endswith("?v=0.1.0-dev.6")
+        version = (await async_get_integration(hass, DOMAIN)).version
+        assert own[0]["url"].endswith("?v=" + version)
         await collection.async_update_item(
             resource_id, {"url": own[0]["url"].split("?")[0] + "?v=old"}
         )
@@ -193,7 +196,7 @@ async def test_reload_resources_and_remove_last_entry(hass):
         assert len(list(collection.async_items())) == 2
         assert next(item for item in collection.async_items() if item["id"] == resource_id)[
             "url"
-        ].endswith("?v=0.1.0-dev.6")
+        ].endswith("?v=" + version)
         assert await hass.config_entries.async_remove(entries[0].entry_id)
         assert len(list(collection.async_items())) == 2
         assert await hass.config_entries.async_remove(entries[1].entry_id)

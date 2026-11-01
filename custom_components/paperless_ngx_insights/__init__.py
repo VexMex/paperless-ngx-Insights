@@ -12,7 +12,7 @@ from homeassistant.helpers.typing import ConfigType
 
 from .client import Forbidden, InvalidAuth, InvalidResponse, PaperlessClient, PaperlessError
 from .const import CONF_TOKEN, CONF_URL, DOMAIN
-from .http import PreviewView, ThumbnailView
+from .http import DownloadView, PreviewView, ThumbnailView
 from .resources import async_manage_resource
 from .websocket import async_register_commands
 
@@ -28,6 +28,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     async_register_commands(hass)
     hass.http.register_view(PreviewView(hass))
     hass.http.register_view(ThumbnailView(hass))
+    hass.http.register_view(DownloadView(hass))
     return True
 
 

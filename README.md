@@ -2,7 +2,7 @@
 
 Home-Assistant-Integration zum Suchen und Anzeigen von Paperless-ngx-Dokumenten.
 
-**Entwicklungsstand 0.1.0-dev.5:** Backend, kompakte Suchkarte, große Dokumentkarte und visuelle Karteneditoren sind implementiert:
+**Entwicklungsstand 0.1.0-dev.7:** Beide Karten mit visuellen Editoren, automatischer Ressourcenverwaltung und gestreamten PDF-/Original-Downloads sind implementiert:
 Einrichtung über die Oberfläche, Verbindungstest, erneute Anmeldung,
 Ändern der Verbindung, getrennte Browser-Adresse und eine administrativ
 geschützte Suchschnittstelle mit serverseitiger Pagination.
@@ -86,10 +86,12 @@ Netzbeschränkungen des Dateieditors.
 
 ## Kompakte Karte
 
-Dashboard-Ressource als **JavaScript-Modul** registrieren:
+Für HA-Storage-Dashboards wird die Ressource automatisch registriert und bei Updates
+versioniert aktualisiert. Dashboard danach neu laden. Nur bei manuell gepflegten
+YAML-Ressourcen das **JavaScript-Modul** selbst registrieren:
 
 ```text
-/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.5
+/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.7
 ```
 
 Danach die Karte hinzufügen:
@@ -110,6 +112,9 @@ Die PDF-Anzeige hängt vom Browser ab; ohne nativen PDF-Viewer erscheint eine
 geschützte Bildvorschau der ersten Seite. Diese lässt sich auch per Button wählen.
 Download und Paperless-Link bleiben verfügbar. Vorschauen sind nur für aktive HA-Administratoren zugänglich.
 Details und Grenzen: [PDF-Vorschau](docs/pdf-preview.md).
+Größere PDFs bleiben außerhalb des Viewers und können über **PDF herunterladen**
+gestreamt werden. **Original herunterladen** überträgt die ursprüngliche Datei,
+auch wenn keine PDF-Vorschau verfügbar ist. Details: [Downloads](docs/downloads.md).
 Mit `open_mode: paperless` (Standard) öffnen Dokumentlinks die normale
 Paperless-Oberfläche in einem neuen Tab. Dafür kann eine Paperless-Anmeldung
 erforderlich sein. Beide Karten bieten jetzt einen visuellen Editor in Home Assistant.
@@ -134,6 +139,14 @@ und Öffnen in Paperless verwenden den bestehenden geschützten Abruf.
 Verbindung, Überschrift, Suchbereich, Trefferzahl, Höhe und Vorschaubilder lassen
 sich im visuellen Editor ändern. Details und Panel-Beispiel:
 [Große Karte und Editor](docs/document-card.md).
+
+## Verbindung ändern und Updates
+
+Unter Geräte & Dienste bei der Integration **Verbindung ändern** wählen.
+Ein leeres Schlüsselfeld behält den vorhandenen Schlüssel; neue Werte werden vor
+Speicherung geprüft. Zum Aktualisieren Dateien austauschen und HA neu starten;
+die Karten-Ressource wird automatisch angepasst. Mehrere Verbindungen teilen eine
+Ressource. Details: [Einrichtung und Updates](docs/setup-updates.md).
 
 Das eingerichtete Test-Dashboard ist unter
 [Paperless auf ha-test](http://192.168.178.147/paperless-test/suche) erreichbar und
