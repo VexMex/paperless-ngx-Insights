@@ -16,7 +16,16 @@ Einrichtung/Schlüsselwechsel, Updates und Downloads sind live abgesichert.
 HACS-Auslieferung einschließlich Installations-/Updateprüfung ist abgeschlossen. Erweiterte
 Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
 
-## Aktueller Entwicklungsstand – HACS und Icon 1.0.1 / 1.0.2
+## Aktueller Entwicklungsstand – Lokalisierung 1.1.0
+
+- [x] Gemeinsame eingebundene DE-/EN-Übersetzungen für kompakte/große Karte und visuellen Editor ergänzt: Beschriftungen, Status-/Fehlermeldungen, Vorschau, Downloads, Seitennavigation, Standardüberschriften und zugängliche Namen.
+- [x] Sprache folgt `hass.language`, ersatzweise HA-Locale/Systemsprache. Sprachvarianten wie de-AT werden erkannt; andere Sprachen verwenden Englisch. Kartenüberschriften aus eigener Konfiguration und Dokumenttitel bleiben unverändert.
+- [x] Sprachwechsel aktualisiert bestehende Elemente, laufende Suche und Vorschau ohne neue Anfragen; neue Karten speichern keine sprachgebundene Standardüberschrift.
+- [x] README und neue Release-Beschreibungen auf Englisch umgestellt; HACS verwendet dieselbe README. Einrichtungs-/Reauth-/Reconfigure-Übersetzungen in DE/EN bereits vorhanden.
+- [ ] Erweiterte Frontendtests, Backend-/HA-Frameworktests und HACS-Validierung abschließen.
+- [ ] 1.1.0 über HACS auf ha-test aktualisieren und DE/EN in tatsächlicher HA-Oberfläche samt Editor sowie englischer HACS-README prüfen.
+
+## Vorheriger Entwicklungsstand – HACS und Icon 1.0.1 / 1.0.2
 
 - [x] Freigegebenes eigenes Icon als lokale HA-Marke in 256 und 512 Pixeln eingebunden.
 - [x] `hacs.json` ergänzt; Manifest auf 1.0.1 angehoben und Changelog angelegt. Bestehendes Release V1.0 bleibt unverändert.

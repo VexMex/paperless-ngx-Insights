@@ -86,6 +86,6 @@ jobs:
             await github.rest.repos.createRelease({
               owner, repo, tag_name: tag, target_commitish: context.sha,
               name: `Paperless-ngx Insights ${version}`,
-              body: 'Installation über HACS als benutzerdefiniertes Repository vom Typ Integration. Beide Dashboard-Karten und das eigene Icon sind enthalten. Einrichtung und Updates siehe README; Änderungen siehe CHANGELOG.md.',
+              body: 'Install through HACS as a custom repository of type Integration. Both dashboard cards and the integration icon are included. Cards and the visual editor follow the Home Assistant interface language (English or German, with English fallback). See README for setup and updates, and CHANGELOG.md for changes.',
               draft: false, prerelease: false, make_latest: 'true'
             });

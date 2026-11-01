@@ -7,6 +7,7 @@ const settle = () => new Promise(resolve => setImmediate(resolve));
 async function setup(callWS, config = {}) {
   const { Window } = await import("happy-dom");
   const window = new Window({ url: "http://ha-test.local/" });
+  window.document.documentElement.lang = "de";
   window.eval(source);
   const card = window.document.createElement("paperless-ngx-insights-search");
   card.setConfig({ entry_id: "entry-1", ...config });

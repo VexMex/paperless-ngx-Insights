@@ -1,64 +1,66 @@
 # Paperless-ngx Insights
 
-<img src="https://raw.githubusercontent.com/VexMex/paperless-ngx-Insights/main/custom_components/paperless_ngx_insights/brand/icon.png" width="96" alt="Paperless-ngx Insights Icon">
+<img src="https://raw.githubusercontent.com/VexMex/paperless-ngx-Insights/main/custom_components/paperless_ngx_insights/brand/icon.png" width="96" alt="Paperless-ngx Insights icon">
 
-Mit Paperless-ngx Insights kannst du dein Dokumentenarchiv direkt in Home Assistant durchsuchen und Dokumente ansehen. So findest du zum Beispiel Rechnungen oder Briefe, ohne zuerst die Paperless-Oberfläche öffnen zu müssen.
+Search your Paperless-ngx document archive and view documents directly in Home Assistant. Find invoices, letters and other documents without opening the Paperless interface first.
 
-## Funktionen
+## Features
 
-- **Dokumentensuche:** Suche im Titel oder in Titel und Inhalt. Mehrere Suchwörter werden gemeinsam berücksichtigt.
-- **Kompakte Suchkarte:** Eine einfache Trefferliste mit fünf Dokumenten pro Seite und Pfeilen zum Blättern.
-- **Große Dokumentübersicht:** Treffer mit Vorschaubildern und Datum sowie eine Dokumentansicht für einen ganzen Dashboard-Tab.
-- **Vorschau und Downloads:** PDFs in Home Assistant ansehen, PDF oder Originaldatei herunterladen oder das Dokument in Paperless öffnen.
-- **Visueller Editor:** Beide Karten lassen sich über die Oberfläche einstellen.
+- **Document search:** Search titles, or titles and content. Multiple search terms are matched together.
+- **Compact search card:** A simple list with five results per page and arrows for browsing.
+- **Document overview card:** Thumbnails, document dates and an integrated preview, suitable for a dedicated dashboard tab.
+- **Previews and downloads:** View PDFs in Home Assistant, download the PDF or original file, or open the document in Paperless.
+- **Visual card editor:** Configure both cards through the interface.
+- **English and German:** Cards and their editor follow your Home Assistant interface language automatically. Other languages use English. Setup dialogs are also available in English and German. Custom headings and document titles keep their original text.
 
-Die Integration liest Dokumente aus Paperless. Sie verändert oder löscht keine Dokumente.
+The integration reads documents from Paperless. It does not modify or delete them.
 
 ## Installation
 
-Du benötigst Home Assistant ab **2026.10.4**, HACS ab **2.0.5**, eine erreichbare Paperless-ngx-Instanz und einen Paperless-API-Schlüssel mit Leserechten für die gewünschten Dokumente.
+You need **Home Assistant 2026.10.4 or newer**, **HACS 2.0.5 or newer**, a reachable Paperless-ngx server and a Paperless API token with permission to read the documents you want to access.
 
-### Über HACS
+### Using HACS
 
-1. In Home Assistant **HACS** öffnen und im Menü **Benutzerdefinierte Repositories** auswählen.
-2. Diesen Repository-Link eintragen und als Typ **Integration** auswählen:
+1. Open **HACS** in Home Assistant, then select **Custom repositories** from the menu.
+2. Enter this repository URL and select **Integration** as the type:
 
    ```text
    https://github.com/VexMex/paperless-ngx-Insights
    ```
 
-3. Das Repository hinzufügen, **Paperless-ngx Insights** öffnen und **Herunterladen** auswählen.
-4. Home Assistant neu starten.
-5. Unter **Einstellungen → Geräte & Dienste → Integration hinzufügen** nach **Paperless-ngx Insights** suchen.
-6. Deine Paperless-Adresse und den API-Schlüssel eintragen. Die optionale **Browser-Adresse** benötigst du nur, wenn du Paperless im Browser über eine andere Adresse öffnest.
+3. Add the repository, open **Paperless-ngx Insights** and select **Download**.
+4. Restart Home Assistant.
+5. Go to **Settings → Devices & services → Add integration** and search for **Paperless-ngx Insights**.
+6. Enter your Paperless server address and API token. The optional **Browser address** is only needed if your browser uses a different address to open Paperless.
 
-Beide Dashboard-Karten und das Icon werden mit der Integration installiert. Ein separates Karten-Repository ist nicht nötig.
+Both dashboard cards and the icon are included. You do not need a separate card repository.
 
-### Alternativ manuell
+### Manual installation
 
-[Repository als ZIP herunterladen](https://github.com/VexMex/paperless-ngx-Insights/archive/refs/heads/main.zip), entpacken und den enthaltenen Ordner `custom_components/paperless_ngx_insights` nach `/config/custom_components/paperless_ngx_insights/` kopieren. Anschließend Home Assistant neu starten und die Integration wie oben beschrieben hinzufügen.
+[Download the repository ZIP](https://github.com/VexMex/paperless-ngx-Insights/archive/refs/heads/main.zip), extract it and copy `custom_components/paperless_ngx_insights` to `/config/custom_components/paperless_ngx_insights/`. Restart Home Assistant, then add the integration as described above.
 
-## Karten zum Dashboard hinzufügen
+## Adding cards to your dashboard
 
-Nach der Einrichtung das Dashboard neu laden und über **Dashboard bearbeiten → Karte hinzufügen** eine der beiden Karten auswählen:
+After setup, reload your dashboard and select **Edit dashboard → Add card**. Choose:
 
-- **Paperless-ngx Insights · Suche** für die kompakte Trefferliste.
-- **Paperless-ngx Insights · Dokumentübersicht** für die große Ansicht mit Vorschaubildern.
+- **Paperless-ngx Insights · Search** for the compact results list.
+- **Paperless-ngx Insights · Document overview** for the larger view with thumbnails.
 
-Für einen ganzen Tab eine Ansicht vom Typ **Panel** mit der Dokumentübersicht als einziger Karte verwenden. In den Karteneinstellungen kannst du unter anderem Überschrift, Suchbereich und Trefferzahl anpassen. Die Karten-Ressource wird bei über die Oberfläche verwalteten Dashboards automatisch eingerichtet.
+For a dedicated dashboard tab, use a **Panel** view with the document overview as its only card. The visual editor lets you adjust the heading, search scope, results per page and other options. The card resource is registered automatically for dashboards managed through the Home Assistant interface.
 
-## Hinweise
+## Notes
 
-- Aktuell können nur **Home-Assistant-Administratoren** auf die Dokumente zugreifen.
-- Die PDF-Vorschau ist auf **20 MiB** begrenzt. Größere PDFs können heruntergeladen werden.
-- Falls dein Browser PDFs nicht direkt anzeigt, steht eine Bildvorschau der ersten Seite zur Verfügung.
-- Der API-Schlüssel bleibt in der Integration und gehört nicht in die Kartenkonfiguration.
+- Currently, only **Home Assistant administrators** can access documents.
+- PDF previews are limited to **20 MiB**. Larger PDFs can be downloaded.
+- If your browser cannot display a PDF directly, you can show the first page as an image.
+- The API token stays in the integration configuration. Do not put it in the card configuration.
+- Change the interface language in your **Home Assistant profile**. No language setting is needed in the cards.
 
 ## Updates
 
-Updates über HACS herunterladen, Home Assistant neu starten und das Dashboard neu laden. Bei manueller Installation den Integrationsordner durch die neue Version ersetzen.
+Download updates through HACS, restart Home Assistant and reload your dashboard. For manual installations, replace the integration folder with the new version.
 
-## Lizenz
+## License
 
 [GNU General Public License v3](LICENSE).
 

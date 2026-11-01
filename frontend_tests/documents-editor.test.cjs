@@ -9,6 +9,7 @@ async function setup(config = {}, api = {}) {
   const window = new Window({ url: "http://ha-test.local" });
   // Drive lazy visibility deterministically in these DOM tests.
   window.IntersectionObserver = undefined;
+  window.document.documentElement.lang = "de";
   window.eval(source);
   let nextUrl = 0;
   const revoked = [];

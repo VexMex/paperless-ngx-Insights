@@ -1,11 +1,191 @@
-/* Paperless-ngx Insights: compact search card. No credentials in the browser. */
+/* Paperless-ngx Insights. Translations are bundled; no external requests. */
+const PAPERLESS_TEXT = {
+  "de": {
+    "invalid_open_mode": "open_mode muss preview oder paperless sein.",
+    "invalid_page_size": "Treffer pro Seite müssen zwischen 1 und 50 liegen.",
+    "invalid_search_mode": "Suchmodus muss title oder text sein.",
+    "invalid_height": "Höhe muss zwischen 400 und 1400 Pixel liegen.",
+    "invalid_thumbnails": "show_thumbnails muss true oder false sein.",
+    "search_label": "Dokument suchen",
+    "search_placeholder": "Suchbegriff …",
+    "search": "Suchen",
+    "scope": "Suchbereich",
+    "title_only": "Nur Titel",
+    "title_content": "Titel und Inhalt",
+    "search_hint": "Mehrere Wörter: alle Begriffe, beliebige Reihenfolge. Mit \"Anführungszeichen\" eine Wortfolge suchen.",
+    "found_documents": "Gefundene Dokumente",
+    "result_pages": "Ergebnisseiten",
+    "previous": "Vorherige Seite",
+    "next": "Nächste Seite",
+    "close_preview": "Dokumentvorschau schließen",
+    "close": "Schließen",
+    "open_paperless": "In Paperless öffnen ↗",
+    "download_pdf": "PDF herunterladen",
+    "download_original": "Original herunterladen",
+    "show_first_page": "Erste Seite als Bild anzeigen",
+    "first_page_alt": "Vorschaubild der ersten Dokumentseite",
+    "pdf_preview": "PDF-Dokumentvorschau",
+    "default_search_title": "Paperless · Dokumente",
+    "default_documents_title": "Paperless · Dokumentübersicht",
+    "search_prompt": "Suchbegriff eingeben und Suchen drücken.",
+    "select_entry": "Bitte entry_id in der Karte festlegen.",
+    "not_configured": "Paperless-Integration ist nicht eingerichtet.",
+    "admin_required": "Kein Zugriff. Bitte als HA-Administrator anmelden.",
+    "searching": "Dokumente werden gesucht …",
+    "untitled": "Dokument ohne Titel",
+    "document": "Dokument",
+    "tap_preview": "Dokument antippen, um die Vorschau zu öffnen.",
+    "tap_paperless": "Dokument antippen, um es in Paperless zu öffnen.",
+    "no_results": "Keine Dokumente gefunden.",
+    "renew_token": "Paperless-Schlüssel bitte in der Integration erneuern.",
+    "invalid_search": "Anführungszeichen bitte schließen und höchstens 32 Suchbegriffe verwenden.",
+    "search_failed": "Suche fehlgeschlagen. Verbindung und Berechtigung prüfen.",
+    "loading_preview": "PDF-Vorschau wird geladen …",
+    "pdf_hint": "Falls die PDF-Anzeige hier leer bleibt: PDF herunterladen oder in Paperless öffnen.",
+    "pdf_too_large": "Diese PDF ist größer als 20 MiB und wird zum Schutz von Home Assistant nicht angezeigt. Bitte PDF herunterladen.",
+    "unsupported_preview": "Für dieses Format ist keine PDF-Vorschau verfügbar. Bitte das Original herunterladen oder die erste Seite als Bild anzeigen.",
+    "preview_forbidden": "Keine Berechtigung für diese Dokumentvorschau.",
+    "preview_failed": "Vorschau konnte nicht geladen werden. Verbindung und Anmeldung prüfen oder in Paperless öffnen.",
+    "first_page_hint": "Vorschaubild der ersten Seite. Die vollständige PDF kann heruntergeladen oder in Paperless geöffnet werden.",
+    "thumbnail_failed": "Seitenvorschau nicht verfügbar. Bitte PDF herunterladen oder in Paperless öffnen.",
+    "download_started": "Download an den Browser übergeben. Die Datei wird direkt übertragen und nicht als Vorschau geladen.",
+    "download_failed": "Download konnte nicht gestartet werden. Anmeldung und Verbindung prüfen.",
+    "results_region": "Dokumentensuche und Treffer",
+    "selected_document": "Ausgewähltes Dokument",
+    "select_document": "Dokument aus der Trefferliste auswählen, um die Vorschau zu öffnen.",
+    "back_results": "← Zur Trefferliste",
+    "back_results_aria": "Zur Trefferliste zurückkehren",
+    "heading": "Überschrift",
+    "connection": "Paperless-Verbindung",
+    "page_size": "Treffer pro Seite",
+    "open_document": "Dokument öffnen",
+    "new_tab": "Paperless im neuen Tab",
+    "ha_preview": "Vorschau in Home Assistant",
+    "height": "Höhe des Dokumentbereichs (Pixel)",
+    "thumbnails": "Vorschaubilder in der Trefferliste",
+    "editor_hint": "Der API-Schlüssel wird ausschließlich in der Integration verwaltet. PDF-Vorschauen bis 20 MiB; Anzeige abhängig vom Browser.",
+    "automatic": "Automatisch (bei genau einer Verbindung)",
+    "no_entries": "Keine geladene Paperless-Verbindung gefunden. Bitte zuerst die Integration einrichten.",
+    "entries_failed": "Verbindungen konnten nicht geladen werden. HA-Administratorrechte und Integration prüfen.",
+    "range": "{start}–{end} von {count}",
+    "open_external_aria": "{title} in Paperless öffnen (neuer Tab)",
+    "open_preview_aria": "{title} als Vorschau öffnen",
+    "number_validation": "Bitte eine ganze Zahl zwischen {min} und {max} eingeben.",
+    "entry_unloaded": "{id} (derzeit nicht geladen)",
+    "picker_search": "Suche",
+    "picker_documents": "Dokumentübersicht",
+    "picker_search_description": "Dokumente suchen, seitenweise anzeigen und in Paperless öffnen.",
+    "picker_documents_description": "Dokumente mit Vorschaubildern suchen und direkt im Dashboard ansehen."
+  },
+  "en": {
+    "invalid_open_mode": "open_mode must be preview or paperless.",
+    "invalid_page_size": "Results per page must be between 1 and 50.",
+    "invalid_search_mode": "search_mode must be title or text.",
+    "invalid_height": "Height must be between 400 and 1400 pixels.",
+    "invalid_thumbnails": "show_thumbnails must be true or false.",
+    "search_label": "Search documents",
+    "search_placeholder": "Search term …",
+    "search": "Search",
+    "scope": "Search scope",
+    "title_only": "Title only",
+    "title_content": "Title and content",
+    "search_hint": "Multiple words: all terms, in any order. Use \"quotation marks\" to search for a phrase.",
+    "found_documents": "Matching documents",
+    "result_pages": "Result pages",
+    "previous": "Previous page",
+    "next": "Next page",
+    "close_preview": "Close document preview",
+    "close": "Close",
+    "open_paperless": "Open in Paperless ↗",
+    "download_pdf": "Download PDF",
+    "download_original": "Download original",
+    "show_first_page": "Show first page as an image",
+    "first_page_alt": "Preview of the first document page",
+    "pdf_preview": "PDF document preview",
+    "default_search_title": "Paperless · Documents",
+    "default_documents_title": "Paperless · Document overview",
+    "search_prompt": "Enter a search term and press Search.",
+    "select_entry": "Please select a Paperless connection in the card settings.",
+    "not_configured": "The Paperless integration is not configured.",
+    "admin_required": "Access denied. Please sign in as a Home Assistant administrator.",
+    "searching": "Searching documents …",
+    "untitled": "Untitled document",
+    "document": "Document",
+    "tap_preview": "Select a document to open its preview.",
+    "tap_paperless": "Select a document to open it in Paperless.",
+    "no_results": "No documents found.",
+    "renew_token": "Please renew the Paperless API token in the integration settings.",
+    "invalid_search": "Please close quotation marks and use no more than 32 search terms.",
+    "search_failed": "Search failed. Check the connection and your permissions.",
+    "loading_preview": "Loading PDF preview …",
+    "pdf_hint": "If the PDF viewer stays blank, download the PDF or open it in Paperless.",
+    "pdf_too_large": "This PDF exceeds 20 MiB and cannot be previewed to protect Home Assistant resources. Please download the PDF.",
+    "unsupported_preview": "No PDF preview is available for this format. Download the original or show the first page as an image.",
+    "preview_forbidden": "You do not have permission to preview this document.",
+    "preview_failed": "Could not load the preview. Check the connection and your sign-in, or open it in Paperless.",
+    "first_page_hint": "First-page preview. Download the complete PDF or open it in Paperless.",
+    "thumbnail_failed": "Page preview unavailable. Download the PDF or open it in Paperless.",
+    "download_started": "Download handed to your browser. The file is streamed directly without loading a preview.",
+    "download_failed": "Could not start the download. Check your sign-in and connection.",
+    "results_region": "Document search and results",
+    "selected_document": "Selected document",
+    "select_document": "Select a document from the results to open its preview.",
+    "back_results": "← Back to results",
+    "back_results_aria": "Return to the results",
+    "heading": "Heading",
+    "connection": "Paperless connection",
+    "page_size": "Results per page",
+    "open_document": "Open document",
+    "new_tab": "Paperless in a new tab",
+    "ha_preview": "Preview in Home Assistant",
+    "height": "Document area height (pixels)",
+    "thumbnails": "Thumbnails in the results",
+    "editor_hint": "The API token is managed only in the integration. PDF previews up to 20 MiB; display depends on your browser.",
+    "automatic": "Automatic (when exactly one connection is available)",
+    "no_entries": "No loaded Paperless connection found. Please set up the integration first.",
+    "entries_failed": "Could not load connections. Check your Home Assistant administrator permissions and the integration.",
+    "range": "{start}–{end} of {count}",
+    "open_external_aria": "Open {title} in Paperless (new tab)",
+    "open_preview_aria": "Open preview of {title}",
+    "number_validation": "Enter a whole number between {min} and {max}.",
+    "entry_unloaded": "{id} (not currently loaded)",
+    "picker_search": "Search",
+    "picker_documents": "Document overview",
+    "picker_search_description": "Search documents, browse results and open them in Paperless.",
+    "picker_documents_description": "Search documents with thumbnails and view them directly in your dashboard."
+  }
+};
+
+function paperlessLanguage(hass) {
+  const language = hass?.language || hass?.locale?.language || hass?.config?.language
+    || document.documentElement.lang || navigator.language || "en";
+  return String(language).toLowerCase().split(/[-_]/)[0] === "de" ? "de" : "en";
+}
+
+function paperlessText(hass, key, values = {}) {
+  const text = PAPERLESS_TEXT[paperlessLanguage(hass)][key] || PAPERLESS_TEXT.en[key] || key;
+  return text.replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? `{${name}}`));
+}
+
+function paperlessLocalize(root, hass) {
+  root.host.setAttribute("lang", paperlessLanguage(hass));
+  for (const attribute of ["text", "aria-label", "placeholder", "alt", "title"]) {
+    const data = attribute === "text" ? "data-i18n" : `data-i18n-${attribute}`;
+    for (const node of root.querySelectorAll(`[${data}]`)) {
+      const value = paperlessText(hass, node.getAttribute(data));
+      if (attribute === "text") node.textContent = value;
+      else node.setAttribute(attribute, value);
+    }
+  }
+}
+
 class PaperlessInsightsSearchCard extends HTMLElement {
   static getConfigElement() {
     return document.createElement("paperless-ngx-insights-editor");
   }
 
   static getStubConfig() {
-    return { title: "Dokumente suchen", page_size: 5, search_mode: "title", open_mode: "preview" };
+    return { page_size: 5, search_mode: "title", open_mode: "preview" };
   }
   constructor() {
     super();
@@ -20,15 +200,15 @@ class PaperlessInsightsSearchCard extends HTMLElement {
 
   setConfig(config) {
     if (config.open_mode && !["preview", "paperless"].includes(config.open_mode)) {
-      throw new Error("open_mode muss preview oder paperless sein.");
+      throw new Error(this._t("invalid_open_mode"));
     }
     this._closePreview(false);
     const size = config.page_size ?? 5;
     if (!Number.isInteger(size) || size < 1 || size > 50) {
-      throw new Error("Treffer pro Seite müssen zwischen 1 und 50 liegen.");
+      throw new Error(this._t("invalid_page_size"));
     }
     if (config.search_mode && !["title", "text"].includes(config.search_mode)) {
-      throw new Error("Suchmodus muss title oder text sein.");
+      throw new Error(this._t("invalid_search_mode"));
     }
     this._config = { ...config, page_size: size };
     this._sequence++;
@@ -43,9 +223,43 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     this._connect();
   }
 
+  _t(key, values) { return paperlessText(this._hass, key, values); }
+
   set hass(value) {
     this._hass = value;
+    const language = paperlessLanguage(value);
+    if (language !== this._language) {
+      this._language = language;
+      if (this._config) this._localize();
+    }
     this._connect();
+  }
+
+  _localize() {
+    const root = this.shadowRoot;
+    paperlessLocalize(root, this._hass);
+    const heading = root.querySelector("h2");
+    if (heading) heading.textContent = this._config.title || this._t(this instanceof PaperlessInsightsDocumentsCard ? "default_documents_title" : "default_search_title");
+    if (this._messageKey) this._message(this._messageKey, this._messageError);
+    if (this._previewStatusKey) this._setPreviewStatus(this._previewStatusKey);
+    for (const link of root.querySelectorAll("li a")) this._localizeResult(link);
+    for (const time of root.querySelectorAll("time")) time.textContent = new Date(time.dateTime).toLocaleDateString(this._language || paperlessLanguage(this._hass));
+    const title = this._dialog?.querySelector(".preview-title");
+    if (title && this._previewDocument) title.textContent = this._previewTitle || this._t("document");
+    this._controls();
+  }
+
+  _localizeResult(link) {
+    const title = link.dataset.documentTitle || this._t("document");
+    link.setAttribute("aria-label", this._t(this._config.open_mode === "preview" ? "open_preview_aria" : "open_external_aria", { title }));
+    const name = link.querySelector(".document-name");
+    if (name) name.textContent = link.dataset.documentTitle || this._t("untitled");
+  }
+
+  _setPreviewStatus(key) {
+    this._previewStatusKey = key;
+    const status = this._dialog?.querySelector(".preview-status");
+    if (status) status.textContent = this._t(key);
   }
 
   connectedCallback() {
@@ -122,30 +336,30 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       <ha-card><div class="body">
         <h2></h2>
         <form>
-          <label>Dokument suchen<input type="search" maxlength="500" placeholder="Suchbegriff …" autocomplete="off"></label>
-          <button type="submit">Suchen</button>
+          <label><span data-i18n="search_label"></span><input type="search" maxlength="500" data-i18n-placeholder="search_placeholder" autocomplete="off"></label>
+          <button type="submit"><span data-i18n="search"></span></button>
         </form>
-        <select aria-label="Suchbereich"><option value="title">Nur Titel</option><option value="text">Titel und Inhalt</option></select>
-        <p class="hint">Mehrere Wörter: alle Begriffe, beliebige Reihenfolge. Mit "Anführungszeichen" eine Wortfolge suchen.</p>
+        <select data-i18n-aria-label="scope"><option value="title" data-i18n="title_only"></option><option value="text" data-i18n="title_content"></option></select>
+        <p class="hint"><span data-i18n="search_hint"></span></p>
         <p class="status" role="status" aria-live="polite"></p>
-        <ul aria-label="Gefundene Dokumente"></ul>
-        <nav aria-label="Ergebnisseiten" hidden>
-          <button class="previous" aria-label="Vorherige Seite">‹</button>
+        <ul data-i18n-aria-label="found_documents"></ul>
+        <nav data-i18n-aria-label="result_pages" hidden>
+          <button class="previous" data-i18n-aria-label="previous">‹</button>
           <span class="range"></span>
-          <button class="next" aria-label="Nächste Seite">›</button>
+          <button class="next" data-i18n-aria-label="next">›</button>
         </nav>
       </div></ha-card>`;
     this.shadowRoot.innerHTML += `
       <dialog aria-labelledby="preview-title"><div class="preview-layout">
         <div class="preview-header"><h3 id="preview-title" class="preview-title"></h3>
-          <button class="preview-close" aria-label="Dokumentvorschau schließen">Schließen</button></div>
+          <button class="preview-close" data-i18n-aria-label="close_preview"><span data-i18n="close"></span></button></div>
         <p class="preview-status" role="status" aria-live="polite"></p>
-        <div class="preview-actions"><a class="paperless-link" target="_blank" rel="noopener noreferrer">In Paperless öffnen ↗</a>
-          <button class="preview-download" hidden>PDF herunterladen</button>
-          <button class="original-download" hidden>Original herunterladen</button></div>
-        <button class="show-thumbnail">Erste Seite als Bild anzeigen</button>
-        <div class="thumbnail-wrap" hidden><img alt="Vorschaubild der ersten Dokumentseite"></div>
-        <iframe title="PDF-Dokumentvorschau" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="preview-actions"><a class="paperless-link" target="_blank" rel="noopener noreferrer"><span data-i18n="open_paperless"></span></a>
+          <button class="preview-download" hidden><span data-i18n="download_pdf"></span></button>
+          <button class="original-download" hidden><span data-i18n="download_original"></span></button></div>
+        <button class="show-thumbnail"><span data-i18n="show_first_page"></span></button>
+        <div class="thumbnail-wrap" hidden><img data-i18n-alt="first_page_alt"></div>
+        <iframe data-i18n-title="pdf_preview" referrerpolicy="no-referrer" hidden></iframe>
       </div></dialog>`;
     const root = this.shadowRoot;
     this._dialog = root.querySelector("dialog");
@@ -154,7 +368,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     root.querySelector(".original-download").addEventListener("click", () => this._download("original"));
     root.querySelector(".show-thumbnail").addEventListener("click", () => this._showThumbnail());
     this._dialog.addEventListener("cancel", event => { event.preventDefault(); this._closePreview(); });
-    root.querySelector("h2").textContent = this._config.title || "Paperless · Dokumente";
+    
     this._input = root.querySelector("input");
     this._mode = root.querySelector("select");
     this._mode.value = this._config.search_mode || "title";
@@ -173,8 +387,8 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     });
     this._previous.addEventListener("click", () => this._search(this._page - 1));
     this._next.addEventListener("click", () => this._search(this._page + 1));
-    this._message("Suchbegriff eingeben und Suchen drücken.");
-    this._controls();
+    this._message("search_prompt");
+    this._localize();
   }
 
   async _connect() {
@@ -186,12 +400,12 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       if (sequence !== this._sequence) return;
       if (entries.length === 1) {
         this._entry = entries[0].entry_id;
-        this._message("Suchbegriff eingeben und Suchen drücken.");
+        this._message("search_prompt");
       } else {
-        this._message(entries.length ? "Bitte entry_id in der Karte festlegen." : "Paperless-Integration ist nicht eingerichtet.", true);
+        this._message(entries.length ? "select_entry" : "not_configured", true);
       }
     } catch (_) {
-      if (sequence === this._sequence) this._message("Kein Zugriff. Bitte als HA-Administrator anmelden.", true);
+      if (sequence === this._sequence) this._message("admin_required", true);
     } finally {
       if (sequence === this._sequence) {
         this._connecting = false;
@@ -207,7 +421,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     if (fresh) this._query = this._input.value.trim();
     const sequence = ++this._sequence;
     this._loading = true;
-    this._message("Dokumente werden gesucht …");
+    this._message("searching");
     this._controls();
     try {
       const result = await this._hass.callWS({
@@ -236,15 +450,19 @@ class PaperlessInsightsSearchCard extends HTMLElement {
         icon.setAttribute("aria-hidden", "true");
         const title = window.document.createElement("span");
         title.className = "title";
-        title.textContent = document.title || "Dokument ohne Titel";
+        const name = window.document.createElement("span");
+        name.className = "document-name";
+        name.textContent = document.title || this._t("untitled");
+        title.append(name);
+        link.dataset.documentTitle = document.title || "";
         const arrow = window.document.createElement("span");
         arrow.className = "external";
         arrow.textContent = "↗";
         arrow.setAttribute("aria-hidden", "true");
-        link.setAttribute("aria-label", `${document.title || "Dokument"} in Paperless öffnen (neuer Tab)`);
+        this._localizeResult(link);
         if (this._config.open_mode === "preview") {
           arrow.textContent = "▣";
-          link.setAttribute("aria-label", `${document.title || "Dokument"} als Vorschau öffnen`);
+          this._localizeResult(link);
           link.addEventListener("click", event => {
             if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
             event.preventDefault();
@@ -258,18 +476,18 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       }
       this._afterResults?.();
       this._message(result.count ? (this._config.open_mode === "preview"
-        ? "Dokument antippen, um die Vorschau zu öffnen."
-        : "Dokument antippen, um es in Paperless zu öffnen.") : "Keine Dokumente gefunden.");
+        ? "tap_preview"
+        : "tap_paperless") : "no_results");
     } catch (error) {
       if (sequence !== this._sequence) return;
       this._documents = [];
       this._count = 0;
       this._list.replaceChildren();
       const message = error.code === "invalid_auth"
-        ? "Paperless-Schlüssel bitte in der Integration erneuern."
+        ? "renew_token"
         : error.code === "invalid_search"
-          ? "Anführungszeichen bitte schließen und höchstens 32 Suchbegriffe verwenden."
-          : "Suche fehlgeschlagen. Verbindung und Berechtigung prüfen.";
+          ? "invalid_search"
+          : "search_failed";
       this._message(message, true);
     } finally {
       if (sequence === this._sequence) {
@@ -279,9 +497,11 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     }
   }
 
-  _message(text, error = false) {
+  _message(key, error = false) {
+    this._messageKey = key;
+    this._messageError = error;
     if (!this._status) return;
-    this._status.textContent = text;
+    this._status.textContent = this._t(key);
     this._status.classList.toggle("error", error);
   }
 
@@ -314,10 +534,10 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     const sequence = this._previewSequence;
     this._previewDocument = document.id;
     const root = this._dialog;
-    root.querySelector(".preview-title").textContent = document.title || "Dokument";
+    this._previewTitle = document.title;
+    root.querySelector(".preview-title").textContent = document.title || this._t("document");
     root.querySelector(".paperless-link").href = opener.href;
-    const status = root.querySelector(".preview-status");
-    status.textContent = "PDF-Vorschau wird geladen …";
+    this._setPreviewStatus("loading_preview");
     root.querySelector(".preview-download").hidden = false;
     root.querySelector(".original-download").hidden = false;
     root.querySelectorAll(".preview-download,.original-download").forEach(button => { button.disabled = false; });
@@ -340,15 +560,15 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       frame.hidden = false;
       const download = root.querySelector(".preview-download");
       download.hidden = false;
-      status.textContent = "Falls die PDF-Anzeige hier leer bleibt: PDF herunterladen oder in Paperless öffnen.";
+      this._setPreviewStatus("pdf_hint");
       if (navigator.pdfViewerEnabled === false) await this._showThumbnail();
     } catch (error) {
       if (sequence !== this._previewSequence) return;
       if (error.status === 415) root.querySelector(".preview-download").hidden = true;
-      status.textContent = error.status === 413 ? "Diese PDF ist größer als 20 MiB und wird zum Schutz von Home Assistant nicht angezeigt. Bitte PDF herunterladen."
-        : error.status === 415 ? "Für dieses Format ist keine PDF-Vorschau verfügbar. Bitte das Original herunterladen oder die erste Seite als Bild anzeigen."
-          : error.status === 403 ? "Keine Berechtigung für diese Dokumentvorschau."
-            : "Vorschau konnte nicht geladen werden. Verbindung und Anmeldung prüfen oder in Paperless öffnen.";
+      this._setPreviewStatus(error.status === 413 ? "pdf_too_large"
+        : error.status === 415 ? "unsupported_preview"
+          : error.status === 403 ? "preview_forbidden"
+            : "preview_failed");
     } finally {
       if (sequence === this._previewSequence) {
         clearTimeout(this._previewTimeout);
@@ -366,7 +586,6 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     const controller = new AbortController();
     this._thumbnailAbort = controller;
     const timeout = setTimeout(() => controller.abort(), 30000);
-    const status = root.querySelector(".preview-status");
     try {
       if (!this._thumbnailUrl) {
         const response = await this._hass.callApiRaw("GET",
@@ -382,9 +601,9 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       const image = root.querySelector("img");
       image.src = this._thumbnailUrl;
       image.parentElement.hidden = false;
-      status.textContent = "Vorschaubild der ersten Seite. Die vollständige PDF kann heruntergeladen oder in Paperless geöffnet werden.";
+      this._setPreviewStatus("first_page_hint");
     } catch (_) {
-      if (sequence === this._previewSequence) status.textContent = "Seitenvorschau nicht verfügbar. Bitte PDF herunterladen oder in Paperless öffnen.";
+      if (sequence === this._previewSequence) this._setPreviewStatus("thumbnail_failed");
     } finally {
       clearTimeout(timeout);
       if (this._thumbnailAbort === controller) this._thumbnailAbort = null;
@@ -416,9 +635,9 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       root.append(anchor);
       anchor.click();
       anchor.remove();
-      root.querySelector(".preview-status").textContent = "Download an den Browser übergeben. Die Datei wird direkt übertragen und nicht als Vorschau geladen.";
+      this._setPreviewStatus("download_started");
     } catch (_) {
-      if (sequence === this._previewSequence) root.querySelector(".preview-status").textContent = "Download konnte nicht gestartet werden. Anmeldung und Verbindung prüfen.";
+      if (sequence === this._previewSequence) this._setPreviewStatus("download_failed");
     } finally {
       if (sequence === this._previewSequence) button.disabled = false;
     }
@@ -432,20 +651,20 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     this._nav.hidden = !this._searched || !this._count;
     const start = this._count ? (this._page - 1) * this._config.page_size + 1 : 0;
     const end = Math.min(this._page * this._config.page_size, this._count);
-    this.shadowRoot.querySelector(".range").textContent = `${start}–${end} von ${this._count}`;
+    this.shadowRoot.querySelector(".range").textContent = this._t("range", { start, end, count: this._count });
     this._list.setAttribute("aria-busy", String(this._loading));
   }
 }
 
 class PaperlessInsightsDocumentsCard extends PaperlessInsightsSearchCard {
   static getStubConfig() {
-    return { title: "Paperless · Dokumentübersicht", page_size: 10, search_mode: "text", height: 800, show_thumbnails: true };
+    return { page_size: 10, search_mode: "text", height: 800, show_thumbnails: true };
   }
 
   setConfig(config) {
     const height = config.height ?? 800;
-    if (!Number.isInteger(height) || height < 400 || height > 1400) throw new Error("Höhe muss zwischen 400 und 1400 Pixel liegen.");
-    if (config.show_thumbnails !== undefined && typeof config.show_thumbnails !== "boolean") throw new Error("show_thumbnails muss true oder false sein.");
+    if (!Number.isInteger(height) || height < 400 || height > 1400) throw new Error(this._t("invalid_height"));
+    if (config.show_thumbnails !== undefined && typeof config.show_thumbnails !== "boolean") throw new Error(this._t("invalid_thumbnails"));
     this._releaseThumbnails();
     super.setConfig({ ...config, height, page_size: config.page_size ?? 10, search_mode: config.search_mode ?? "text", open_mode: "preview" });
   }
@@ -463,14 +682,14 @@ class PaperlessInsightsDocumentsCard extends PaperlessInsightsSearchCard {
     workspace.className = "workspace";
     const results = document.createElement("section");
     results.className = "results";
-    results.setAttribute("aria-label", "Dokumentensuche und Treffer");
+    results.setAttribute("data-i18n-aria-label", "results_region");
     for (const node of [...body.children].filter(node => node.tagName !== "H2")) results.append(node);
     const pane = document.createElement("section");
     pane.className = "document-pane";
-    pane.setAttribute("aria-label", "Ausgewähltes Dokument");
+    pane.setAttribute("data-i18n-aria-label", "selected_document");
     const empty = document.createElement("p");
     empty.className = "preview-empty";
-    empty.textContent = "Dokument aus der Trefferliste auswählen, um die Vorschau zu öffnen.";
+    empty.setAttribute("data-i18n", "select_document");
     const oldDialog = this._dialog;
     const inline = document.createElement("div");
     inline.className = "inline-preview";
@@ -480,8 +699,8 @@ class PaperlessInsightsDocumentsCard extends PaperlessInsightsSearchCard {
     this._dialog = inline;
     this._emptyPreview = empty;
     const close = inline.querySelector(".preview-close");
-    close.textContent = "← Zur Trefferliste";
-    close.setAttribute("aria-label", "Zur Trefferliste zurückkehren");
+    close.setAttribute("data-i18n", "back_results");
+    close.setAttribute("data-i18n-aria-label", "back_results_aria");
     pane.append(empty, inline);
     workspace.append(results, pane);
     body.append(workspace);
@@ -512,6 +731,7 @@ class PaperlessInsightsDocumentsCard extends PaperlessInsightsSearchCard {
     `;
     root.append(style);
     this._pendingThumbs = [];
+    this._localize();
   }
 
   _presentPreview() {
@@ -546,7 +766,7 @@ class PaperlessInsightsDocumentsCard extends PaperlessInsightsSearchCard {
     if (item.created && !Number.isNaN(date.getTime())) {
       const time = document.createElement("time");
       time.dateTime = item.created;
-      time.textContent = date.toLocaleDateString(this._hass?.locale?.language || "de");
+      time.textContent = date.toLocaleDateString(this._language || paperlessLanguage(this._hass));
       link.querySelector(".title").append(time);
     }
     if (this._config.show_thumbnails === false) return;
@@ -650,7 +870,30 @@ class PaperlessInsightsEditor extends HTMLElement {
     this._loadEntries();
   }
 
-  set hass(value) { this._hass = value; this._loadEntries(); }
+  _t(key, values) { return paperlessText(this._hass, key, values); }
+  set hass(value) {
+    this._hass = value;
+    const language = paperlessLanguage(value);
+    if (language !== this._language) {
+      this._language = language;
+      if (this._config) this._localize();
+    }
+    this._loadEntries();
+  }
+
+  _localize() {
+    paperlessLocalize(this.shadowRoot, this._hass);
+    const title = this.shadowRoot.querySelector('[name="title"]');
+    if (title) title.placeholder = this._t(this._large ? "default_documents_title" : "default_search_title");
+    this._fillEntries();
+    this._showEntryStatus();
+    if (this._validationValues) this.shadowRoot.querySelector(".validation").textContent = this._t("number_validation", this._validationValues);
+  }
+
+  _showEntryStatus() {
+    const status = this.shadowRoot.querySelector(".entries-status");
+    if (status) status.textContent = this._entriesStatusKey ? this._t(this._entriesStatusKey) : "";
+  }
   connectedCallback() { this._loadEntries(); }
   disconnectedCallback() { this._entriesRequest = null; }
 
@@ -669,16 +912,16 @@ class PaperlessInsightsEditor extends HTMLElement {
         [hidden] { display:none !important; }
       </style>
       <div class="fields">
-        <label>Überschrift<input name="title" type="text" maxlength="200"></label>
-        <label>Paperless-Verbindung<select name="entry_id"></select></label>
+        <label><span data-i18n="heading"></span><input name="title" type="text" maxlength="200"></label>
+        <label><span data-i18n="connection"></span><select name="entry_id"></select></label>
         <p class="entries-status" role="status"></p>
-        <label>Suchbereich<select name="search_mode"><option value="title">Nur Titel</option><option value="text">Titel und Inhalt</option></select></label>
-        <label>Treffer pro Seite<input name="page_size" type="number" min="1" max="50" step="1"></label>
-        <label class="compact-option">Dokument öffnen<select name="open_mode"><option value="paperless">Paperless im neuen Tab</option><option value="preview">Vorschau in Home Assistant</option></select></label>
-        <label class="large-option">Höhe des Dokumentbereichs (Pixel)<input name="height" type="number" min="400" max="1400" step="1"></label>
-        <label class="large-option check"><input name="show_thumbnails" type="checkbox">Vorschaubilder in der Trefferliste</label>
+        <label><span data-i18n="scope"></span><select name="search_mode"><option value="title" data-i18n="title_only"></option><option value="text" data-i18n="title_content"></option></select></label>
+        <label><span data-i18n="page_size"></span><input name="page_size" type="number" min="1" max="50" step="1"></label>
+        <label class="compact-option"><span data-i18n="open_document"></span><select name="open_mode"><option value="paperless" data-i18n="new_tab"></option><option value="preview" data-i18n="ha_preview"></option></select></label>
+        <label class="large-option"><span data-i18n="height"></span><input name="height" type="number" min="400" max="1400" step="1"></label>
+        <label class="large-option check"><input name="show_thumbnails" type="checkbox"><span data-i18n="thumbnails"></span></label>
         <p class="validation error" role="alert"></p>
-        <p>Der API-Schlüssel wird ausschließlich in der Integration verwaltet. PDF-Vorschauen bis 20 MiB; Anzeige abhängig vom Browser.</p>
+        <p><span data-i18n="editor_hint"></span></p>
       </div>`;
     const defaults = this._large ? PaperlessInsightsDocumentsCard.getStubConfig() : PaperlessInsightsSearchCard.getStubConfig();
     for (const control of this.shadowRoot.querySelectorAll("input,select")) {
@@ -689,6 +932,7 @@ class PaperlessInsightsEditor extends HTMLElement {
     }
     this.shadowRoot.querySelectorAll(".large-option").forEach(node => { node.hidden = !this._large; });
     this.shadowRoot.querySelector(".compact-option").hidden = this._large;
+    this._localize();
   }
 
   _changed(control) {
@@ -698,10 +942,12 @@ class PaperlessInsightsEditor extends HTMLElement {
     if (control.type === "number") {
       value = Number(value);
       if (!Number.isInteger(value) || value < Number(control.min) || value > Number(control.max)) {
-        error.textContent = `Bitte eine ganze Zahl zwischen ${control.min} und ${control.max} eingeben.`;
+        this._validationValues = { min: control.min, max: control.max };
+        error.textContent = this._t("number_validation", this._validationValues);
         return;
       }
     }
+    this._validationValues = null;
     error.textContent = "";
     if (value === "") delete config[control.name];
     else config[control.name] = value;
@@ -714,9 +960,9 @@ class PaperlessInsightsEditor extends HTMLElement {
     if (!select) return;
     select.replaceChildren();
     const option = (value, title) => { const node = document.createElement("option"); node.value = value; node.textContent = title; select.append(node); };
-    option("", "Automatisch (bei genau einer Verbindung)");
+    option("", this._t("automatic"));
     for (const entry of this._entries || []) option(entry.entry_id, entry.title);
-    if (this._config.entry_id && !this._entries?.some(entry => entry.entry_id === this._config.entry_id)) option(this._config.entry_id, `${this._config.entry_id} (derzeit nicht geladen)`);
+    if (this._config.entry_id && !this._entries?.some(entry => entry.entry_id === this._config.entry_id)) option(this._config.entry_id, this._t("entry_unloaded", { id: this._config.entry_id }));
     select.value = this._config.entry_id || "";
   }
 
@@ -729,9 +975,10 @@ class PaperlessInsightsEditor extends HTMLElement {
       if (this._entriesRequest !== request) return;
       this._entries = entries;
       this._fillEntries();
-      this.shadowRoot.querySelector(".entries-status").textContent = entries.length ? "" : "Keine geladene Paperless-Verbindung gefunden. Bitte zuerst die Integration einrichten.";
+      this._entriesStatusKey = entries.length ? null : "no_entries";
+      this._showEntryStatus();
     } catch (_) {
-      if (this._entriesRequest === request) this.shadowRoot.querySelector(".entries-status").textContent = "Verbindungen konnten nicht geladen werden. HA-Administratorrechte und Integration prüfen.";
+      if (this._entriesRequest === request) { this._entriesStatusKey = "entries_failed"; this._showEntryStatus(); }
     } finally {
       if (this._entriesRequest === request) this._entriesRequest = null;
     }
@@ -746,13 +993,13 @@ if (!customElements.get("paperless-ngx-insights-search")) {
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: "paperless-ngx-insights-search",
-  name: "Paperless-ngx Insights · Suche",
-  description: "Dokumente suchen, seitenweise anzeigen und in Paperless öffnen.",
+  get name() { return `Paperless-ngx Insights · ${paperlessText(null, "picker_search")}`; },
+  get description() { return paperlessText(null, "picker_search_description"); },
   preview: false,
 });
 window.customCards.push({
   type: "paperless-ngx-insights-documents",
-  name: "Paperless-ngx Insights · Dokumentübersicht",
-  description: "Dokumente mit Vorschaubildern suchen und direkt im Dashboard ansehen.",
+  get name() { return `Paperless-ngx Insights · ${paperlessText(null, "picker_documents")}`; },
+  get description() { return paperlessText(null, "picker_documents_description"); },
   preview: false,
 });

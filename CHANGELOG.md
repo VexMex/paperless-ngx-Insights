@@ -1,5 +1,12 @@
 # Änderungen
 
+## 1.1.0
+
+- Cards and the visual editor automatically follow the Home Assistant interface language: English and German, with English fallback for other languages.
+- Search, pagination, preview/download messages, accessibility labels and default headings are translated. Custom headings and document titles are preserved.
+- Language changes update existing controls without restarting searches or discarding an open preview.
+- README and new release descriptions are now in English, including the documentation displayed in HACS.
+
 ## 1.0.2
 
 - README-Icon mit vollständiger Bildadresse verlinkt, damit es auch innerhalb von HACS angezeigt wird.
