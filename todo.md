@@ -23,8 +23,11 @@ Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Ve
 - [x] Kurzlebige HA-Downloadsignatur pro Dokument/Downloadart und aktueller Anmeldung; feste Upstream-Pfade, keine Redirects und sichere Dateinamen.
 - [x] Laufende Upstream-Antworten bei Unload schließen; Anmeldung und Rechte während Streaming prüfen.
 - [x] Lokal 103 Client-Tests und 19 Frontend-Tests bestanden, einschließlich großer synthetischer Dateien, Größenmeldung und Original-Download.
-- [ ] Abschließende HA-Framework-/CI-Prüfungen bestehen und auf ha-test installieren.
-- [ ] Einrichtung/Schlüsselwechsel/Reload zuerst live prüfen, danach Downloads und Darstellung einschließlich Sections auf ha-test.
+- [x] [CI 0.1.0-dev.7](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41289561585) vollständig bestanden: 103 Client-Tests je Python-Version, 37 HA-Frameworktests und 19 Frontendtests. Dateien auf ha-test übertragen und zurückgelesen geprüft; Konfiguration validiert, nur Test-HA neu gestartet.
+- [x] Einrichtung/Updates zuerst live geprüft: ungültiger neuer Schlüssel abgewiesen, alte Verbindung erhalten, leerer Schlüssel beibehalten, gültigen vorhandenen Schlüssel erneut gespeichert, temporäre Browser-Adresse geändert und wiederhergestellt, Reload mit Suche und genau einer automatisch auf dev.7 aktualisierten Ressource erfolgreich.
+- [x] Anschließend PDF- und Original-Download über ha-test vollständig gestreamt abgerufen; Attachment/no-store und Ablehnung ohne Anmeldung/Signatur geprüft. Such-/PDF-/Thumbnail-Regressionsprüfungen bestanden.
+- [x] Beide Download-Buttons im Browser sichtbar geprüft, PDF-Button angeklickt und Übergabe bestätigt. Browserautomation lieferte kein Download-Abschlussereignis; tatsächliches Speichern über die Browseroberfläche bleibt unbestätigt.
+- [x] Große Karte zusätzlich in einer temporären regulären Sections-Ansicht mit Suche, Bildern und Dokumentauswahl visuell geprüft. Testansicht entfernt, ursprüngliche zwei Ansichten exakt erhalten. File editor gestoppt, Start bleibt manuell.
 - [ ] Companion-/weitere Browser und native PDF-Seitenwahl/Zoom nur mit vorhandenen Geräten praktisch abnehmen; fehlende Abdeckung bleibt offen.
 
 Details: [Dateien und Downloads](docs/downloads.md), [Einrichtung und Updates](docs/setup-updates.md).
@@ -35,8 +38,8 @@ Details: [Dateien und Downloads](docs/downloads.md), [Einrichtung und Updates](d
 - [x] Neuladen erhält die gemeinsame Ressource; Entfernen der letzten Verbindung entfernt nur die eigene Modulressource. YAML-Ressourcen werden nicht verändert.
 - [x] Reconfigure: leerer/fehlender Schlüssel behält den bisherigen Schlüssel; neuer Schlüssel wird vor Speicherung geprüft. Einrichtung und Reauth verlangen weiterhin gültige Zugangsdaten.
 - [x] Zusätzliche HA-Tests für unveränderte Einstellungen bei ungültiger Anmeldung, Behalten des Schlüssels, Reload/Ressourcenupdate und Entfernen mehrerer Einträge geschrieben.
-- [ ] CI und Live-Prüfung von Reconfigure, Reauth und Reload auf ha-test abschließen.
-- [ ] Danach Dateien/Darstellung und Downloads gemeinsam abschließen: Vorschau bleibt auf 20 MiB begrenzt, größere PDFs erhalten Größenmeldung und speicherschonenden Download.
+- [x] Reconfigure mit ungültigem/leeren/gültigem Schlüssel und Reload auf ha-test erfolgreich geprüft; Reauth-Erfolg und Ablehnung mit unveränderten Einstellungen im echten HA-Testframework geprüft. Kein tatsächlicher Paperless-Schlüssel widerrufen. Automatisches Ressourcenupdate live bestätigt.
+- [x] Danach Dateien/Darstellung und Downloads gemeinsam umgesetzt; siehe dev.7 mit 20-MiB-Vorschaugrenze und gestreamten Downloads.
 - [ ] Browser-/Companion-Abdeckung ehrlich getrennt dokumentieren; optionale persönliche API-Schlüssel bleiben zuletzt.
 
 ## Vorheriger Entwicklungsstand – Große Karte und Editor 0.1.0-dev.5
@@ -51,7 +54,7 @@ Details: [Dateien und Downloads](docs/downloads.md), [Einrichtung und Updates](d
 - [x] Live im eingebauten Browser bei 1280×720 und 390×844 geprüft: Suche mit zehn Treffern, geladene Vorschaubilder/Datum, eingebettete Bildvorschau, Umblättern auf 11–20, Auswahl zurücksetzen sowie mobile Rücknavigation mit Fokusrückgabe erfolgreich.
 - [x] Beide visuellen Editoren in der tatsächlichen HA-Oberfläche geöffnet. Große Karte: Überschrift im Editor geändert und gespeichert; neue Konfiguration anschließend über MCP zurückgelesen (Titel Dokumentübersicht, übrige Optionen erhalten). Kompakte Karte zeigt Verbindung/Suchmodus/Seitenzahl/Klickverhalten korrekt.
 - [x] Bestehende Suche und geschützte PDF-/Thumbnail-Endpunkte nach Installation erneut live erfolgreich geprüft; anonyme Abrufe 401, ungültige ID 400. File editor anschließend gestoppt; Start bleibt manuell.
-- [ ] Große Karte zusätzlich in einer regulären Sections-Ansicht live prüfen. Im Panel und in der schmalen Vorschau des Karteneditors bereits geprüft.
+- [x] Große Karte zusätzlich in regulärer Sections-Ansicht live geprüft (01.11.2026, dev.7); temporäre Testansicht anschließend entfernt.
 - [ ] Companion-/weitere Browser, Screenreader und große Dateien/Streaming bleiben offen; PDF-Seitenwahl/Zoom hängt weiterhin vom nativen Browser-Viewer ab.
 
 Details: [Große Karte und Editor](docs/document-card.md).
@@ -163,7 +166,7 @@ Dieser Plan wird mit jedem abgeschlossenen Entwicklungsschritt und jeder relevan
 - [x] Einrichtung über Config Flow mit Paperless-Adresse und API-Schlüssel implementiert und auf ha-test erfolgreich ausgeführt.
 - [x] Zugriff auf Dokumentliste vor Abschluss der Einrichtung prüfen; mit bereitgestelltem Schlüssel auf ha-test bestätigt.
 - [x] Schlüssel ausschließlich serverseitig verwenden; Karten verwenden die HA-WebSocket-Schnittstelle und enthalten keine Paperless-Zugangsdaten.
-- [ ] Adresse und Schlüssel nachträglich ändern können; erneute Anmeldung bei ungültigem Schlüssel anbieten.
+- [x] Adresse und Schlüssel nachträglich ändern; bei leerem Feld Schlüssel behalten. Live geprüft; Reauth im HA-Framework einschließlich ungültiger Eingaben geprüft.
 - [x] Optional getrennte interne API-Adresse und vom Browser erreichbare Paperless-Adresse unterstützen; Links verwenden Browser-Adresse, Vorschau die interne API.
 - [x] Mehrere Integrationseinträge architektonisch berücksichtigen; Karten wählen per entry_id. Paralleler Live-Test mit zwei Servern bleibt offen.
 
@@ -232,18 +235,18 @@ blockieren die erste Veröffentlichung nicht.
 - [ ] Aktuelle HA-Schnittstellen für eigene WebSocket-Befehle und geschützte HTTP-Antworten prüfen.
 - [x] PDF-Anzeige als authentifizierter Abruf mit Blob-URL und nativem Viewer gewählt; keine PDF.js-Abhängigkeit. Entscheidung und Grenzen in docs/pdf-preview.md.
 - [x] Authentifizierungsweg implementiert: callApiRaw sendet HA-Bearer, Viewer lädt nur lokale Blob-URL. Keine Anmeldeheader von iframe/neuem Tab voraussetzen.
-- [ ] Falls kurzlebige signierte Links nötig sind: Ablauf, Rechtebindung, Cache-Verhalten und Widerruf untersuchen.
-- [ ] Große PDFs, Byte-Range-Anfragen, Speicherverbrauch und Streaming je gewähltem Anzeigeweg prüfen.
+- [x] Für speicherschonende Downloads HA-Pfadsignatur mit 30 Sekunden Gültigkeit, Bindung an aktuelle Anmeldung, Adminprüfung und no-store umgesetzt. Ablauf/manipulierter Pfad/Nicht-Admin automatisiert, tatsächlicher Abruf live geprüft; Details in docs/downloads.md.
+- [x] Vorschau bleibt auf 20 MiB begrenzt, Downloads werden in 64-KiB-Blöcken gestreamt. Synthetische Dateien über 25 MiB im Client und HA-HTTP-Pfad geprüft. Byte-Range/Resume ist ausdrücklich nicht implementiert; detaillierte Leistungsbaseline bleibt offen.
 - [ ] PDF-Anzeige in Chrome/Edge, Firefox, Safari und Companion-WebViews praktisch testen.
-- [ ] Für nicht darstellbare Formate und fehlende Vorschau einen Download-/Öffnen-Fallback definieren.
-- [ ] Unterschied zwischen neuem Tab zur Paperless-Weboberfläche mit deren Anmeldung und geschützter Dokumentvorschau aus HA dokumentieren.
+- [x] Für nicht darstellbare Formate und fehlende Vorschau Original-Download, Bildvorschau und Paperless-Link angeboten.
+- [x] Unterschied zwischen Paperless-Anmeldung im neuen Tab, HA-Vorschau und kurzlebigem HA-Download dokumentiert.
 
 ### R4: Installation und Frontend
 
 - [ ] Aktuelle HA-Konventionen für Config Flow, Reauth/Reconfigure, Lifecycle und statische Ressourcen prüfen.
 - [ ] Gemeinsames Repository für Integration und zwei Karten auf HACS-Kompatibilität untersuchen; nicht zwei Repository-Kategorien ungeprüft voraussetzen.
 - [ ] Entscheiden, ob gebaute Karten mit der Integration ausgeliefert und versioniert als Ressource registriert werden.
-- [ ] Ressourcenentfernung, Updates, Browser-Cache und parallele Integrationseinträge berücksichtigen.
+- [x] Gemeinsame Ressource automatisch registrieren/aktualisieren, eigene Duplikate entfernen, bei letztem entfernten Eintrag aufräumen. Zwei Einträge/Reload/Update/Entfernen im HA-Framework und Ressourcenupdate mit Reload live geprüft; laufende Browserseiten müssen neu geladen werden.
 - [ ] Geeignete Frontend-Basis, Testwerkzeuge und gegebenenfalls PDF-Bibliothek nach Wartung, Lizenz und Bundlegröße auswählen.
 - [ ] Entscheidung zu nativer PDF-Anzeige oder eigener Viewer-Bibliothek durch einen kleinen technischen Prototyp absichern.
 
@@ -274,8 +277,8 @@ Abhängigkeit: Projektgrundlage, R1 und Zugriffsentscheidung R2.
 - [ ] Fehlerklassen für ungültige Anmeldung, fehlende Rechte, Nichterreichbarkeit, TLS, inkompatible API und fehlerhafte Antworten vorsehen.
 - [x] Config Flow mit sicherem Schlüsselfeld und aussagekräftigen deutschen/englischen Fehlermeldungen implementieren.
 - [x] Reauth/Reconfigure und sichere Aktualisierung bestehender Einstellungen implementiert und im HA-Framework getestet. Vollständiger Live-Test bleibt offen.
-- [ ] Doppelte Einträge erkennen; mehrere verschiedene Paperless-Server eindeutig verwalten.
-- [ ] Setup, Unload, Reload und Entfernen sauber implementieren; laufende Aufgaben und Sitzungen aufräumen.
+- [x] Doppelte Einträge erkennen und verschiedene Server getrennt verwalten; automatisierte HA-Tests mit zwei Einträgen. Zwei physisch getrennte Server nicht live vorhanden.
+- [x] Setup/Unload/Reload/Entfernen einschließlich gemeinsamer Ressource im HA-Framework geprüft; Reload live erfolgreich. Upstream-Antworten werden bei Unload geschlossen, HA-Sitzung bleibt HA-eigen.
 - [x] Diagnosedaten mit redigierten Schlüsseln und ohne Dokumentinhalt bereitstellen.
 - [x] Keine Dokumentlisten, Suchbegriffe oder Volltexte als globale Sensorattribute oder Recorder-Daten ablegen.
 
@@ -291,11 +294,11 @@ Abhängigkeit: Backend-Verbindung, verifizierter Suchvertrag und R3.
 - [x] Eingaben validieren und begrenzen; Seitengröße und parallele Abfragen begrenzen.
 - [x] Nur benötigte Antwortfelder übertragen; Dokumentinhalt standardmäßig nicht an Karten senden.
 - [ ] Stabile Seitennavigation und definiertes Verhalten für leere Suche und verschwundene Treffer implementieren.
-- [ ] Dokumentmetadaten und geschützte Endpunkte für Thumbnail, Vorschau und Download implementieren.
-- [ ] Zugriff in jeder Anfrage anhand des HA-Benutzers und des Integrationseintrags prüfen.
-- [ ] Upstream-URLs aus vertrauenswürdiger Basis und validierter Dokument-ID bilden; keinen beliebigen URL-Proxy anbieten.
-- [ ] Weiterleitungen und Pagination-Links prüfen, damit API-Schlüssel nicht an fremde Hosts weitergereicht werden.
-- [ ] MIME-Typ, Dateiname und Content-Disposition korrekt behandeln; HTML nicht ungeprüft unter der HA-Origin ausführen.
+- [x] Metadaten sowie geschützte Thumbnail-/Vorschau-/PDF- und Original-Download-Endpunkte vorhanden.
+- [x] Jede Anfrage prüft HA-Anmeldung, Adminrechte und geladenen Eintrag; Streaming prüft Zugriff erneut während des Transfers. Erweiterte Benutzerfreigaben bleiben Abschnitt 14.
+- [x] Feste Upstream-Pfade aus konfigurierter Basis und validierter Dokument-ID; kein allgemeiner URL-Proxy.
+- [x] Redirects deaktiviert und Upstream-Pagination-URLs nicht verfolgt; automatisiert geprüft.
+- [x] PDF/Bild-Typ und Signatur prüfen; Downloads mit bereinigtem Dateinamen als Attachment, Originale als octet-stream mit nosniff/Sandbox. HTML/SVG werden nicht inline ausgeführt.
 - [ ] Caches nur begrenzt und getrennt nach Integration/Zugriffskontext verwenden; bei Schlüsselwechsel und Unload leeren.
 - [ ] Fehlerbehandlung für 404, 429, 5xx, abgebrochene Downloads und verweigerte Dokumentrechte ergänzen.
 
@@ -390,7 +393,7 @@ Abnahme: Ein Dashboard-Tab bietet benutzbare Suche, Treffer und Dokumentanzeige 
 - [ ] Beispiele für kompakte Karte und große Karte in eigenem Dashboard-Tab bereitstellen.
 - [ ] Interne/externe Adresse, Paperless-Anmeldung im neuen Tab, Zertifikate und Vorschau-Fallback erklären.
 - [ ] Unterstützte Versionen, bekannte Einschränkungen und Fehlerdiagnose dokumentieren.
-- [ ] Installationsweg und Ressourcenregistrierung aus R4 praktisch auf frischem HA testen.
+- [x] Testinstallation über File editor durchgeführt, Config Flow und automatisches Ressourcenupdate live geprüft. HACS-Installation/Update auf sauberer Installation bleibt eigener Release-Schritt.
 - [ ] Versionsnummer, Changelog, Upgrade-/Entfernungsanleitung und Release-Artefakte vorbereiten.
 - [ ] Lizenzhinweise für alle mitgelieferten Bibliotheken beifügen.
 - [ ] Vor Release vollständigen Kernablauf auf sauberer Installation durchführen und Ergebnis dokumentieren.

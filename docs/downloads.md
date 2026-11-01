@@ -48,3 +48,13 @@ einen über 25 MiB großen Attachment-Stream, Authentifizierung, Signaturablauf,
 manipulierten Pfad, Nicht-Adminzugriff und Dateinamen. Frontendtests prüfen die
 Größenmeldung mit beiden Downloads, erlaubte HA-URLs und veraltete Antworten.
 Tatsächliche CI-/Live-Ergebnisse stehen in todo.md.
+
+Am 01.11.2026 vollständig grüne CI: 103 Client-Tests pro Python-Version,
+37 HA-Frameworktests und 19 Frontendtests. Auf ha-test beide Downloadarten vollständig
+gestreamt abgerufen, Attachment/no-store geprüft; ohne gültige Anmeldung/Signatur
+jeweils abgewiesen. Vorschau, Thumbnail und Suche weiterhin erfolgreich.
+Im Browser beide Buttons sichtbar und PDF-Klick mit Übergabestatus geprüft.
+Die Browserautomation lieferte kein Download-Abschlussereignis; das tatsächliche
+Speichern über diesen Browser wird nicht als bestanden behauptet. Sections-Layout
+mit Suche, Vorschaubildern und ausgewähltem Dokument zusätzlich visuell geprüft.
+Temporäre Testansicht entfernt; vorhandenes Dashboard vollständig erhalten.

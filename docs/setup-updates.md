@@ -26,3 +26,13 @@ Die Erweiterungen werden mit HA 2026.10.4 geprüft. Ressourcenverwaltung nutzt d
 [HA-Lovelace-Ressourcensammlung](https://github.com/home-assistant/core/blob/2026.10.4/homeassistant/components/lovelace/resources.py).
 Neue automatisierte Prüfungen ergänzen die vorhandenen Flow-/Lifecycle-Tests.
 Tatsächlich bestandene CI- und Live-Prüfungen werden in todo.md ergänzt.
+
+Am 01.11.2026 mit dev.7 auf ha-test erfolgreich: ein ungültiger neuer Schlüssel
+wird abgewiesen und die bisherige Verbindung bleibt erreichbar. Ein leeres Feld
+behält den Schlüssel bei Änderung der Browser-Adresse. Die ursprüngliche Adresse
+wurde danach wiederhergestellt und der vorhandene gültige Schlüssel erneut
+gespeichert. Reload und anschließende Suche funktionieren. Die bisher manuell
+registrierte Ressource wurde automatisch auf dev.7 aktualisiert, ohne Duplikat.
+Reauth und Entfernen zweier Einträge einschließlich letzter Ressourcenentfernung
+sind im echten HA-Framework geprüft; der echte Paperless-Schlüssel wurde nicht
+widerrufen und die produktive Test-Verbindung nicht zu Testzwecken gelöscht.

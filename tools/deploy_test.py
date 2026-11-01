@@ -16,12 +16,14 @@ import aiohttp
 BASE = "http://192.168.178.147"
 DOMAIN = "paperless_ngx_insights"
 PROJECT = Path(__file__).resolve().parents[1]
+LAST_STAGE = {"value": "login"}
 
 
 async def run(action: str, key_file: Path | None) -> None:
     async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30)) as session:
 
         async def post_json(path, data, headers=None):
+            LAST_STAGE["value"] = "authenticated_request" if headers else "login"
             async with session.post(BASE + path, json=data, headers=headers) as response:
                 response.raise_for_status()
                 return await response.json()
@@ -93,15 +95,19 @@ async def run(action: str, key_file: Path | None) -> None:
                     raise RuntimeError("Test HA websocket login failed")
                 seq = 0
 
-                async def command(kind, allow_error=False, **data):
+                async def command(command_type, allow_error=False, **data):
                     nonlocal seq
                     seq += 1
-                    await ws.send_json({"id": seq, "type": kind, **data})
+                    LAST_STAGE["value"] = command_type
+                    await ws.send_json({"id": seq, "type": command_type, **data})
                     answer = await ws.receive_json()
                     if not answer.get("success"):
                         if allow_error:
                             return {"error": answer.get("error", {})}
-                        raise RuntimeError("Test HA command failed")
+                        raise RuntimeError(
+                            "Test HA command failed: "
+                            + str(answer.get("error", {}).get("code", "unknown"))
+                        )
                     return answer["result"]
 
                 user = await command("auth/current_user")
@@ -118,9 +124,20 @@ async def run(action: str, key_file: Path | None) -> None:
                     base_url = "http://192.168.178.10:8810"
 
                     async def search():
-                        return await command(
-                            DOMAIN + "/search", entry_id=entry_id, text="", page_size=1
-                        )
+                        for _ in range(40):
+                            result = await command(
+                                DOMAIN + "/search",
+                                entry_id=entry_id,
+                                text="",
+                                page_size=1,
+                                allow_error=True,
+                            )
+                            if "error" not in result:
+                                return result
+                            if result["error"].get("code") != "not_loaded":
+                                raise RuntimeError("Lifecycle search failed")
+                            await asyncio.sleep(0.25)
+                        raise RuntimeError("Reload did not finish")
 
                     async def reconfigure(values):
                         flow = await post_json(
@@ -434,5 +451,14 @@ if __name__ == "__main__":
         asyncio.run(run(args.action, args.key_file))
     except Exception as error:
         # No traceback or upstream bodies: they may contain authentication data.
-        print(json.dumps({"result": "failed", "error_type": type(error).__name__}))
+        print(
+            json.dumps(
+                {
+                    "result": "failed",
+                    "error_type": type(error).__name__,
+                    "stage": LAST_STAGE["value"],
+                    "check": str(error) if type(error) is RuntimeError else None,
+                }
+            )
+        )
         raise SystemExit(1) from None
