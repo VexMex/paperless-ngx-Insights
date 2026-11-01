@@ -93,8 +93,15 @@ test("first-page image fallback keeps PDF download and releases both URLs", asyn
   assert.equal(root.querySelector(".thumbnail-wrap").hidden, false);
   assert.equal(root.querySelector("iframe").hidden, true);
   assert.equal(root.querySelector(".preview-download").hidden, false);
+  assert.equal(root.querySelector(".show-thumbnail").hidden, true);
+  assert.equal(root.querySelector(".preview-status").classList.contains("is-hint"), true);
+  root.querySelector(".preview-close").click();
+  root.querySelector("li a").click();
+  await settle();
+  assert.equal(root.querySelector(".show-thumbnail").hidden, false);
+  assert.equal(root.querySelector(".show-thumbnail").getAttribute("aria-label"), "Erste Seite als Bild anzeigen");
   card.remove();
-  assert.equal(revoked.length, 2);
+  assert.equal(revoked.length, 3);
 });
 
 test("unsupported or oversized previews keep the Paperless fallback", async () => {
@@ -107,6 +114,7 @@ test("unsupported or oversized previews keep the Paperless fallback", async () =
     assert.equal(root.querySelector("iframe").hidden, true);
     assert.equal(root.querySelector(".paperless-link").href, "http://paperless.test/documents/1/details");
     assert.ok(root.querySelector(".preview-status").textContent.length > 20);
+    assert.equal(root.querySelector(".preview-status").classList.contains("is-hint"), false);
     root.querySelector(".preview-close").click();
   }
 });

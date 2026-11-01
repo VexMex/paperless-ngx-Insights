@@ -16,7 +16,15 @@ Einrichtung/Schlüsselwechsel, Updates und Downloads sind live abgesichert.
 HACS-Auslieferung einschließlich Installations-/Updateprüfung ist abgeschlossen. Erweiterte
 Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
 
-## Aktueller Entwicklungsstand – Lokalisierung 1.1.0
+## Aktueller Entwicklungsstand – Mobile Dokumentvorschau 1.1.1
+
+- [x] Schmale Vorschau: kompakte Symbolleiste mit lokalisierten zugänglichen Namen/Tooltips, 44-Pixel-Touchflächen, zweizeiliger Dokumenttitel und kompakter Schließen-/Zurück-Aktion.
+- [x] Smartphone-Dialog nutzt die verfügbare Bildschirmfläche einschließlich Safe-Area-Abständen. Eingebettete Vorschau reagiert auf ihre tatsächliche Breite per Container Query.
+- [x] Lange normale PDF-/Erste-Seite-Erklärtexte auf schmalen Ansichten ausgeblendet; Ladezustand, Größen-/Zugriffsfehler und Downloadrückmeldung bleiben sichtbar. Bildvorschau-Schalter nach erfolgreichem Laden ausgeblendet und für das nächste Dokument zurückgesetzt.
+- [ ] Frontend-/Backend-/HA-/HACS-Prüfungen sowie mobile und Desktop-Sichtprüfung auf ha-test abschließen. Echtes Companion-Gerät steht der Browserautomation nicht zur Verfügung; Nutzerabnahme bleibt erforderlich.
+- [ ] Version 1.1.1 über HACS ausschließlich auf ha-test aktualisieren und Ergebnisse dokumentieren.
+
+## Vorheriger Entwicklungsstand – Lokalisierung 1.1.0
 
 - [x] Meldung „Karten nach neuer HACS-Einrichtung nicht in der Suche“ untersucht: Beide Karten erscheinen mit 1.1.0 in einem frischen Browser auf einem leeren temporären ha-test-Dashboard, ohne zuvor vorhandene Paperless-Karte. Nutzer bestätigt: Nach Strg+F5 auf seiner neuen Installation ebenfalls sichtbar. Kein Codefehler reproduziert; Browser hatte die neue Karten-Ressource noch nicht geladen. Hinweis zum vollständigen Neuladen in README ergänzt. Temporäres Test-Dashboard nach Prüfung unverändert entfernt.
 

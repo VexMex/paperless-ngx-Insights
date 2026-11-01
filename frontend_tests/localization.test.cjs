@@ -43,6 +43,8 @@ test("cards follow HA language, regional German, locale fallback and English fal
       assert.equal(root.querySelector("select").getAttribute("aria-label"), expected === "Suchen" ? "Suchbereich" : "Search scope");
       assert.equal(root.querySelector(".next").getAttribute("aria-label"), expected === "Suchen" ? "Nächste Seite" : "Next page");
       assert.equal(root.querySelector(".preview-download").textContent, expected === "Suchen" ? "PDF herunterladen" : "Download PDF");
+      assert.equal(root.querySelector(".preview-download").getAttribute("aria-label"), expected === "Suchen" ? "PDF herunterladen" : "Download PDF");
+      assert.equal(root.querySelector(".preview-download").title, expected === "Suchen" ? "PDF herunterladen" : "Download PDF");
       assert.equal(root.querySelector("iframe").title, expected === "Suchen" ? "PDF-Dokumentvorschau" : "PDF document preview");
       card.hass = { ...hass, language: undefined, locale: { language: "de-DE" } };
       assert.equal(root.querySelector('[type="submit"]').textContent, "Suchen");
@@ -75,7 +77,7 @@ test("language changes preserve query, focus, page, results and open preview wit
     assert.match(root.querySelector(".preview-status").textContent, /PDF viewer stays blank/);
     assert.equal(calls.length, count);
     assert.equal(revoked.length, 0);
-    if (type === "documents") assert.equal(root.querySelector(".preview-close").textContent, "← Back to results");
+    if (type === "documents") assert.equal(root.querySelector(".preview-close").textContent, "Back to results");
     else assert.equal(root.querySelector("dialog").open, true);
     card.remove();
   }

@@ -1,5 +1,12 @@
 # Änderungen
 
+## 1.1.1
+
+- Compact document preview on phones: full-screen dialog, two-line heading and a single row of accessible icon actions.
+- Hide routine preview explanations on narrow screens while keeping loading, download feedback and errors visible.
+- Move the first-page image action into the toolbar and hide it once the image is displayed; restore it for the next document.
+- Apply the compact toolbar to narrow embedded previews in the document overview card as well.
+
 ## 1.1.0
 
 - Cards and the visual editor automatically follow the Home Assistant interface language: English and German, with English fallback for other languages.

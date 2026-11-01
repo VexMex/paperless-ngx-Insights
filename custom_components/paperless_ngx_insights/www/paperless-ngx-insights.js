@@ -53,7 +53,7 @@ const PAPERLESS_TEXT = {
     "results_region": "Dokumentensuche und Treffer",
     "selected_document": "Ausgewähltes Dokument",
     "select_document": "Dokument aus der Trefferliste auswählen, um die Vorschau zu öffnen.",
-    "back_results": "← Zur Trefferliste",
+    "back_results": "Zur Trefferliste",
     "back_results_aria": "Zur Trefferliste zurückkehren",
     "heading": "Überschrift",
     "connection": "Paperless-Verbindung",
@@ -130,7 +130,7 @@ const PAPERLESS_TEXT = {
     "results_region": "Document search and results",
     "selected_document": "Selected document",
     "select_document": "Select a document from the results to open its preview.",
-    "back_results": "← Back to results",
+    "back_results": "Back to results",
     "back_results_aria": "Return to the results",
     "heading": "Heading",
     "connection": "Paperless connection",
@@ -259,7 +259,10 @@ class PaperlessInsightsSearchCard extends HTMLElement {
   _setPreviewStatus(key) {
     this._previewStatusKey = key;
     const status = this._dialog?.querySelector(".preview-status");
-    if (status) status.textContent = this._t(key);
+    if (status) {
+      status.textContent = this._t(key);
+      status.classList.toggle("is-hint", ["pdf_hint", "first_page_hint"].includes(key));
+    }
   }
 
   connectedCallback() {
@@ -324,14 +327,33 @@ class PaperlessInsightsSearchCard extends HTMLElement {
           height:90dvh; max-height:90dvh; border:1px solid var(--divider-color); border-radius:12px;
           padding:16px; color:var(--primary-text-color); background:var(--card-background-color,#fff); }
         dialog::backdrop { background:rgba(0,0,0,.55); }
-        .preview-layout { height:100%; display:flex; flex-direction:column; gap:10px; }
-        .preview-header { display:flex; gap:12px; align-items:center; }
-        .preview-title { flex:1; font-size:18px; overflow-wrap:anywhere; margin:0; }
-        .preview-actions { display:flex; gap:16px; flex-wrap:wrap; }
-        .preview-actions a { min-height:32px; padding:0; color:var(--primary-color); }
+        .preview-layout { height:100%; display:flex; flex-direction:column; gap:10px; container-type:inline-size; }
+        .preview-header { display:flex; gap:10px; align-items:center; flex-shrink:0; }
+        .preview-title { flex:1; min-width:0; font-size:18px; line-height:1.35; overflow-wrap:anywhere; margin:0; }
+        .preview-status { margin:0; font-size:13px; line-height:1.35; flex-shrink:0; }
+        .preview-actions { display:flex; gap:8px; flex-wrap:wrap; flex-shrink:0; }
+        .preview-actions a,.preview-actions button,.preview-close { display:inline-flex; align-items:center;
+          justify-content:center; gap:6px; min-height:44px; min-width:44px; padding:8px 10px;
+          font-size:14px; line-height:1.2; border:1px solid var(--divider-color); border-radius:8px;
+          background:transparent; color:var(--primary-color); text-decoration:none; }
+        .preview-layout ha-icon { --mdc-icon-size:20px; width:20px; height:20px; flex-shrink:0; }
         iframe { flex:1; min-height:120px; width:100%; border:0; background:#eee; }
         .thumbnail-wrap { flex:1; min-height:0; overflow:auto; text-align:center; }
         .thumbnail-wrap img { max-width:100%; height:auto; background:white; }
+        @container (max-width:600px) {
+          .preview-title { font-size:16px; display:-webkit-box; -webkit-line-clamp:2;
+            -webkit-box-orient:vertical; overflow:hidden; }
+          .preview-header { flex-wrap:nowrap; align-items:flex-start; }
+          .preview-actions { flex-wrap:nowrap; gap:6px; }
+          .preview-layout .action-label,.preview-status.is-hint { display:none; }
+          .preview-actions a,.preview-actions button,.preview-close { width:44px; height:44px; padding:10px; }
+        }
+        @media (max-width:600px), (max-height:500px) and (pointer:coarse) {
+          dialog { width:100vw; max-width:100vw; height:100dvh; max-height:100dvh;
+            margin:0; inset:0; border:0; border-radius:0;
+            padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right))
+              max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left)); }
+        }
       </style>
       <ha-card><div class="body">
         <h2></h2>
@@ -352,12 +374,12 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     this.shadowRoot.innerHTML += `
       <dialog aria-labelledby="preview-title"><div class="preview-layout">
         <div class="preview-header"><h3 id="preview-title" class="preview-title"></h3>
-          <button class="preview-close" data-i18n-aria-label="close_preview"><span data-i18n="close"></span></button></div>
+          <button class="preview-close" data-i18n-aria-label="close_preview" data-i18n-title="close_preview"><ha-icon icon="mdi:close" aria-hidden="true"></ha-icon><span class="action-label" data-i18n="close"></span></button></div>
+        <div class="preview-actions"><a class="paperless-link" target="_blank" rel="noopener noreferrer" data-i18n-aria-label="open_paperless" data-i18n-title="open_paperless"><ha-icon icon="mdi:open-in-new" aria-hidden="true"></ha-icon><span class="action-label" data-i18n="open_paperless"></span></a>
+          <button class="preview-download" hidden data-i18n-aria-label="download_pdf" data-i18n-title="download_pdf"><ha-icon icon="mdi:file-download-outline" aria-hidden="true"></ha-icon><span class="action-label" data-i18n="download_pdf"></span></button>
+          <button class="original-download" hidden data-i18n-aria-label="download_original" data-i18n-title="download_original"><ha-icon icon="mdi:download" aria-hidden="true"></ha-icon><span class="action-label" data-i18n="download_original"></span></button>
+          <button class="show-thumbnail" data-i18n-aria-label="show_first_page" data-i18n-title="show_first_page"><ha-icon icon="mdi:file-image-outline" aria-hidden="true"></ha-icon><span class="action-label" data-i18n="show_first_page"></span></button></div>
         <p class="preview-status" role="status" aria-live="polite"></p>
-        <div class="preview-actions"><a class="paperless-link" target="_blank" rel="noopener noreferrer"><span data-i18n="open_paperless"></span></a>
-          <button class="preview-download" hidden><span data-i18n="download_pdf"></span></button>
-          <button class="original-download" hidden><span data-i18n="download_original"></span></button></div>
-        <button class="show-thumbnail"><span data-i18n="show_first_page"></span></button>
         <div class="thumbnail-wrap" hidden><img data-i18n-alt="first_page_alt"></div>
         <iframe data-i18n-title="pdf_preview" referrerpolicy="no-referrer" hidden></iframe>
       </div></dialog>`;
@@ -522,6 +544,8 @@ class PaperlessInsightsSearchCard extends HTMLElement {
     this._thumbnailUrl = null;
     const image = this._dialog?.querySelector("img");
     if (image) { image.removeAttribute("src"); image.parentElement.hidden = true; }
+    const thumbnailButton = this._dialog?.querySelector(".show-thumbnail");
+    if (thumbnailButton) { thumbnailButton.hidden = false; thumbnailButton.disabled = false; }
     this._previewUrl = null;
     if (this._dialog?.open) this._dialog.close();
     if (restoreFocus && this._previewOpener?.isConnected) this._previewOpener.focus();
@@ -601,6 +625,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       const image = root.querySelector("img");
       image.src = this._thumbnailUrl;
       image.parentElement.hidden = false;
+      button.hidden = true;
       this._setPreviewStatus("first_page_hint");
     } catch (_) {
       if (sequence === this._previewSequence) this._setPreviewStatus("thumbnail_failed");
@@ -699,8 +724,10 @@ class PaperlessInsightsDocumentsCard extends PaperlessInsightsSearchCard {
     this._dialog = inline;
     this._emptyPreview = empty;
     const close = inline.querySelector(".preview-close");
-    close.setAttribute("data-i18n", "back_results");
+    close.querySelector(".action-label").setAttribute("data-i18n", "back_results");
+    close.querySelector("ha-icon").setAttribute("icon", "mdi:arrow-left");
     close.setAttribute("data-i18n-aria-label", "back_results_aria");
+    close.setAttribute("data-i18n-title", "back_results_aria");
     pane.append(empty, inline);
     workspace.append(results, pane);
     body.append(workspace);
@@ -715,8 +742,7 @@ class PaperlessInsightsDocumentsCard extends PaperlessInsightsSearchCard {
       .inline-preview { height:100%; }
       .preview-status { font-size:13px; margin:0; }
       .preview-close { background:transparent; color:var(--primary-color); }
-      .preview-header { flex-wrap:wrap; }
-      .preview-title { min-width:180px; }
+      .preview-header { flex-wrap:nowrap; }
       .show-thumbnail { background:transparent; color:var(--primary-color); border:1px solid var(--divider-color); }
       .result-image { width:56px; height:76px; object-fit:contain; flex-shrink:0; background:var(--secondary-background-color); }
       li a { border-radius:8px; padding:10px 6px; }
