@@ -1,5 +1,10 @@
 # Änderungen
 
+## 1.0.2
+
+- README-Icon mit vollständiger Bildadresse verlinkt, damit es auch innerhalb von HACS angezeigt wird.
+- Installation von 1.0.1 über HACS erfolgreich geprüft; 1.0.2 dient zusätzlich der Prüfung des HACS-Updatewegs.
+
 ## 1.0.1
 
 - Installation und Updates über HACS als benutzerdefiniertes Integrations-Repository vorbereitet.

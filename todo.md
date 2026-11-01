@@ -12,19 +12,22 @@ Der Eigentümer nutzt das System normalerweise allein. Die bestehende serverseit
 Beschränkung auf HA-Administratoren sowie die Prüfung der Paperless-Dokumentrechte
 bleiben erhalten; diese Sicherheitsprüfungen werden nicht zurückgestellt.
 
-Nächste Prioritäten: todo bereinigen, Einrichtung/Schlüsselwechsel/Reauth und Updates
-live absichern, danach HACS-Auslieferung und Release-Vorbereitung. Erweiterte
+Einrichtung/Schlüsselwechsel, Updates und Downloads sind live abgesichert.
+Aktuell: HACS-Auslieferung und Release-Abnahme abschließen. Erweiterte
 Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
 
-## Aktueller Entwicklungsstand – HACS und Icon 1.0.1
+## Aktueller Entwicklungsstand – HACS und Icon 1.0.1 / 1.0.2
 
 - [x] Freigegebenes eigenes Icon als lokale HA-Marke in 256 und 512 Pixeln eingebunden.
 - [x] `hacs.json` ergänzt; Manifest auf 1.0.1 angehoben und Changelog angelegt. Bestehendes Release V1.0 bleibt unverändert.
 - [x] README auf HACS-Installation und Updates umgestellt; manuelle Alternative bleibt dokumentiert.
 - [x] Lokal 103 Client-Tests, 19 Frontendtests, Ruff und Formatprüfung erfolgreich.
-- [ ] HACS-Validierung und vollständige HA-Frameworktests in GitHub Actions erfolgreich abschließen; anschließend Release v1.0.1 veröffentlichen.
-- [ ] Benutzerdefiniertes Repository auf ha-test hinzufügen und tatsächlich über HACS installieren; installierte Dateien samt Icon zurücklesen.
-- [ ] Nach Neustart Suche, Vorschau, Downloads, Ressourcenversion und Erhalt der bisherigen Einrichtung prüfen.
+- [x] [GitHub Actions](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41292719992) erfolgreich: HACS-Validierung, 103 Client-Tests je Python-Version, 37 HA-Frameworktests, 19 Frontendtests; [Release v1.0.1](https://github.com/VexMex/paperless-ngx-Insights/releases/tag/v1.0.1) veröffentlicht.
+- [x] Benutzerdefiniertes Repository auf ha-test hinzugefügt und v1.0.1 tatsächlich über HACS installiert. Alle 15 Laufzeitdateien zurückgelesen: Textinhalt mit normalisierten Zeilenenden, PNG-Icons bytegenau identisch. Keine manuelle Dateiübertragung für diese Installation.
+- [x] Nach Neustart Suche mit mehreren Wörtern, Pagination, geschützte PDF-/Thumbnail-Vorschau und vollständig gestreamte PDF-/Original-Downloads geprüft. Schlüsselwechsel/Reload erfolgreich; genau eine Ressource auf 1.0.1. Dashboard-Konfiguration unverändert (Hash 696d5f569f29e4af). Eigenes Icon und Version in Geräte & Dienste sichtbar.
+- [x] Sichtprüfung fand kaputten relativen README-Bildpfad innerhalb von HACS; vollständige Bildadresse für 1.0.2 eingesetzt.
+- [ ] 1.0.2 veröffentlichen, als Update über HACS installieren und README-Bild sowie Integrationsversion nach Neustart prüfen.
+- Hinweis: Geprüft wurde die Übernahme der vorhandenen manuellen Testinstallation in HACS, keine frisch aufgesetzte HA-Instanz. Companion-/Browsermatrix bleibt separat offen.
 
 ## Vorheriger Entwicklungsstand – Dateien und Downloads 0.1.0-dev.7
 

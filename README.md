@@ -1,6 +1,6 @@
 # Paperless-ngx Insights
 
-<img src="custom_components/paperless_ngx_insights/brand/icon.png" width="96" alt="Paperless-ngx Insights Icon">
+<img src="https://raw.githubusercontent.com/VexMex/paperless-ngx-Insights/main/custom_components/paperless_ngx_insights/brand/icon.png" width="96" alt="Paperless-ngx Insights Icon">
 
 Mit Paperless-ngx Insights kannst du dein Dokumentenarchiv direkt in Home Assistant durchsuchen und Dokumente ansehen. So findest du zum Beispiel Rechnungen oder Briefe, ohne zuerst die Paperless-Oberfläche öffnen zu müssen.
 

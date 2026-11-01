@@ -407,6 +407,11 @@ async def run(action: str, key_file: Path | None) -> None:
                             response.raise_for_status()
                             actual = await response.read()
                         expected = await asyncio.to_thread(path.read_bytes)
+                        if path.suffix != ".png":
+                            # Windows checkout endings and final blank lines do not
+                            # change text assets; binary brand files remain exact.
+                            actual = actual.replace(b"\r\n", b"\n").rstrip(b"\n")
+                            expected = expected.replace(b"\r\n", b"\n").rstrip(b"\n")
                         if hashlib.sha256(actual).digest() != hashlib.sha256(expected).digest():
                             raise RuntimeError("Installed file verification failed: " + relative)
                     print(
