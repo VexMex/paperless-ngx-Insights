@@ -22,8 +22,11 @@ Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Ve
 - [x] Sprache folgt `hass.language`, ersatzweise HA-Locale/Systemsprache. Sprachvarianten wie de-AT werden erkannt; andere Sprachen verwenden Englisch. Kartenüberschriften aus eigener Konfiguration und Dokumenttitel bleiben unverändert.
 - [x] Sprachwechsel aktualisiert bestehende Elemente, laufende Suche und Vorschau ohne neue Anfragen; neue Karten speichern keine sprachgebundene Standardüberschrift.
 - [x] README und neue Release-Beschreibungen auf Englisch umgestellt; HACS verwendet dieselbe README. Einrichtungs-/Reauth-/Reconfigure-Übersetzungen in DE/EN bereits vorhanden.
-- [ ] Erweiterte Frontendtests, Backend-/HA-Frameworktests und HACS-Validierung abschließen.
-- [ ] 1.1.0 über HACS auf ha-test aktualisieren und DE/EN in tatsächlicher HA-Oberfläche samt Editor sowie englischer HACS-README prüfen.
+- [x] Lokal 25 Frontendtests und 103 Clienttests sowie Ruff/Format/Compile erfolgreich. [GitHub Actions](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41294407852) vollständig grün: zusätzlich HA-Frameworktests unter Python 3.14 und HACS-Validierung. Neue Tests decken DE/EN, regionale Sprachvarianten, Englisch-Fallback, Such-/Vorschauzustand beim Sprachwechsel sowie Editorvalidierung und unveränderte eigene Texte ab.
+- [x] [1.1.0 veröffentlicht](https://github.com/VexMex/paperless-ngx-Insights/releases/tag/v1.1.0), ausschließlich auf ha-test über HACS aktualisiert und neu gestartet. Kompakte und große Karte in echter HA-Oberfläche auf Deutsch und Englisch geprüft. Großen Editor auf Englisch sowie kompakten Editor auf Deutsch geöffnet; Beschriftungen und Auswahloptionen korrekt. Ohne Änderungen geschlossen. Testsprache anschließend auf Deutsch zurückgestellt.
+- [x] HACS zeigt v1.1.0 und die englische README einschließlich geladenem Icon korrekt an. Dashboard unverändert (Hash 696d5f569f29e4af), bestehende Ressourcen-ID erhalten und automatisch auf 1.1.0 aktualisiert.
+- [x] Nach HACS-Update erneut Live-Prüfungen für Schlüsselwechsel/Reload, kombinierte Suche/Pagination, geschützte PDF-/Thumbnail-Vorschau und vollständige PDF-/Original-Downloads bestanden. Kein Zugriff auf produktives HA.
+- Hinweis: Eigene Dashboard-/Ansichts-/Kartenüberschriften werden bewusst nicht automatisch übersetzt. Sprachwechsel bei laufender Suche bzw. offener Vorschau und zusätzliche Regional-/Fallback-Sprachen sind automatisiert geprüft; visuelle Abnahme erfolgte für DE/EN. Companion-Abdeckung bleibt unverändert offen.
 
 ## Vorheriger Entwicklungsstand – HACS und Icon 1.0.1 / 1.0.2
 
