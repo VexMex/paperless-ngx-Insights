@@ -1,5 +1,10 @@
 # Änderungen
 
+## 1.1.2
+
+- Give the Paperless link the same compact 44-pixel toolbar size as the download buttons.
+- Use a PDF-specific icon to distinguish the PDF download from the original-file download.
+
 ## 1.1.1
 
 - Compact document preview on phones: full-screen dialog, two-line heading and a single row of accessible icon actions.

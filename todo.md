@@ -16,25 +16,26 @@ Einrichtung/Schlüsselwechsel, Updates und Downloads sind live abgesichert.
 HACS-Auslieferung einschließlich Installations-/Updateprüfung ist abgeschlossen. Erweiterte
 Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
 
-## Aktueller Entwicklungsstand – Mobile Dokumentvorschau 1.1.1
+## Aktueller Entwicklungsstand – Mobile Dokumentvorschau 1.1.1 / 1.1.2
 
 - [x] Schmale Vorschau: kompakte Symbolleiste mit lokalisierten zugänglichen Namen/Tooltips, 44-Pixel-Touchflächen, zweizeiliger Dokumenttitel und kompakter Schließen-/Zurück-Aktion.
 - [x] Smartphone-Dialog nutzt die verfügbare Bildschirmfläche einschließlich Safe-Area-Abständen. Eingebettete Vorschau reagiert auf ihre tatsächliche Breite per Container Query.
 - [x] Lange normale PDF-/Erste-Seite-Erklärtexte auf schmalen Ansichten ausgeblendet; Ladezustand, Größen-/Zugriffsfehler und Downloadrückmeldung bleiben sichtbar. Bildvorschau-Schalter nach erfolgreichem Laden ausgeblendet und für das nächste Dokument zurückgesetzt.
-- [ ] Frontend-/Backend-/HA-/HACS-Prüfungen sowie mobile und Desktop-Sichtprüfung auf ha-test abschließen. Echtes Companion-Gerät steht der Browserautomation nicht zur Verfügung; Nutzerabnahme bleibt erforderlich.
-- [ ] Version 1.1.1 über HACS ausschließlich auf ha-test aktualisieren und Ergebnisse dokumentieren.
+- [x] 1.1.1: lokal 25 Frontendtests, 103 Clienttests, Ruff/Format/Compile erfolgreich; [CI](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41297889522) einschließlich HA-Frameworktests und HACS-Validierung grün. Über HACS ausschließlich auf der isolierten Testinstanz aktualisiert und neu gestartet; Suche, Vorschau und Downloads live erneut erfolgreich.
+- [x] Erste Sichtprüfung mit 390×844 und dem vom Nutzer gezeigten Beispieldokument: Titel/Schließen und drei Symbolaktionen statt großer Button-Blöcke, lange Erklärung ausgeblendet, Bildvorschau direkt darunter. Unterschiedliche Box-Sizing-Vorgaben von Link und Buttons entdeckt und für 1.1.2 vereinheitlicht; PDF-Aktion erhält eindeutiges PDF-Icon.
+- [ ] 1.1.2 validieren und über HACS ausschließlich auf der isolierten Testinstanz aktualisieren; abschließende mobile und Desktop-Sichtprüfung für beide Karten. Echtes Companion-Gerät steht der Browserautomation nicht zur Verfügung; Nutzerabnahme bleibt erforderlich.
 
 ## Vorheriger Entwicklungsstand – Lokalisierung 1.1.0
 
-- [x] Meldung „Karten nach neuer HACS-Einrichtung nicht in der Suche“ untersucht: Beide Karten erscheinen mit 1.1.0 in einem frischen Browser auf einem leeren temporären ha-test-Dashboard, ohne zuvor vorhandene Paperless-Karte. Nutzer bestätigt: Nach Strg+F5 auf seiner neuen Installation ebenfalls sichtbar. Kein Codefehler reproduziert; Browser hatte die neue Karten-Ressource noch nicht geladen. Hinweis zum vollständigen Neuladen in README ergänzt. Temporäres Test-Dashboard nach Prüfung unverändert entfernt.
+- [x] Meldung „Karten nach neuer HACS-Einrichtung nicht in der Suche“ untersucht: Beide Karten erscheinen mit 1.1.0 in einem frischen Browser auf einem leeren temporären der isolierten Testinstanz-Dashboard, ohne zuvor vorhandene Paperless-Karte. Nutzer bestätigt: Nach Strg+F5 auf seiner neuen Installation ebenfalls sichtbar. Kein Codefehler reproduziert; Browser hatte die neue Karten-Ressource noch nicht geladen. Hinweis zum vollständigen Neuladen in README ergänzt. Temporäres Test-Dashboard nach Prüfung unverändert entfernt.
 
 - [x] Gemeinsame eingebundene DE-/EN-Übersetzungen für kompakte/große Karte und visuellen Editor ergänzt: Beschriftungen, Status-/Fehlermeldungen, Vorschau, Downloads, Seitennavigation, Standardüberschriften und zugängliche Namen.
 - [x] Sprache folgt `hass.language`, ersatzweise HA-Locale/Systemsprache. Sprachvarianten wie de-AT werden erkannt; andere Sprachen verwenden Englisch. Kartenüberschriften aus eigener Konfiguration und Dokumenttitel bleiben unverändert.
 - [x] Sprachwechsel aktualisiert bestehende Elemente, laufende Suche und Vorschau ohne neue Anfragen; neue Karten speichern keine sprachgebundene Standardüberschrift.
 - [x] README und neue Release-Beschreibungen auf Englisch umgestellt; HACS verwendet dieselbe README. Einrichtungs-/Reauth-/Reconfigure-Übersetzungen in DE/EN bereits vorhanden.
 - [x] Lokal 25 Frontendtests und 103 Clienttests sowie Ruff/Format/Compile erfolgreich. [GitHub Actions](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41294407852) vollständig grün: zusätzlich HA-Frameworktests unter Python 3.14 und HACS-Validierung. Neue Tests decken DE/EN, regionale Sprachvarianten, Englisch-Fallback, Such-/Vorschauzustand beim Sprachwechsel sowie Editorvalidierung und unveränderte eigene Texte ab.
-- [x] [1.1.0 veröffentlicht](https://github.com/VexMex/paperless-ngx-Insights/releases/tag/v1.1.0), ausschließlich auf ha-test über HACS aktualisiert und neu gestartet. Kompakte und große Karte in echter HA-Oberfläche auf Deutsch und Englisch geprüft. Großen Editor auf Englisch sowie kompakten Editor auf Deutsch geöffnet; Beschriftungen und Auswahloptionen korrekt. Ohne Änderungen geschlossen. Testsprache anschließend auf Deutsch zurückgestellt.
-- [x] HACS zeigt v1.1.0 und die englische README einschließlich geladenem Icon korrekt an. Dashboard unverändert (Hash 696d5f569f29e4af), bestehende Ressourcen-ID erhalten und automatisch auf 1.1.0 aktualisiert.
+- [x] [1.1.0 veröffentlicht](https://github.com/VexMex/paperless-ngx-Insights/releases/tag/v1.1.0), ausschließlich auf der isolierten Testinstanz über HACS aktualisiert und neu gestartet. Kompakte und große Karte in echter HA-Oberfläche auf Deutsch und Englisch geprüft. Großen Editor auf Englisch sowie kompakten Editor auf Deutsch geöffnet; Beschriftungen und Auswahloptionen korrekt. Ohne Änderungen geschlossen. Testsprache anschließend auf Deutsch zurückgestellt.
+- [x] HACS zeigt v1.1.0 und die englische README einschließlich geladenem Icon korrekt an. Dashboard unverändert, bestehende Ressourcen-ID erhalten und automatisch auf 1.1.0 aktualisiert.
 - [x] Nach HACS-Update erneut Live-Prüfungen für Schlüsselwechsel/Reload, kombinierte Suche/Pagination, geschützte PDF-/Thumbnail-Vorschau und vollständige PDF-/Original-Downloads bestanden. Kein Zugriff auf produktives HA.
 - Hinweis: Eigene Dashboard-/Ansichts-/Kartenüberschriften werden bewusst nicht automatisch übersetzt. Sprachwechsel bei laufender Suche bzw. offener Vorschau und zusätzliche Regional-/Fallback-Sprachen sind automatisiert geprüft; visuelle Abnahme erfolgte für DE/EN. Companion-Abdeckung bleibt unverändert offen.
 
@@ -45,8 +46,8 @@ Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Ve
 - [x] README auf HACS-Installation und Updates umgestellt; manuelle Alternative bleibt dokumentiert.
 - [x] Lokal 103 Client-Tests, 19 Frontendtests, Ruff und Formatprüfung erfolgreich.
 - [x] [GitHub Actions](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41292719992) erfolgreich: HACS-Validierung, 103 Client-Tests je Python-Version, 37 HA-Frameworktests, 19 Frontendtests; [Release v1.0.1](https://github.com/VexMex/paperless-ngx-Insights/releases/tag/v1.0.1) veröffentlicht.
-- [x] Benutzerdefiniertes Repository auf ha-test hinzugefügt und v1.0.1 tatsächlich über HACS installiert. Alle 15 Laufzeitdateien zurückgelesen: Textinhalt mit normalisierten Zeilenenden, PNG-Icons bytegenau identisch. Keine manuelle Dateiübertragung für diese Installation.
-- [x] Nach Neustart Suche mit mehreren Wörtern, Pagination, geschützte PDF-/Thumbnail-Vorschau und vollständig gestreamte PDF-/Original-Downloads geprüft. Schlüsselwechsel/Reload erfolgreich; genau eine Ressource auf 1.0.1. Dashboard-Konfiguration unverändert (Hash 696d5f569f29e4af). Eigenes Icon und Version in Geräte & Dienste sichtbar.
+- [x] Benutzerdefiniertes Repository auf der isolierten Testinstanz hinzugefügt und v1.0.1 tatsächlich über HACS installiert. Alle 15 Laufzeitdateien zurückgelesen: Textinhalt mit normalisierten Zeilenenden, PNG-Icons bytegenau identisch. Keine manuelle Dateiübertragung für diese Installation.
+- [x] Nach Neustart Suche mit mehreren Wörtern, Pagination, geschützte PDF-/Thumbnail-Vorschau und vollständig gestreamte PDF-/Original-Downloads geprüft. Schlüsselwechsel/Reload erfolgreich; genau eine Ressource auf 1.0.1. Dashboard-Konfiguration unverändert. Eigenes Icon und Version in Geräte & Dienste sichtbar.
 - [x] Sichtprüfung fand kaputten relativen README-Bildpfad innerhalb von HACS; vollständige Bildadresse für 1.0.2 eingesetzt.
 - [x] [CI für 1.0.2](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41293055466) vollständig grün; [v1.0.2 veröffentlicht](https://github.com/VexMex/paperless-ngx-Insights/releases/tag/v1.0.2). HACS erkannte das Update von v1.0.1 und installierte v1.0.2. Nach Neustart zeigt Geräte & Dienste das eigene Icon und Version 1.0.2; Ressource automatisch auf 1.0.2 aktualisiert, Dashboard-Hash unverändert. Suche, Vorschau, Downloads und Schlüssel-/Reload-Prüfungen erneut erfolgreich. File editor gestoppt, Start bleibt manuell.
 - [x] Korrigiertes README-Bild innerhalb von HACS abschließend visuell geprüft: eigenes Icon geladen, Version v1.0.2 als heruntergeladen angezeigt, HACS-Installationsanleitung lesbar.
@@ -61,9 +62,9 @@ Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Ve
 - [x] Kurzlebige HA-Downloadsignatur pro Dokument/Downloadart und aktueller Anmeldung; feste Upstream-Pfade, keine Redirects und sichere Dateinamen.
 - [x] Laufende Upstream-Antworten bei Unload schließen; Anmeldung und Rechte während Streaming prüfen.
 - [x] Lokal 103 Client-Tests und 19 Frontend-Tests bestanden, einschließlich großer synthetischer Dateien, Größenmeldung und Original-Download.
-- [x] [CI 0.1.0-dev.7](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41289561585) vollständig bestanden: 103 Client-Tests je Python-Version, 37 HA-Frameworktests und 19 Frontendtests. Dateien auf ha-test übertragen und zurückgelesen geprüft; Konfiguration validiert, nur Test-HA neu gestartet.
+- [x] [CI 0.1.0-dev.7](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41289561585) vollständig bestanden: 103 Client-Tests je Python-Version, 37 HA-Frameworktests und 19 Frontendtests. Dateien auf der isolierten Testinstanz übertragen und zurückgelesen geprüft; Konfiguration validiert, nur Testinstanz neu gestartet.
 - [x] Einrichtung/Updates zuerst live geprüft: ungültiger neuer Schlüssel abgewiesen, alte Verbindung erhalten, leerer Schlüssel beibehalten, gültigen vorhandenen Schlüssel erneut gespeichert, temporäre Browser-Adresse geändert und wiederhergestellt, Reload mit Suche und genau einer automatisch auf dev.7 aktualisierten Ressource erfolgreich.
-- [x] Anschließend PDF- und Original-Download über ha-test vollständig gestreamt abgerufen; Attachment/no-store und Ablehnung ohne Anmeldung/Signatur geprüft. Such-/PDF-/Thumbnail-Regressionsprüfungen bestanden.
+- [x] Anschließend PDF- und Original-Download über der isolierten Testinstanz vollständig gestreamt abgerufen; Attachment/no-store und Ablehnung ohne Anmeldung/Signatur geprüft. Such-/PDF-/Thumbnail-Regressionsprüfungen bestanden.
 - [x] Beide Download-Buttons im Browser sichtbar geprüft, PDF-Button angeklickt und Übergabe bestätigt. Browserautomation lieferte kein Download-Abschlussereignis; tatsächliches Speichern über die Browseroberfläche bleibt unbestätigt.
 - [x] Große Karte zusätzlich in einer temporären regulären Sections-Ansicht mit Suche, Bildern und Dokumentauswahl visuell geprüft. Testansicht entfernt, ursprüngliche zwei Ansichten exakt erhalten. File editor gestoppt, Start bleibt manuell.
 - [ ] Companion-/weitere Browser und native PDF-Seitenwahl/Zoom nur mit vorhandenen Geräten praktisch abnehmen; fehlende Abdeckung bleibt offen.
@@ -76,7 +77,7 @@ Details: [Dateien und Downloads](docs/downloads.md), [Einrichtung und Updates](d
 - [x] Neuladen erhält die gemeinsame Ressource; Entfernen der letzten Verbindung entfernt nur die eigene Modulressource. YAML-Ressourcen werden nicht verändert.
 - [x] Reconfigure: leerer/fehlender Schlüssel behält den bisherigen Schlüssel; neuer Schlüssel wird vor Speicherung geprüft. Einrichtung und Reauth verlangen weiterhin gültige Zugangsdaten.
 - [x] Zusätzliche HA-Tests für unveränderte Einstellungen bei ungültiger Anmeldung, Behalten des Schlüssels, Reload/Ressourcenupdate und Entfernen mehrerer Einträge geschrieben.
-- [x] Reconfigure mit ungültigem/leeren/gültigem Schlüssel und Reload auf ha-test erfolgreich geprüft; Reauth-Erfolg und Ablehnung mit unveränderten Einstellungen im echten HA-Testframework geprüft. Kein tatsächlicher Paperless-Schlüssel widerrufen. Automatisches Ressourcenupdate live bestätigt.
+- [x] Reconfigure mit ungültigem/leeren/gültigem Schlüssel und Reload auf der isolierten Testinstanz erfolgreich geprüft; Reauth-Erfolg und Ablehnung mit unveränderten Einstellungen im echten HA-Testframework geprüft. Kein tatsächlicher Paperless-Schlüssel widerrufen. Automatisches Ressourcenupdate live bestätigt.
 - [x] Danach Dateien/Darstellung und Downloads gemeinsam umgesetzt; siehe dev.7 mit 20-MiB-Vorschaugrenze und gestreamten Downloads.
 - [ ] Browser-/Companion-Abdeckung ehrlich getrennt dokumentieren; optionale persönliche API-Schlüssel bleiben zuletzt.
 
@@ -88,7 +89,7 @@ Details: [Dateien und Downloads](docs/downloads.md), [Einrichtung und Updates](d
 - [x] Visueller Editor für beide Karten: Verbindungsauswahl, Überschrift, Suchbereich, Trefferzahl; kompakt zusätzlich Klickverhalten, groß zusätzlich Höhe und Vorschaubilder. Zusätzliche YAML-/Layoutoptionen bleiben erhalten.
 - [x] Lokale Frontendtests: 17 erfolgreich, einschließlich Vorschauwechsel, Pagination, Bildfehler, begrenzter Parallelität und Editorereignissen/Validierung.
 - [x] [GitHub Actions](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41249145583) vollständig grün: 90 Client-Tests unter Python 3.10/3.14, 23 HA-Frameworktests und 17 Frontend-Tests.
-- [x] Auf ha-test installiert, Dateien vollständig zurückgelesen geprüft, Konfiguration validiert und ausschließlich Test-HA neu gestartet. Große Karte als Panel-Ansicht [Dokumente](http://192.168.178.147/paperless-test/dokumente) ergänzt; bisherige Suche bleibt erhalten.
+- [x] Auf der isolierten Testinstanz installiert, Dateien vollständig zurückgelesen geprüft, Konfiguration validiert und ausschließlich Testinstanz neu gestartet. Große Karte als Panel-Ansicht Dokumente (lokale Testansicht) ergänzt; bisherige Suche bleibt erhalten.
 - [x] Live im eingebauten Browser bei 1280×720 und 390×844 geprüft: Suche mit zehn Treffern, geladene Vorschaubilder/Datum, eingebettete Bildvorschau, Umblättern auf 11–20, Auswahl zurücksetzen sowie mobile Rücknavigation mit Fokusrückgabe erfolgreich.
 - [x] Beide visuellen Editoren in der tatsächlichen HA-Oberfläche geöffnet. Große Karte: Überschrift im Editor geändert und gespeichert; neue Konfiguration anschließend über MCP zurückgelesen (Titel Dokumentübersicht, übrige Optionen erhalten). Kompakte Karte zeigt Verbindung/Suchmodus/Seitenzahl/Klickverhalten korrekt.
 - [x] Bestehende Suche und geschützte PDF-/Thumbnail-Endpunkte nach Installation erneut live erfolgreich geprüft; anonyme Abrufe 401, ungültige ID 400. File editor anschließend gestoppt; Start bleibt manuell.
@@ -108,7 +109,7 @@ Details: [Große Karte und Editor](docs/document-card.md).
 - [x] Lokal 90 Client-Tests und 11 Frontend-Tests bestanden; Ruff, Format und Kompilierung erfolgreich. Größenlimit auch ohne Content-Length geprüft.
 - [x] Geschützte Raster-Bildvorschau der ersten Seite als Fallback ergänzt (PNG/JPEG/WebP, maximal 2 MiB, dieselben Adminrechte); ohne nativen PDF-Viewer automatisch, sonst per Button.
 - [x] [GitHub Actions](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41248280037) vollständig erfolgreich: 90 Client-Tests jeweils unter Python 3.10/3.14, 23 HA-Frameworktests und 11 Frontend-Tests.
-- [x] Dateien auf ha-test übertragen und zurückgelesen geprüft; Konfiguration validiert und ausschließlich Test-HA neu gestartet. PDF und Thumbnail authentifiziert erfolgreich, ohne Anmeldung jeweils 401; ungültige ID 400; no-store bestätigt. Suchregression live bestanden.
+- [x] Dateien auf der isolierten Testinstanz übertragen und zurückgelesen geprüft; Konfiguration validiert und ausschließlich Testinstanz neu gestartet. PDF und Thumbnail authentifiziert erfolgreich, ohne Anmeldung jeweils 401; ungültige ID 400; no-store bestätigt. Suchregression live bestanden.
 - [x] Test-Dashboard auf open_mode: preview umgestellt; Ressource auf ?v=0.1.0-dev.4-r2 aktualisiert. File editor anschließend gestoppt, Start bleibt manuell.
 - [x] Sichtprüfung im eingebauten Browser bei schmaler Ansicht und 1366×900: Dialog, Bildvorschau der ersten Seite, Schließen mit Fokusrückgabe und erneutes Öffnen eines anderen Dokuments erfolgreich. Keine Dokumentinhalte ins Repository übernommen.
 - [ ] Vollständige native PDF-Anzeige mit Seitenwahl/Zoom in eigenständigen Browsern und Companion praktisch prüfen. Im eingebauten Browser bleibt der native Viewer leer; der manuelle Button zur ersten Bildseite funktioniert. Automatische Umschaltung bei pdfViewerEnabled=false ist implementiert, meldete sich hier aber nicht.
@@ -125,7 +126,7 @@ Entscheidung und Grenzen: [PDF-Vorschau](docs/pdf-preview.md).
 - [x] Kartenhinweis und verständliche Fehlermeldung ergänzt.
 - [x] Lokale Regressionstests: **64 Client-Tests**, **7 Frontend-Tests**, Ruff, Formatprüfung und Kompilierung bestanden.
 - [x] Direkte Paperless-Live-Prüfung: **telekom rechnung mai liefert vier Treffer**. Umgestellte Reihenfolge, Großbuchstaben, engere Wortfolge, fehlender Begriff, getrennte Suchbereiche und Pagination erfolgreich geprüft.
-- [x] Version 0.1.0-dev.3 auf **ha-test / 192.168.178.147** übertragen und zurückgelesen geprüft; Konfiguration validiert und ausschließlich das Testsystem neu gestartet.
+- [x] Version 0.1.0-dev.3 auf **der isolierten Testinstanz** übertragen und zurückgelesen geprüft; Konfiguration validiert und ausschließlich das Testsystem neu gestartet.
 - [x] Neue Suche über die tatsächliche HA-WebSocket-Schnittstelle unter dem Testbenutzer geprüft, einschließlich kontrollierter Fehlermeldung bei ungeschlossenen Anführungszeichen.
 - [x] Frontend-Ressource auf ?v=0.1.0-dev.3 aktualisiert; Auslieferung des neuen Moduls geprüft. File editor anschließend wieder gestoppt.
 - [x] [GitHub-Actions-Lauf](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41201471773) vollständig erfolgreich: jeweils 64 Client-Tests unter Python 3.10/3.14, 13 HA-Frameworktests und 7 Frontend-Tests.
@@ -137,12 +138,12 @@ Keine privaten Dokumentinhalte oder Zugangsdaten wurden in das Repository übern
 
 ## Vorheriger Entwicklungsstand – 0.1.0-dev.2
 
-**0.1.0-dev.2: Backend und erste kompakte Suchkarte auf ha-test eingerichtet.**
+**0.1.0-dev.2: Backend und erste kompakte Suchkarte auf der isolierten Testinstanz eingerichtet.**
 
-- [x] Integrationsdateien und Suchkarten-Modul auf **192.168.178.147** übertragen und vollständig zurückgelesen/per Hash geprüft.
-- [x] HA-Konfiguration geprüft, ausschließlich ha-test neu gestartet und Paperless über den regulären Config Flow eingerichtet.
+- [x] Integrationsdateien und Suchkarten-Modul auf die isolierte Testinstanz übertragen und vollständig zurückgelesen/per Hash geprüft.
+- [x] HA-Konfiguration geprüft, ausschließlich der isolierten Testinstanz neu gestartet und Paperless über den regulären Config Flow eingerichtet.
 - [x] Integration meldet **loaded**. Der bereitgestellte Schlüssel ist im HA-Konfigurationseintrag hinterlegt, nicht im Repository.
-- [x] Dashboard **Paperless** mit Ansicht **Suche** und versionierter JavaScript-Ressource angelegt: [Test-Dashboard](http://192.168.178.147/paperless-test/suche).
+- [x] Dashboard **Paperless** mit Ansicht **Suche** und versionierter JavaScript-Ressource angelegt: Test-Dashboard (lokale Testansicht).
 - [x] Im Browser geprüft: Karte lädt, fünf Titel pro Seite, Weiterblättern auf Treffer 6–10, neue Titelsuche setzt Seite auf 1 zurück, Auswahl Titel/Inhalt und Links für neue Tabs vorhanden.
 - [x] Neue kompakte Karte mit sicherer Textausgabe, getrenntem Suchzustand, Lade-/Fehlerzuständen und Verwerfen veralteter Antworten implementiert.
 - [x] Lokale Tests: **52 Client-Tests**, **6 Frontend-Tests**, Ruff, Format- und Kompilierungsprüfung bestanden.
@@ -187,12 +188,12 @@ Dieser Plan wird mit jedem abgeschlossenen Entwicklungsschritt und jeder relevan
 
 ### Verbindliche Entwicklungs- und Testumgebung
 
-- Ausschließlich den MCP-Server **ha-test** für Entwicklung, Installation und Live-Tests dieser Integration verwenden.
-- Vom Benutzer zugeordnetes Testsystem: **192.168.178.147**. Der produktive Home Assistant darf für diese Entwicklung und Tests nicht verwendet oder verändert werden.
-- Vor jeder Live-Änderung sicherstellen, dass der Aufruf über ha-test erfolgt; niemals auf den produktiven MCP-Server ausweichen, wenn ha-test nicht verfügbar ist.
+- Ausschließlich den MCP-Server **der isolierten Testinstanz** für Entwicklung, Installation und Live-Tests dieser Integration verwenden.
+- Vom Benutzer zugeordnetes Testsystem: die isolierte Testinstanz. Der produktive Home Assistant darf für diese Entwicklung und Tests nicht verwendet oder verändert werden.
+- Vor jeder Live-Änderung sicherstellen, dass der Aufruf über der isolierten Testinstanz erfolgt; niemals auf den produktiven MCP-Server ausweichen, wenn der isolierten Testinstanz nicht verfügbar ist.
 - Lokale Builds und automatisierte Tests mit Mocks sind ergänzend zulässig; alle Live-HA-Tests erfolgen ausschließlich auf dem genannten Testsystem.
 - Zugangsdaten und Tokens weder hier noch in Quellcode, Test-Fixtures oder Commit-Nachrichten speichern.
-- [x] 31.10.2026: Verbindung über ha-test erfolgreich geprüft (ha_get_overview, success=true).
+- [x] 31.10.2026: Verbindung über der isolierten Testinstanz erfolgreich geprüft (ha_get_overview, success=true).
 - Gemeldeter Stand: Home Assistant **2026.10.4**, Zustand **RUNNING**, ha-mcp **9.0.0**.
 - Die vom MCP-Server gemeldete interne Basisadresse ist http://supervisor/core. Die IP-Zuordnung stammt aus der Benutzerangabe und ist dadurch nicht unabhängig bestätigt.
 - Integration und Suchkarte inzwischen installiert und im Browser geprüft; siehe aktuellen Entwicklungsstand und Live-Testbericht.
@@ -201,8 +202,8 @@ Dieser Plan wird mit jedem abgeschlossenen Entwicklungsschritt und jeder relevan
 
 ### Integration
 
-- [x] Einrichtung über Config Flow mit Paperless-Adresse und API-Schlüssel implementiert und auf ha-test erfolgreich ausgeführt.
-- [x] Zugriff auf Dokumentliste vor Abschluss der Einrichtung prüfen; mit bereitgestelltem Schlüssel auf ha-test bestätigt.
+- [x] Einrichtung über Config Flow mit Paperless-Adresse und API-Schlüssel implementiert und auf der isolierten Testinstanz erfolgreich ausgeführt.
+- [x] Zugriff auf Dokumentliste vor Abschluss der Einrichtung prüfen; mit bereitgestelltem Schlüssel auf der isolierten Testinstanz bestätigt.
 - [x] Schlüssel ausschließlich serverseitig verwenden; Karten verwenden die HA-WebSocket-Schnittstelle und enthalten keine Paperless-Zugangsdaten.
 - [x] Adresse und Schlüssel nachträglich ändern; bei leerem Feld Schlüssel behalten. Live geprüft; Reauth im HA-Framework einschließlich ungültiger Eingaben geprüft.
 - [x] Optional getrennte interne API-Adresse und vom Browser erreichbare Paperless-Adresse unterstützen; Links verwenden Browser-Adresse, Vorschau die interne API.
@@ -364,7 +365,7 @@ Tests: verspätete Antwort überschreibt keine neue Suche; zwei Karten beeinflus
 
 Abhängigkeit: gemeinsame Frontend-Bausteine.
 
-- [x] Kartentyp, Kartenauswahl-Eintrag und visuellen Editor bereitgestellt und auf ha-test geöffnet.
+- [x] Kartentyp, Kartenauswahl-Eintrag und visuellen Editor bereitgestellt und auf der isolierten Testinstanz geöffnet.
 - [x] Optionen: Integrationseintrag, Überschrift, Suchmodus, Treffer pro Seite (Standard 5), Klickverhalten.
 - [x] Titelzeilen ohne dauerhaft geladene Thumbnails umgesetzt; Titel umbrechen und werden als Text ausgegeben.
 - [x] Vor-/Zurück-Pfeile und Trefferbereich korrekt berechnen.
@@ -465,10 +466,10 @@ Bereits zur Orientierung herangezogen; konkrete Versionskompatibilität bleibt i
 
 Vor den Live-Integrationstests aus einer autorisierten Testumgebung ermitteln:
 
-- [x] Test-Home-Assistant vom Benutzer bereitgestellt; ha-test erreichbar, HA 2026.10.4 (31.10.2026).
+- [x] Test-Home-Assistant vom Benutzer bereitgestellt; der isolierten Testinstanz erreichbar, HA 2026.10.4 (31.10.2026).
 - [x] Bereitgestellter Paperless-Testzugang funktioniert für lesende API-Aufrufe.
 - [ ] Paperless-Anwendungsversion separat bestätigen; unterstützte Mindestversionen bleiben offen.
-- [x] Paperless-Adresse vom Benutzer erhalten: http://192.168.178.10:8810; Anmeldeseite erreichbar. Externe Adresse/Unterpfad noch nicht benötigt bzw. ungeprüft.
+- [x] Paperless-Testzugang vom Benutzer erhalten; Anmeldeseite erreichbar. Externe Adresse/Unterpfad noch nicht benötigt bzw. ungeprüft.
 - [ ] Eingeschränkter Testzugang und gewünschter Kreis berechtigter HA-Benutzer.
 - [ ] Relevante Browser/Companion-Geräte und typische Dokumentformate/-größen.
 

@@ -332,7 +332,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
         .preview-title { flex:1; min-width:0; font-size:18px; line-height:1.35; overflow-wrap:anywhere; margin:0; }
         .preview-status { margin:0; font-size:13px; line-height:1.35; flex-shrink:0; }
         .preview-actions { display:flex; gap:8px; flex-wrap:wrap; flex-shrink:0; }
-        .preview-actions a,.preview-actions button,.preview-close { display:inline-flex; align-items:center;
+        .preview-actions a,.preview-actions button,.preview-close { box-sizing:border-box; display:inline-flex; align-items:center;
           justify-content:center; gap:6px; min-height:44px; min-width:44px; padding:8px 10px;
           font-size:14px; line-height:1.2; border:1px solid var(--divider-color); border-radius:8px;
           background:transparent; color:var(--primary-color); text-decoration:none; }
@@ -376,7 +376,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
         <div class="preview-header"><h3 id="preview-title" class="preview-title"></h3>
           <button class="preview-close" data-i18n-aria-label="close_preview" data-i18n-title="close_preview"><ha-icon icon="mdi:close" aria-hidden="true"></ha-icon><span class="action-label" data-i18n="close"></span></button></div>
         <div class="preview-actions"><a class="paperless-link" target="_blank" rel="noopener noreferrer" data-i18n-aria-label="open_paperless" data-i18n-title="open_paperless"><ha-icon icon="mdi:open-in-new" aria-hidden="true"></ha-icon><span class="action-label" data-i18n="open_paperless"></span></a>
-          <button class="preview-download" hidden data-i18n-aria-label="download_pdf" data-i18n-title="download_pdf"><ha-icon icon="mdi:file-download-outline" aria-hidden="true"></ha-icon><span class="action-label" data-i18n="download_pdf"></span></button>
+          <button class="preview-download" hidden data-i18n-aria-label="download_pdf" data-i18n-title="download_pdf"><ha-icon icon="mdi:file-pdf-box" aria-hidden="true"></ha-icon><span class="action-label" data-i18n="download_pdf"></span></button>
           <button class="original-download" hidden data-i18n-aria-label="download_original" data-i18n-title="download_original"><ha-icon icon="mdi:download" aria-hidden="true"></ha-icon><span class="action-label" data-i18n="download_original"></span></button>
           <button class="show-thumbnail" data-i18n-aria-label="show_first_page" data-i18n-title="show_first_page"><ha-icon icon="mdi:file-image-outline" aria-hidden="true"></ha-icon><span class="action-label" data-i18n="show_first_page"></span></button></div>
         <p class="preview-status" role="status" aria-live="polite"></p>
