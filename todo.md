@@ -19,7 +19,8 @@ Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Ve
 ## Aktueller Entwicklungsstand – Hassfest-Erstprüfung
 
 - [x] Offizielle Hassfest-Action als eigenständigen Workflow ergänzt: Push, Pull Request und manueller Start; keine übersprungenen Prüfungen.
-- [ ] Ersten GitHub-Lauf auswerten und tatsächliche Beanstandungen dokumentieren. Auf Nutzerwunsch zunächst keine Fehlerbehebungen oder Änderungen am Integrationscode.
+- [x] [Erster Hassfest-Lauf](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41328369753) erfolgreich: `Integrations: 1`, `Invalid integrations: 0`. Unter anderem Manifest, Codeowners, Abhängigkeiten, Config Flow, JSON und Übersetzungen bestanden. Keine Hassfest-Beanstandungen an der Integration; keine Behebungen oder Änderungen am Integrationscode vorgenommen.
+- [ ] Optionaler GitHub-Runner-Hinweis: `actions/checkout@v4` zielt noch auf Node.js 20 und wurde vom Runner erfolgreich mit Node.js 24 ausgeführt. Kein Integrationsfehler; auf Nutzerwunsch zunächst unverändert belassen.
 
 ## Vorheriger Entwicklungsstand – Mobile Dokumentvorschau 1.1.1 / 1.1.2
 
@@ -436,7 +437,7 @@ Abnahme: Ein Dashboard-Tab bietet benutzbare Suche, Treffer und Dokumentanzeige 
 - [ ] Python-Linting, relevante Typprüfung und Backend-Tests in CI einrichten.
 - [ ] Frontend-Linting, Typprüfung, Komponententests und reproduzierbaren Produktionsbuild in CI einrichten.
 - [x] HACS-Validator in CI integriert und für 1.0.1 sowie 1.0.2 bestanden; lokale Markenbilder nach aktuellen HA-Anforderungen eingebunden.
-- [ ] Zusätzliche Hassfest-/Übersetzungsprüfung integrieren.
+- [x] Zusätzliche Hassfest-Prüfung einschließlich Übersetzungsvalidierung integriert; erster Lauf erfolgreich (siehe aktueller Entwicklungsstand).
 - [x] HACS liefert ausschließlich den Integrationsordner mit Backend, Karten, Übersetzungen und Icon aus; tatsächliche Installation zurückgelesen. Keine Zugangsdaten, privaten Dokumente oder Entwicklungsartefakte im Paket.
 - [ ] README um Einrichtung, API-Schlüssel-Erstellung, Berechtigungen und beide Karten erweitern.
 - [ ] Beispiele für kompakte Karte und große Karte in eigenem Dashboard-Tab bereitstellen.
