@@ -16,7 +16,12 @@ Einrichtung/Schlüsselwechsel, Updates und Downloads sind live abgesichert.
 HACS-Auslieferung einschließlich Installations-/Updateprüfung ist abgeschlossen. Erweiterte
 Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
 
-## Aktueller Entwicklungsstand – Mobile Dokumentvorschau 1.1.1 / 1.1.2
+## Aktueller Entwicklungsstand – Hassfest-Erstprüfung
+
+- [x] Offizielle Hassfest-Action als eigenständigen Workflow ergänzt: Push, Pull Request und manueller Start; keine übersprungenen Prüfungen.
+- [ ] Ersten GitHub-Lauf auswerten und tatsächliche Beanstandungen dokumentieren. Auf Nutzerwunsch zunächst keine Fehlerbehebungen oder Änderungen am Integrationscode.
+
+## Vorheriger Entwicklungsstand – Mobile Dokumentvorschau 1.1.1 / 1.1.2
 
 - [x] Schmale Vorschau: kompakte Symbolleiste mit lokalisierten zugänglichen Namen/Tooltips, 44-Pixel-Touchflächen, zweizeiliger Dokumenttitel und kompakter Schließen-/Zurück-Aktion.
 - [x] Smartphone-Dialog nutzt die verfügbare Bildschirmfläche einschließlich Safe-Area-Abständen. Eingebettete Vorschau reagiert auf ihre tatsächliche Breite per Container Query.
