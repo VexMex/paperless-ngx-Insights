@@ -18,6 +18,8 @@ Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Ve
 
 ## Aktueller Entwicklungsstand – Lokalisierung 1.1.0
 
+- [x] Meldung „Karten nach neuer HACS-Einrichtung nicht in der Suche“ untersucht: Beide Karten erscheinen mit 1.1.0 in einem frischen Browser auf einem leeren temporären ha-test-Dashboard, ohne zuvor vorhandene Paperless-Karte. Nutzer bestätigt: Nach Strg+F5 auf seiner neuen Installation ebenfalls sichtbar. Kein Codefehler reproduziert; Browser hatte die neue Karten-Ressource noch nicht geladen. Hinweis zum vollständigen Neuladen in README ergänzt. Temporäres Test-Dashboard nach Prüfung unverändert entfernt.
+
 - [x] Gemeinsame eingebundene DE-/EN-Übersetzungen für kompakte/große Karte und visuellen Editor ergänzt: Beschriftungen, Status-/Fehlermeldungen, Vorschau, Downloads, Seitennavigation, Standardüberschriften und zugängliche Namen.
 - [x] Sprache folgt `hass.language`, ersatzweise HA-Locale/Systemsprache. Sprachvarianten wie de-AT werden erkannt; andere Sprachen verwenden Englisch. Kartenüberschriften aus eigener Konfiguration und Dokumenttitel bleiben unverändert.
 - [x] Sprachwechsel aktualisiert bestehende Elemente, laufende Suche und Vorschau ohne neue Anfragen; neue Karten speichern keine sprachgebundene Standardüberschrift.

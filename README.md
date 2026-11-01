@@ -46,6 +46,8 @@ After setup, reload your dashboard and select **Edit dashboard → Add card**. C
 - **Paperless-ngx Insights · Search** for the compact results list.
 - **Paperless-ngx Insights · Document overview** for the larger view with thumbnails.
 
+If searching for `paperless` does not show the cards immediately after setup, close the card picker and fully reload the Home Assistant browser page with **Ctrl+F5** (or **Cmd+Shift+R** on macOS). Then open the card picker again. In the Companion app, use **Reset frontend cache** if reloading does not help.
+
 For a dedicated dashboard tab, use a **Panel** view with the document overview as its only card. The visual editor lets you adjust the heading, search scope, results per page and other options. The card resource is registered automatically for dashboards managed through the Home Assistant interface.
 
 ## Notes
