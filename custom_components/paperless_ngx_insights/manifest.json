@@ -3,11 +3,11 @@
   "name": "Paperless-ngx Insights",
   "codeowners": ["@VexMex"],
   "config_flow": true,
-  "dependencies": ["websocket_api"],
+  "dependencies": ["lovelace", "websocket_api"],
   "documentation": "https://github.com/VexMex/paperless-ngx-Insights",
   "integration_type": "service",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/VexMex/paperless-ngx-Insights/issues",
   "requirements": [],
-  "version": "0.1.0-dev.5"
+  "version": "0.1.0-dev.6"
 }

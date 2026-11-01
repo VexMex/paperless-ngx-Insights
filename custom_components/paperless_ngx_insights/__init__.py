@@ -13,6 +13,7 @@ from homeassistant.helpers.typing import ConfigType
 from .client import Forbidden, InvalidAuth, InvalidResponse, PaperlessClient, PaperlessError
 from .const import CONF_TOKEN, CONF_URL, DOMAIN
 from .http import PreviewView, ThumbnailView
+from .resources import async_manage_resource
 from .websocket import async_register_commands
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
@@ -43,9 +44,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         raise ConfigEntryError("Paperless API access or response is invalid") from err
     except PaperlessError as err:
         raise ConfigEntryNotReady("Paperless is temporarily unavailable") from err
+    await async_manage_resource(hass)
     entry.runtime_data = client
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = client
     return True
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Remove our module only when the last configured connection is removed."""
+    if not any(
+        other.entry_id != entry.entry_id for other in hass.config_entries.async_entries(DOMAIN)
+    ):
+        await async_manage_resource(hass, remove=True)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

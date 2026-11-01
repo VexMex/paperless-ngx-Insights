@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Paperless-ngx Insights",
-        "description": "Verbinde Paperless. Der Dokumentzugriff ist in diesem Entwicklungsstand auf HA-Administratoren beschränkt. Die Browser-Adresse ist nur für spätere externe Dokumentlinks vorgesehen.",
+        "description": "Verbinde Paperless. Der Dokumentzugriff ist auf HA-Administratoren beschränkt. Die optionale Browser-Adresse wird für Links zur Paperless-Oberfläche verwendet.",
         "data": {
           "url": "Paperless-Adresse",
           "token": "API-Schlüssel",
@@ -13,6 +13,7 @@
       },
       "reconfigure": {
         "title": "Verbindung ändern",
+        "description": "Ein leeres Schlüsselfeld behält den vorhandenen API-Schlüssel. Neue Zugangsdaten werden vor dem Speichern geprüft.",
         "data": {
           "url": "Paperless-Adresse",
           "token": "API-Schlüssel",

@@ -21,13 +21,17 @@ from .client import (
 from .const import CONF_TOKEN, CONF_URL, CONF_WEB_URL, DOMAIN
 
 
-def connection_schema(defaults: Mapping[str, Any] | None = None) -> probatio.Schema:
+def connection_schema(
+    defaults: Mapping[str, Any] | None = None, *, reconfigure: bool = False
+) -> probatio.Schema:
     """Never prefill the token in a browser-visible form."""
     values = defaults or {}
     return probatio.Schema(
         {
             probatio.Required(CONF_URL, default=values.get(CONF_URL, "")): str,
-            probatio.Required(probatio.Secret(CONF_TOKEN)): str,
+            (probatio.Optional if reconfigure else probatio.Required)(
+                probatio.Secret(CONF_TOKEN)
+            ): str,
             probatio.Optional(CONF_WEB_URL, default=values.get(CONF_WEB_URL, "")): str,
         }
     )
@@ -104,7 +108,10 @@ class PaperlessInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
         entry = self._get_reconfigure_entry()
         errors = {}
         if user_input is not None:
-            data, errors = await self._validate(user_input)
+            values = {**entry.data, **user_input}
+            if not user_input.get(CONF_TOKEN, "").strip():
+                values[CONF_TOKEN] = entry.data[CONF_TOKEN]
+            data, errors = await self._validate(values)
             if not errors:
                 if any(
                     other.entry_id != entry.entry_id and other.unique_id == data[CONF_URL]
@@ -115,6 +122,6 @@ class PaperlessInsightsConfigFlow(ConfigFlow, domain=DOMAIN):
                 return self.async_update_reload_and_abort(entry, data_updates=data)
         return self.async_show_form(
             step_id="reconfigure",
-            data_schema=connection_schema(user_input or entry.data),
+            data_schema=connection_schema(user_input or entry.data, reconfigure=True),
             errors=errors,
         )

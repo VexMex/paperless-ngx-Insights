@@ -1,6 +1,6 @@
 # Entwicklungsplan: paperless-ngx-Insights
 
-Stand: 31.10.2026
+Stand: 01.11.2026
 Repository: https://github.com/VexMex/paperless-ngx-Insights
 Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Dokumenten.
 
@@ -16,7 +16,17 @@ Nächste Prioritäten: todo bereinigen, Einrichtung/Schlüsselwechsel/Reauth und
 live absichern, danach HACS-Auslieferung und Release-Vorbereitung. Erweiterte
 Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
 
-## Aktueller Entwicklungsstand – Große Karte und Editor 0.1.0-dev.5
+## Aktueller Entwicklungsstand – Einrichtung und Updates 0.1.0-dev.6
+
+- [x] Automatische versionierte Registrierung/Aktualisierung der eigenen Karten-Ressource für HA-Storage-Dashboards implementiert; doppelte eigene Einträge bereinigen, fremde Ressourcen erhalten.
+- [x] Neuladen erhält die gemeinsame Ressource; Entfernen der letzten Verbindung entfernt nur die eigene Modulressource. YAML-Ressourcen werden nicht verändert.
+- [x] Reconfigure: leerer/fehlender Schlüssel behält den bisherigen Schlüssel; neuer Schlüssel wird vor Speicherung geprüft. Einrichtung und Reauth verlangen weiterhin gültige Zugangsdaten.
+- [x] Zusätzliche HA-Tests für unveränderte Einstellungen bei ungültiger Anmeldung, Behalten des Schlüssels, Reload/Ressourcenupdate und Entfernen mehrerer Einträge geschrieben.
+- [ ] CI und Live-Prüfung von Reconfigure, Reauth und Reload auf ha-test abschließen.
+- [ ] Danach Dateien/Darstellung und Downloads gemeinsam abschließen: Vorschau bleibt auf 20 MiB begrenzt, größere PDFs erhalten Größenmeldung und speicherschonenden Download.
+- [ ] Browser-/Companion-Abdeckung ehrlich getrennt dokumentieren; optionale persönliche API-Schlüssel bleiben zuletzt.
+
+## Vorheriger Entwicklungsstand – Große Karte und Editor 0.1.0-dev.5
 
 - [x] Große Karte `custom:paperless-ngx-insights-documents` mit gemeinsamer Suche, Pagination, Datum und geschützten Vorschaubildern implementiert.
 - [x] Eingebettete Dokumentansicht neben der Trefferliste; schmale Kartenbreiten wechseln zwischen Liste und Dokument, mit Rückweg und Fokusrückgabe.
@@ -421,3 +431,4 @@ Auf ausdrücklichen Nutzerwunsch nach allen übrigen Arbeitspaketen, nur falls b
 Kein eigener Modus „nur ansehen, nicht herunterladen“ geplant. Die PDF-Vorschau
 überträgt die Datei bereits an den Browser; ein versteckter Download-Button würde
 das Speichern nicht zuverlässig verhindern.
+

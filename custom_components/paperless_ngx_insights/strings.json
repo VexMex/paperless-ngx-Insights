@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Paperless-ngx Insights",
-        "description": "Connect Paperless. Document access in this development build is limited to HA administrators. The browser address is reserved for future external document links.",
+        "description": "Connect Paperless. Document access is limited to HA administrators. The optional browser address is used for links to the Paperless interface.",
         "data": {
           "url": "Paperless address",
           "token": "API token",
@@ -13,6 +13,7 @@
       },
       "reconfigure": {
         "title": "Change connection",
+        "description": "Leave the token blank to retain the current API token. New credentials are checked before saving.",
         "data": {
           "url": "Paperless address",
           "token": "API token",

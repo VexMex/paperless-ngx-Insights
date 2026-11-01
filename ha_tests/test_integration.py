@@ -111,3 +111,90 @@ async def test_reauth_and_reconfigure(hass, source):
         await hass.async_block_till_done()
     assert result["type"] is FlowResultType.ABORT
     assert entry.data["token"] == "replacement-token"
+
+
+@pytest.mark.parametrize("token", [None, "", "   "])
+async def test_reconfigure_can_retain_secret(hass, token):
+    entry = MockConfigEntry(domain=DOMAIN, unique_id=DATA["url"], data=DATA)
+    entry.add_to_hass(hass)
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": SOURCE_RECONFIGURE, "entry_id": entry.entry_id}
+    )
+    assert "fixture-token" not in str(result)
+    values = {"url": DATA["url"], "web_url": "https://paperless.browser.test"}
+    if token is not None:
+        values["token"] = token
+    with (
+        patch(VALIDATE, new_callable=AsyncMock),
+        patch.object(hass.config_entries, "async_reload", return_value=True),
+    ):
+        result = await hass.config_entries.flow.async_configure(result["flow_id"], values)
+    assert result["type"] is FlowResultType.ABORT
+    assert entry.data["token"] == DATA["token"]
+    assert entry.data["web_url"] == values["web_url"]
+
+
+@pytest.mark.parametrize("source", [SOURCE_RECONFIGURE, SOURCE_REAUTH])
+async def test_invalid_update_preserves_working_connection(hass, source):
+    entry = MockConfigEntry(domain=DOMAIN, unique_id=DATA["url"], data=DATA)
+    entry.add_to_hass(hass)
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": source, "entry_id": entry.entry_id},
+        data=DATA if source == SOURCE_REAUTH else None,
+    )
+    with (
+        patch(VALIDATE, side_effect=InvalidAuth()),
+        patch.object(hass.config_entries, "async_reload", new_callable=AsyncMock) as reload,
+    ):
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {**DATA, "token": "invalid-fixture"}
+            if source == SOURCE_RECONFIGURE
+            else {"token": "invalid-fixture"},
+        )
+    assert result["errors"] == {"base": "invalid_auth"}
+    assert entry.data == DATA
+    reload.assert_not_awaited()
+
+
+async def test_reload_resources_and_remove_last_entry(hass):
+    from homeassistant.components.lovelace.const import LOVELACE_DATA
+
+    entries = [
+        MockConfigEntry(
+            domain=DOMAIN,
+            unique_id=f"http://fixture-{i}.test",
+            data={**DATA, "url": f"http://fixture-{i}.test"},
+        )
+        for i in range(2)
+    ]
+    for entry in entries:
+        entry.add_to_hass(hass)
+    with patch(VALIDATE, new_callable=AsyncMock):
+        for entry in entries:
+            assert await hass.config_entries.async_setup(entry.entry_id)
+        collection = hass.data[LOVELACE_DATA].resources
+        own = list(collection.async_items())
+        assert len(own) == 1
+        resource_id = own[0]["id"]
+        assert own[0]["url"].endswith("?v=0.1.0-dev.6")
+        await collection.async_update_item(
+            resource_id, {"url": own[0]["url"].split("?")[0] + "?v=old"}
+        )
+        unrelated = await collection.async_create_item(
+            {"url": "/local/unrelated.js", "res_type": "module"}
+        )
+        old_client = entries[0].runtime_data
+        assert await hass.config_entries.async_reload(entries[0].entry_id)
+        assert entries[0].runtime_data is not old_client
+        with pytest.raises(CannotConnect):
+            await old_client.search("old")
+        assert len(list(collection.async_items())) == 2
+        assert next(item for item in collection.async_items() if item["id"] == resource_id)[
+            "url"
+        ].endswith("?v=0.1.0-dev.6")
+        assert await hass.config_entries.async_remove(entries[0].entry_id)
+        assert len(list(collection.async_items())) == 2
+        assert await hass.config_entries.async_remove(entries[1].entry_id)
+        assert [item["id"] for item in collection.async_items()] == [unrelated["id"]]
