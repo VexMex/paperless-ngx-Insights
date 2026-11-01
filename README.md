@@ -1,193 +1,49 @@
 # Paperless-ngx Insights
 
-Home-Assistant-Integration zum Suchen und Anzeigen von Paperless-ngx-Dokumenten.
+Mit Paperless-ngx Insights kannst du dein Dokumentenarchiv direkt in Home Assistant durchsuchen und Dokumente ansehen. So findest du zum Beispiel Rechnungen oder Briefe, ohne zuerst die Paperless-Oberfläche öffnen zu müssen.
 
-**Entwicklungsstand 0.1.0-dev.7:** Beide Karten mit visuellen Editoren, automatischer Ressourcenverwaltung und gestreamten PDF-/Original-Downloads sind implementiert:
-Einrichtung über die Oberfläche, Verbindungstest, erneute Anmeldung,
-Ändern der Verbindung, getrennte Browser-Adresse und eine administrativ
-geschützte Suchschnittstelle mit serverseitiger Pagination.
+## Funktionen
 
-Die kompakte Karte zeigt fünf Titel pro Seite, Pfeile zum Blättern und öffnet
-Dokumente wahlweise in einem neuen Paperless-Tab oder als eingebettete PDF-Vorschau.
-Die große Karte zeigt Vorschaubilder, Datum und eine eingebettete Dokumentansicht.
-Beide Karten sind über einen visuellen Editor einstellbar. Diese Version ist kein fertiges Release. Der aktuelle
-Arbeits- und Teststand steht in [todo.md](todo.md).
+- **Dokumentensuche:** Suche im Titel oder in Titel und Inhalt. Mehrere Suchwörter werden gemeinsam berücksichtigt.
+- **Kompakte Suchkarte:** Eine einfache Trefferliste mit fünf Dokumenten pro Seite und Pfeilen zum Blättern.
+- **Große Dokumentübersicht:** Treffer mit Vorschaubildern und Datum sowie eine Dokumentansicht für einen ganzen Dashboard-Tab.
+- **Vorschau und Downloads:** PDFs in Home Assistant ansehen, PDF oder Originaldatei herunterladen oder das Dokument in Paperless öffnen.
+- **Visueller Editor:** Beide Karten lassen sich über die Oberfläche einstellen.
 
-## Entwicklung und Tests
+Die Integration liest Dokumente aus Paperless. Sie verändert oder löscht keine Dokumente.
 
-- Ausschließlich **ha-test**, vom Eigentümer dem System **192.168.178.147**
-  zugeordnet, für alle Live-HA-Tests verwenden. Keine Tests am produktiven HA.
-- Aktuelles HA-Testziel: **2026.10.4**, Python **ab 3.14.2**. Andere HA-Versionen
-  sind noch nicht bestätigt. Die portable HTTP-Client-Testsuite läuft auch auf
-  Python 3.10; das bedeutet keine HA-Unterstützung auf Python 3.10.
-- Paperless-Testadresse: **http://192.168.178.10:8810**. Die Anmeldeseite wurde
-  erreicht. Erste authentifizierte Such-/Dateiprüfungen sind bestanden; siehe
-  [Live-Testbericht](docs/live-tests.md). Die Integration und Suchkarte sind auf
-  ha-test installiert und im Browser geprüft. Die separate Bestätigung der
-  Paperless-Anwendungsversion bleibt offen.
-- Zugriff auf die Suchschnittstelle haben zunächst nur HA-Administratoren.
-  Der Paperless-Schlüssel bestimmt zusätzlich die Paperless-Dokumentrechte.
-- API-Schlüssel werden ausschließlich im HA-Konfigurationseintrag gehalten.
-  Keine Zugangsdaten in YAML-Karten, Repository oder Testdaten eintragen.
+## Installation
 
-### Lokale Tests mit künstlichen Dokumentdaten
+Du benötigst Home Assistant, eine erreichbare Paperless-ngx-Instanz und einen Paperless-API-Schlüssel mit Leserechten für die gewünschten Dokumente.
 
-```sh
-python -m venv .venv
-# Die virtuelle Umgebung passend zum Betriebssystem aktivieren.
-python -m pip install -r requirements-test.txt
-ruff check .
-ruff format --check .
-python -m compileall -q custom_components
-python -m pytest -q
-npm ci --ignore-scripts --no-audit --no-fund
-npm test
-```
+Die Installation erfolgt momentan manuell:
 
-Die HTTP-Tests starten ausschließlich einen lokalen synthetischen Server; sie
-greifen nicht auf einen Home Assistant oder ein reales Dokumentarchiv zu.
+1. [Repository als ZIP herunterladen](https://github.com/VexMex/paperless-ngx-Insights/archive/refs/heads/main.zip) und entpacken.
+2. Den enthaltenen Ordner `custom_components/paperless_ngx_insights` in das Verzeichnis `custom_components` deiner Home-Assistant-Konfiguration kopieren. Das Ziel ist normalerweise `/config/custom_components/paperless_ngx_insights/`.
+3. Home Assistant neu starten.
+4. Unter **Einstellungen → Geräte & Dienste → Integration hinzufügen** nach **Paperless-ngx Insights** suchen.
+5. Deine Paperless-Adresse und den API-Schlüssel eintragen. Die optionale **Browser-Adresse** benötigst du nur, wenn du Paperless im Browser über eine andere Adresse öffnest.
 
-Die HA-Frameworktests benötigen Linux und Python ab 3.14.2:
+## Karten zum Dashboard hinzufügen
 
-```sh
-python -m pip install -r requirements-ha-test.txt
-python -m pytest -q ha_tests
-```
+Nach der Einrichtung das Dashboard neu laden und über **Dashboard bearbeiten → Karte hinzufügen** eine der beiden Karten auswählen:
 
-Beide Testarten werden in GitHub Actions ausgeführt. CI ersetzt die noch offenen
-Live-Tests auf ha-test nicht.
+- **Paperless-ngx Insights · Suche** für die kompakte Trefferliste.
+- **Paperless-ngx Insights · Dokumentübersicht** für die große Ansicht mit Vorschaubildern.
 
-## Einrichtung der Entwicklungsversion auf ha-test
+Für einen ganzen Tab eine Ansicht vom Typ **Panel** mit der Dokumentübersicht als einziger Karte verwenden. In den Karteneinstellungen kannst du unter anderem Überschrift, Suchbereich und Trefferzahl anpassen. Die Karten-Ressource wird bei über die Oberfläche verwalteten Dashboards automatisch eingerichtet.
 
-Nur für die Testinstanz: Den Ordner
-`custom_components/paperless_ngx_insights` in das gleichnamige Unterverzeichnis
-des HA-Konfigurationsverzeichnisses kopieren. Nach dem erforderlichen Neustart
-unter **Einstellungen > Geräte & Dienste > Integration hinzufügen** nach
-**Paperless-ngx Insights** suchen. Ein HACS-Installationsweg ist noch nicht
-fertiggestellt.
+## Hinweise
 
-Folgende Angaben werden abgefragt:
+- Aktuell können nur **Home-Assistant-Administratoren** auf die Dokumente zugreifen.
+- Die PDF-Vorschau ist auf **20 MiB** begrenzt. Größere PDFs können heruntergeladen werden.
+- Falls dein Browser PDFs nicht direkt anzeigt, steht eine Bildvorschau der ersten Seite zur Verfügung.
+- Der API-Schlüssel bleibt in der Integration und gehört nicht in die Kartenkonfiguration.
 
-- **Paperless-Adresse:** vollständige Basisadresse inklusive optionalem Port
-  oder Reverse-Proxy-Unterpfad. Ein reiner Hostname/IP wird als HTTP interpretiert.
-- **API-Schlüssel:** Token eines Paperless-Benutzers mit Dokument-Leserechten.
-- **Browser-Adresse:** optional vom Browser erreichbare Paperless-Basisadresse
-  für die Dokumentlinks. Die HA-Vorschau verwendet die interne API-Adresse.
+## Updates
 
-TLS-Zertifikate werden geprüft. Eine Abschaltoption ist bewusst nicht vorhanden.
-Bei einer falschen Adresse oder unzureichenden Rechten bleibt der Dialog offen.
-Ein Server kann einmal pro normalisierter Basisadresse eingerichtet werden.
-
-Auf ha-test wurde dieser Entwicklungsstand am 31.10.2026 über den regulären
-Dateieditor-Zugang installiert, HA neu gestartet und die Integration über ihren
-Config Flow eingerichtet. HACS auf ha-test konnte das private Repository nicht
-lesen; der Testinstallationsweg ändert keine Repository-Sichtbarkeit und keine
-Netzbeschränkungen des Dateieditors.
-
-## Kompakte Karte
-
-Für HA-Storage-Dashboards wird die Ressource automatisch registriert und bei Updates
-versioniert aktualisiert. Dashboard danach neu laden. Nur bei manuell gepflegten
-YAML-Ressourcen das **JavaScript-Modul** selbst registrieren:
-
-```text
-/paperless_ngx_insights/frontend/paperless-ngx-insights.js?v=0.1.0-dev.7
-```
-
-Danach die Karte hinzufügen:
-
-```yaml
-type: custom:paperless-ngx-insights-search
-title: Dokumente suchen
-page_size: 5
-search_mode: title
-open_mode: preview
-```
-
-Bei genau einem geladenen Integrationseintrag wird dieser automatisch gewählt.
-Bei mehreren Servern zusätzlich dessen `entry_id` setzen. `search_mode` ist
-`title` oder `text`; der Suchbereich kann auch direkt in der Karte gewählt werden.
-`open_mode: preview` öffnet PDFs bis 20 MiB in einem Dialog innerhalb von HA.
-Die PDF-Anzeige hängt vom Browser ab; ohne nativen PDF-Viewer erscheint eine
-geschützte Bildvorschau der ersten Seite. Diese lässt sich auch per Button wählen.
-Download und Paperless-Link bleiben verfügbar. Vorschauen sind nur für aktive HA-Administratoren zugänglich.
-Details und Grenzen: [PDF-Vorschau](docs/pdf-preview.md).
-Größere PDFs bleiben außerhalb des Viewers und können über **PDF herunterladen**
-gestreamt werden. **Original herunterladen** überträgt die ursprüngliche Datei,
-auch wenn keine PDF-Vorschau verfügbar ist. Details: [Downloads](docs/downloads.md).
-Mit `open_mode: paperless` (Standard) öffnen Dokumentlinks die normale
-Paperless-Oberfläche in einem neuen Tab. Dafür kann eine Paperless-Anmeldung
-erforderlich sein. Beide Karten bieten jetzt einen visuellen Editor in Home Assistant.
-
-## Große Dokumentkarte
-
-In der Kartenauswahl **Paperless-ngx Insights · Dokumentübersicht** wählen.
-Für einen ganzen Dashboard-Tab eine Panel-Ansicht mit dieser einzelnen Karte anlegen:
-
-```yaml
-type: custom:paperless-ngx-insights-documents
-title: Paperless · Dokumentübersicht
-page_size: 10
-search_mode: text
-height: 800
-show_thumbnails: true
-```
-
-Trefferliste und Dokument liegen bei breiten Karten nebeneinander. Unter 760px
-Kartenbreite wechselt die Ansicht mit einem Zurück-Button. Vorschau, PDF-Download
-und Öffnen in Paperless verwenden den bestehenden geschützten Abruf.
-Verbindung, Überschrift, Suchbereich, Trefferzahl, Höhe und Vorschaubilder lassen
-sich im visuellen Editor ändern. Details und Panel-Beispiel:
-[Große Karte und Editor](docs/document-card.md).
-
-## Verbindung ändern und Updates
-
-Unter Geräte & Dienste bei der Integration **Verbindung ändern** wählen.
-Ein leeres Schlüsselfeld behält den vorhandenen Schlüssel; neue Werte werden vor
-Speicherung geprüft. Zum Aktualisieren Dateien austauschen und HA neu starten;
-die Karten-Ressource wird automatisch angepasst. Mehrere Verbindungen teilen eine
-Ressource. Details: [Einrichtung und Updates](docs/setup-updates.md).
-
-Das eingerichtete Test-Dashboard ist unter
-[Paperless auf ha-test](http://192.168.178.147/paperless-test/suche) erreichbar und
-auf HA-Administratoren beschränkt.
-
-## Suchschnittstelle für die folgenden Karten
-
-Authentifizierte HA-WebSocket-Befehle, jeweils nur für Administratoren:
-
-```json
-{"id":1,"type":"paperless_ngx_insights/entries"}
-```
-
-```json
-{"id":2,"type":"paperless_ngx_insights/search","entry_id":"ENTRY_ID","text":"Rechnung","mode":"title","page":1,"page_size":5}
-```
-
-`mode` ist `title` (Titel) oder `text` (Titel und Inhalt). Die Antwort enthält
-`count`, `page`, `page_size` und `documents` mit `id`, `title`, `created`.
-Pro Seite sind 1–50 Dokumente erlaubt. Mehrere Begriffe werden mit UND
-verknüpft: `telekom rechnung mai` findet Dokumente mit allen drei
-Begriffen unabhängig von der Reihenfolge. Im Titelmodus müssen alle Begriffe im
-Titel stehen; im Inhaltsmodus dürfen sie über Titel und Dokumenttext verteilt
-sein. Eine Wortfolge in doppelten Anführungszeichen bleibt zusammen. Einzelne
-Begriffe finden weiterhin auch Wortteile. Keine benutzerdefinierte erweiterte
-Suchsyntax. Leere Suche listet erreichbare Dokumente nach Erstellungsdatum und ID
-absteigend. Details und Nachweise: [Mehrwortsuche](docs/multiword-search.md).
-
-Keine vollständigen Dokumenttexte oder Geheimnisse werden zurückgegeben.
-Es gibt keinen Dokumentcache und keine Entitäten mit Dokumentdaten im Recorder.
-Ein entladener Eintrag kann nicht weiter abgefragt werden.
-
-## Entfernung
-
-Den Integrationseintrag über die HA-Oberfläche entfernen. Für vollständige
-Deinstallation anschließend ausschließlich auf dem Testsystem den zugehörigen
-Custom-Component-Ordner entfernen. Noch vorhandene Browser-Verbindungen erhalten
-keinen weiteren Zugriff über den entfernten Eintrag.
+Den Integrationsordner durch die neue Version ersetzen, Home Assistant neu starten und das Dashboard neu laden.
 
 ## Lizenz
 
-Das Repository enthält die GNU GPL Version 3; siehe [LICENSE](LICENSE).
-Es wird keine Viewer-Bibliothek mitgeliefert. Lizenzprüfungen für zukünftige
-Frontend-Abhängigkeiten bleiben Teil des Entwicklungsplans.
+[GNU General Public License v3](LICENSE).
