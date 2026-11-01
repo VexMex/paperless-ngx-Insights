@@ -16,7 +16,17 @@ Nächste Prioritäten: todo bereinigen, Einrichtung/Schlüsselwechsel/Reauth und
 live absichern, danach HACS-Auslieferung und Release-Vorbereitung. Erweiterte
 Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
 
-## Aktueller Entwicklungsstand – Dateien und Downloads 0.1.0-dev.7
+## Aktueller Entwicklungsstand – HACS und Icon 1.0.1
+
+- [x] Freigegebenes eigenes Icon als lokale HA-Marke in 256 und 512 Pixeln eingebunden.
+- [x] `hacs.json` ergänzt; Manifest auf 1.0.1 angehoben und Changelog angelegt. Bestehendes Release V1.0 bleibt unverändert.
+- [x] README auf HACS-Installation und Updates umgestellt; manuelle Alternative bleibt dokumentiert.
+- [x] Lokal 103 Client-Tests, 19 Frontendtests, Ruff und Formatprüfung erfolgreich.
+- [ ] HACS-Validierung und vollständige HA-Frameworktests in GitHub Actions erfolgreich abschließen; anschließend Release v1.0.1 veröffentlichen.
+- [ ] Benutzerdefiniertes Repository auf ha-test hinzufügen und tatsächlich über HACS installieren; installierte Dateien samt Icon zurücklesen.
+- [ ] Nach Neustart Suche, Vorschau, Downloads, Ressourcenversion und Erhalt der bisherigen Einrichtung prüfen.
+
+## Vorheriger Entwicklungsstand – Dateien und Downloads 0.1.0-dev.7
 
 - [x] Öffentliche README vereinfacht: Zweck, Funktionen, manuelle Installation und Karten-Einrichtung; lokale Adressen sowie Entwicklungs- und Testdetails aus der README entfernt.
 
@@ -449,4 +459,5 @@ Auf ausdrücklichen Nutzerwunsch nach allen übrigen Arbeitspaketen, nur falls b
 Kein eigener Modus „nur ansehen, nicht herunterladen“ geplant. Die PDF-Vorschau
 überträgt die Datei bereits an den Browser; ein versteckter Download-Button würde
 das Speichern nicht zuverlässig verhindern.
+
 

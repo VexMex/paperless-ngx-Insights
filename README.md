@@ -1,5 +1,7 @@
 # Paperless-ngx Insights
 
+<img src="custom_components/paperless_ngx_insights/brand/icon.png" width="96" alt="Paperless-ngx Insights Icon">
+
 Mit Paperless-ngx Insights kannst du dein Dokumentenarchiv direkt in Home Assistant durchsuchen und Dokumente ansehen. So findest du zum Beispiel Rechnungen oder Briefe, ohne zuerst die Paperless-Oberfläche öffnen zu müssen.
 
 ## Funktionen
@@ -14,15 +16,27 @@ Die Integration liest Dokumente aus Paperless. Sie verändert oder löscht keine
 
 ## Installation
 
-Du benötigst Home Assistant, eine erreichbare Paperless-ngx-Instanz und einen Paperless-API-Schlüssel mit Leserechten für die gewünschten Dokumente.
+Du benötigst Home Assistant ab **2026.10.4**, HACS ab **2.0.5**, eine erreichbare Paperless-ngx-Instanz und einen Paperless-API-Schlüssel mit Leserechten für die gewünschten Dokumente.
 
-Die Installation erfolgt momentan manuell:
+### Über HACS
 
-1. [Repository als ZIP herunterladen](https://github.com/VexMex/paperless-ngx-Insights/archive/refs/heads/main.zip) und entpacken.
-2. Den enthaltenen Ordner `custom_components/paperless_ngx_insights` in das Verzeichnis `custom_components` deiner Home-Assistant-Konfiguration kopieren. Das Ziel ist normalerweise `/config/custom_components/paperless_ngx_insights/`.
-3. Home Assistant neu starten.
-4. Unter **Einstellungen → Geräte & Dienste → Integration hinzufügen** nach **Paperless-ngx Insights** suchen.
-5. Deine Paperless-Adresse und den API-Schlüssel eintragen. Die optionale **Browser-Adresse** benötigst du nur, wenn du Paperless im Browser über eine andere Adresse öffnest.
+1. In Home Assistant **HACS** öffnen und im Menü **Benutzerdefinierte Repositories** auswählen.
+2. Diesen Repository-Link eintragen und als Typ **Integration** auswählen:
+
+   ```text
+   https://github.com/VexMex/paperless-ngx-Insights
+   ```
+
+3. Das Repository hinzufügen, **Paperless-ngx Insights** öffnen und **Herunterladen** auswählen.
+4. Home Assistant neu starten.
+5. Unter **Einstellungen → Geräte & Dienste → Integration hinzufügen** nach **Paperless-ngx Insights** suchen.
+6. Deine Paperless-Adresse und den API-Schlüssel eintragen. Die optionale **Browser-Adresse** benötigst du nur, wenn du Paperless im Browser über eine andere Adresse öffnest.
+
+Beide Dashboard-Karten und das Icon werden mit der Integration installiert. Ein separates Karten-Repository ist nicht nötig.
+
+### Alternativ manuell
+
+[Repository als ZIP herunterladen](https://github.com/VexMex/paperless-ngx-Insights/archive/refs/heads/main.zip), entpacken und den enthaltenen Ordner `custom_components/paperless_ngx_insights` nach `/config/custom_components/paperless_ngx_insights/` kopieren. Anschließend Home Assistant neu starten und die Integration wie oben beschrieben hinzufügen.
 
 ## Karten zum Dashboard hinzufügen
 
@@ -42,8 +56,9 @@ Für einen ganzen Tab eine Ansicht vom Typ **Panel** mit der Dokumentübersicht 
 
 ## Updates
 
-Den Integrationsordner durch die neue Version ersetzen, Home Assistant neu starten und das Dashboard neu laden.
+Updates über HACS herunterladen, Home Assistant neu starten und das Dashboard neu laden. Bei manueller Installation den Integrationsordner durch die neue Version ersetzen.
 
 ## Lizenz
 
 [GNU General Public License v3](LICENSE).
+

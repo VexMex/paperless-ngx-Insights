@@ -389,6 +389,33 @@ async def run(action: str, key_file: Path | None) -> None:
                     )
                     return
 
+                if action == "verify_install":
+                    source = PROJECT / "custom_components" / DOMAIN
+                    paths = sorted(
+                        p
+                        for p in source.rglob("*")
+                        if p.is_file()
+                        and "__pycache__" not in p.parts
+                        and p.suffix in {".py", ".json", ".js", ".png"}
+                    )
+                    for path in paths:
+                        relative = path.relative_to(source).as_posix()
+                        destination = root + "/custom_components/" + DOMAIN + "/" + relative
+                        async with session.get(
+                            editor + "api/file", params={"filename": destination}, cookies=cookies
+                        ) as response:
+                            response.raise_for_status()
+                            actual = await response.read()
+                        expected = await asyncio.to_thread(path.read_bytes)
+                        if hashlib.sha256(actual).digest() != hashlib.sha256(expected).digest():
+                            raise RuntimeError("Installed file verification failed: " + relative)
+                    print(
+                        json.dumps(
+                            {"test_ha": BASE, "hacs_files_verified": len(paths), "verified": True}
+                        )
+                    )
+                    return
+
                 async def mkdir(path):
                     existing = await listing(path)
                     if existing and not existing.get("error"):
@@ -443,6 +470,7 @@ if __name__ == "__main__":
             "verify_preview",
             "verify_lifecycle",
             "verify_download",
+            "verify_install",
         ],
     )
     parser.add_argument("--key-file", type=Path)
