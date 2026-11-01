@@ -18,6 +18,8 @@ Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Ve
 
 ## Aktueller Entwicklungsstand – Dateien und Downloads 0.1.0-dev.7
 
+- [x] Öffentliche README vereinfacht: Zweck, Funktionen, manuelle Installation und Karten-Einrichtung; lokale Adressen sowie Entwicklungs- und Testdetails aus der README entfernt.
+
 - [x] Vorschaugrenze bleibt bei 20 MiB; größere PDFs erhalten eine ausdrückliche Größenmeldung mit PDF-Download.
 - [x] PDF- und Originaldatei-Download als geschützten Attachment-Stream implementiert: 64-KiB-Blöcke, zwei parallele Downloads je Verbindung, keine vollständigen Datei-Blobs im Browser oder Backend.
 - [x] Kurzlebige HA-Downloadsignatur pro Dokument/Downloadart und aktueller Anmeldung; feste Upstream-Pfade, keine Redirects und sichere Dateinamen.
