@@ -16,6 +16,12 @@ Einrichtung/Schlüsselwechsel, Updates und Downloads sind live abgesichert.
 HACS-Auslieferung einschließlich Installations-/Updateprüfung ist abgeschlossen. Erweiterte
 Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
 
+## HACS-Standardkatalog – Release 1.1.3
+
+- [x] GitHub-Themen gesetzt. HACS-Prüfung ohne Ausnahmen und Hassfest mit einer geprüften Integration und null ungültigen Integrationen bestanden. Auch die Frontend-, Client- und Home-Assistant-Tests waren erfolgreich. [GitHub-Prüflauf](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41708017644)
+- [x] [Release v1.1.3](https://github.com/VexMex/paperless-ngx-Insights/releases/tag/v1.1.3) nach den erfolgreichen Prüfungen veröffentlicht.
+- [ ] Pull Request für die Aufnahme in `hacs/default` einreichen.
+
 ## Aktueller Entwicklungsstand – Hassfest-Erstprüfung
 
 - [x] Offizielle Hassfest-Action als eigenständigen Workflow ergänzt: Push, Pull Request und manueller Start; keine übersprungenen Prüfungen.
