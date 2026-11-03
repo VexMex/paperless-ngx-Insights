@@ -1,5 +1,10 @@
 # Änderungen
 
+## 1.1.3
+
+- Run the full HACS validation, including the repository topics check.
+- Require a successful Hassfest run before publishing a release.
+
 ## 1.1.2
 
 - Give the Paperless link the same compact 44-pixel toolbar size as the download buttons.

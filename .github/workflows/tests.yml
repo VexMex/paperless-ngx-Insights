@@ -47,12 +47,12 @@ jobs:
         uses: hacs/action@main
         with:
           category: integration
-          # Topics only affect discoverability in the default HACS catalog.
-          ignore: topics
           comment: false
+  hassfest:
+    uses: ./.github/workflows/hassfest.yml
   release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [client, frontend, home-assistant, hacs]
+    needs: [client, frontend, home-assistant, hacs, hassfest]
     runs-on: ubuntu-latest
     permissions:
       contents: write
