@@ -17,27 +17,38 @@ The integration reads documents from Paperless. It does not modify or delete the
 
 ## Installation
 
-You need **Home Assistant 2026.10.4 or newer**, **HACS 2.0.5 or newer**, a reachable Paperless-ngx server and a Paperless API token with permission to read the documents you want to access.
+You need **Home Assistant 2026.10.4 or newer**, a reachable Paperless-ngx server and a Paperless API token with permission to read the documents you want to access.
 
-### Using HACS
+### Install from the Marketplace catalog
 
-1. Open **HACS** in Home Assistant, then select **Custom repositories** from the menu.
-2. Enter this repository URL and select **Integration** as the type:
+On **Home Assistant 2026.11 or newer**, the built-in Marketplace replaces HACS.
 
-   ```text
-   https://github.com/VexMex/paperless-ngx-Insights
-   ```
+1. Open **Settings → Marketplace** and search for **Paperless-ngx Insights**.
+2. Open the listing, select **Install**, review the version and confirm.
+3. Follow the setup prompt. If Home Assistant asks you to restart, restart first and then complete setup as described below.
 
-3. Add the repository, open **Paperless-ngx Insights** and select **Download**.
-4. Restart Home Assistant.
-5. Go to **Settings → Devices & services → Add integration** and search for **Paperless-ngx Insights**.
-6. Enter your Paperless server address and API token. The optional **Browser address** is only needed if your browser uses a different address to open Paperless.
+Paperless-ngx Insights is listed in the catalog. Catalog installs do not require a GitHub account or a repository URL. Existing HACS installations are migrated automatically when you upgrade to Home Assistant 2026.11 or newer. On Home Assistant 2026.10.4, you can still install the integration through HACS 2.0.5 or newer.
+
+### Add the repository by link
+
+If you need to add the repository manually, use **Settings → Marketplace → Add from link**.
+
+1. If prompted, connect your GitHub account.
+2. Enter `https://github.com/VexMex/paperless-ngx-Insights` in **GitHub link** and select **Add**.
+3. If the Marketplace asks for a **Type**, choose **Integration** and select **Add** again.
+4. Open the repository listing and select **Install**. If the Marketplace says it is already listed, open the catalog listing to install it.
+
+See the [Home Assistant Marketplace documentation](https://www.home-assistant.io/integrations/marketplace/#custom-repositories) for details.
+
+### Set up Paperless-ngx Insights
+
+If the setup dialog did not open after installation, go to **Settings → Devices & services → Add integration** and search for **Paperless-ngx Insights**. Enter your Paperless server address and API token. Set the optional **Browser address** if your browser uses a different address to open Paperless.
 
 Both dashboard cards and the icon are included. You do not need a separate card repository.
 
-### Manual installation
+### Install from a ZIP
 
-[Download the repository ZIP](https://github.com/VexMex/paperless-ngx-Insights/archive/refs/heads/main.zip), extract it and copy `custom_components/paperless_ngx_insights` to `/config/custom_components/paperless_ngx_insights/`. Restart Home Assistant, then add the integration as described above.
+Download the source ZIP for the [latest release](https://github.com/VexMex/paperless-ngx-Insights/releases/latest), extract it and copy `custom_components/paperless_ngx_insights` to `/config/custom_components/paperless_ngx_insights/`. Restart Home Assistant, then add the integration as described above.
 
 ## Adding cards to your dashboard
 
@@ -61,7 +72,7 @@ For a dedicated dashboard tab, use a **Panel** view with the document overview a
 
 ## Updates
 
-Download updates through HACS, restart Home Assistant and reload your dashboard. For manual installations, replace the integration folder with the new version.
+Marketplace updates appear under **Settings → Updates**. Install the update, restart Home Assistant to apply it and reload your dashboard. On older installations managed by HACS, update through HACS. For installations from a ZIP, replace the integration folder with the new version.
 
 ## License
 

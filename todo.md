@@ -20,6 +20,7 @@ Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Do
 - [x] GitHub-Themen gesetzt. HACS-Prüfung ohne Ausnahmen und Hassfest mit einer geprüften Integration und null ungültigen Integrationen bestanden. Auch die Frontend-, Client- und Home-Assistant-Tests waren erfolgreich. [GitHub-Prüflauf](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41708017644)
 - [x] [Release v1.1.3](https://github.com/VexMex/paperless-ngx-Insights/releases/tag/v1.1.3) nach den erfolgreichen Prüfungen veröffentlicht.
 - [x] Pull Request für die Aufnahme in `hacs/default` eingereicht. Alle 13 automatischen Prüfungen waren bei der Einreichung erfolgreich.
+- [x] Eintrag im [Marketplace-Standardkatalog](https://github.com/hacs/default/blob/master/integration) bestätigt. README dokumentiert die Installation aus dem Katalog und das manuelle Hinzufügen über **Add from link** anhand der [Home-Assistant-Dokumentation](https://www.home-assistant.io/integrations/marketplace/).
 
 ## Aktueller Entwicklungsstand – Hassfest-Erstprüfung
 
