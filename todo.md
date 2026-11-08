@@ -11,7 +11,8 @@ Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Do
 - [x] Entwicklungsstand `1.1.4.dev0` ausschließlich auf der isolierten Testinstanz installiert und alle 16 Integrationsdateien abgeglichen. Live über Home Assistants Konfigurations-, WebSocket- und HTTP-Schnittstellen geprüft: Admin-Zugriff, Verweigerung für anonyme und nicht freigegebene Benutzer, erfolgreiche Freigabe, getrennte Rechte bei zwei Verbindungen, sofortiger Entzug und Schutz vor einer veralteten Freigabemaske.
 - [x] Temporäre Benutzer und zweite Verbindung entfernt. Die ursprüngliche Testverbindung ist wieder ausschließlich für Administratoren freigegeben.
 - [x] Lokal bestanden: 103 Python-Clienttests, 25 Frontendtests, Ruff, Formatierung und Kompilierung.
-- [ ] Vor der Veröffentlichung die vollständige GitHub-CI mit den ergänzten Home-Assistant-Frameworktests und HACS/Hassfest ausführen. Die Oberfläche wurde in diesem Durchlauf über ihre Schnittstellen geprüft, ohne manuellen Browsertest.
+- [x] [Vollständige GitHub-CI](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/42432020881) erfolgreich: 103 Clienttests je Python-Version, 25 Frontendtests, 36 Home-Assistant-Frameworktests, HACS ohne Ausnahmen und Hassfest (eine geprüfte Integration, null ungültig). Die Oberfläche auf der Testinstanz wurde über ihre Schnittstellen geprüft, ohne manuellen Browsertest.
+- [x] [v1.1.4 mit Release Notes](https://github.com/VexMex/paperless-ngx-Insights/releases/tag/v1.1.4) nach den erfolgreichen Prüfungen veröffentlicht.
 - [ ] Persönliche Paperless-Zugangsdaten bleiben optionaler späterer Ausbau. Die Freigabe verwendet die Dokumentrechte des für die Verbindung hinterlegten Paperless-Kontos.
 
 ## HACS-Standardkatalog – Release 1.1.3
