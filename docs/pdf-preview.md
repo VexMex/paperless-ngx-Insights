@@ -8,8 +8,8 @@ Download der geladenen PDF und einem Link zur Paperless-Oberfläche.
 
 - Die Karte nutzt HA `callApiRaw` mit dem regulären Bearer-Header.
 - `GET /api/paperless_ngx_insights/{entry_id}/documents/{id}/preview` verlangt
-  HA-Authentifizierung sowie einen aktiven Administrator. Dashboard-Sichtbarkeit
-  ist keine Berechtigung. Auch direkte IDs werden geprüft.
+  HA-Authentifizierung sowie einen aktiven Administrator oder eine Freigabe für
+  den aktiven Benutzer auf dieser Verbindung. Auch direkte IDs werden geprüft.
 - Das Backend ruft ausschließlich `/api/documents/{id}/preview/` unter der
   konfigurierten Paperless-Basis ab. Keine beliebigen URLs, keine Weiterleitungen,
   keine öffentlichen/signierten Dokumentlinks, keine Tokens in URLs.
@@ -64,7 +64,7 @@ prüfen den registrierten HTTP-Pfad mit echter Auth-Middleware und Adminrechten.
 Aktuelle CI-/Live-Ergebnisse und noch offene Browserprüfung stehen in todo.md.
 
 Am 31.10.2026: GitHub Actions vollständig grün (90 Client-Tests pro Python-Version,
-23 HA-Frameworktests, 11 Frontendtests). Auf ha-test wurden PDF/Thumbnail mit
+23 HA-Frameworktests, 11 Frontendtests). auf der isolierten Testinstanz wurden PDF/Thumbnail mit
 Anmeldung, Ablehnung ohne Anmeldung, ungültige IDs und no-store geprüft. Die
 vorherige Suche bleibt live funktionsfähig. Die Bildvorschau wurde bei schmaler
 Ansicht und 1366×900 sichtbar geprüft; Schließen stellt den Fokus wieder her.

@@ -1,5 +1,11 @@
 # Änderungen
 
+## 1.1.4
+
+- Share a Paperless connection with selected Home Assistant users under **Settings → Devices & services → Paperless-ngx Insights → Configure → Document access**. The list is empty by default, so existing connections remain accessible to administrators only.
+- Selected users can search, preview and download documents that the connection's Paperless account can read. Permissions apply separately to each connection and are checked on the server, including for direct document requests.
+- Removing a user's access takes effect immediately, including for previously issued download links. Changing the Paperless server address or API token clears the sharing list.
+
 ## 1.1.3
 
 - Run the full HACS validation, including the repository topics check.

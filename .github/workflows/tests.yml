@@ -83,9 +83,17 @@ jobs:
             } catch (error) {
               if (error.status !== 404) throw error;
             }
+            const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+            const sections = changelog.split(/^## /m).slice(1);
+            const section = sections.find(entry => entry.split(/\r?\n/, 1)[0].trim() === version);
+            const notes = section?.slice(section.indexOf('\n') + 1).trim();
+            if (!notes) {
+              core.setFailed(`Missing changelog notes for ${tag}.`);
+              return;
+            }
             await github.rest.repos.createRelease({
               owner, repo, tag_name: tag, target_commitish: context.sha,
               name: `Paperless-ngx Insights ${version}`,
-              body: 'Install through HACS as a custom repository of type Integration. Both dashboard cards and the integration icon are included. Cards and the visual editor follow the Home Assistant interface language (English or German, with English fallback). See README for setup and updates, and CHANGELOG.md for changes.',
+              body: notes,
               draft: false, prerelease: false, make_latest: 'true'
             });

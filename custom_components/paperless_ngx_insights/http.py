@@ -9,6 +9,7 @@ from homeassistant.components.http import HomeAssistantView
 from homeassistant.components.http.const import KEY_HASS_REFRESH_TOKEN_ID, KEY_HASS_USER
 from homeassistant.core import HomeAssistant
 
+from .access import can_access
 from .client import (
     Forbidden,
     InvalidAuth,
@@ -39,7 +40,7 @@ class PreviewView(HomeAssistantView):
 
     async def get(self, request: web.Request, entry_id: str, document_id: str) -> web.Response:
         user = request.get(KEY_HASS_USER)
-        if user is None or not user.is_admin or not user.is_active:
+        if not can_access(self.hass, entry_id, user):
             return web.Response(status=403, headers=HEADERS)
         if not document_id.isascii() or not document_id.isdecimal() or len(document_id) > 10:
             return web.Response(status=400, headers=HEADERS)
@@ -56,8 +57,9 @@ class PreviewView(HomeAssistantView):
                 body = await client.preview(number)
                 mime = "application/pdf"
         except InvalidAuth:
-            if entry := self.hass.config_entries.async_get_entry(entry_id):
-                entry.async_start_reauth(self.hass)
+            if user.is_admin:
+                if entry := self.hass.config_entries.async_get_entry(entry_id):
+                    entry.async_start_reauth(self.hass)
             return web.Response(status=502, headers=HEADERS)
         except Forbidden:
             return web.Response(status=403, headers=HEADERS)
@@ -69,10 +71,8 @@ class PreviewView(HomeAssistantView):
             return web.Response(status=429, headers=HEADERS)
         except PaperlessError:
             return web.Response(status=502, headers=HEADERS)
-        if (
-            self.hass.data.get(DOMAIN, {}).get(entry_id) is not client
-            or not user.is_active
-            or not user.is_admin
+        if self.hass.data.get(DOMAIN, {}).get(entry_id) is not client or not can_access(
+            self.hass, entry_id, user
         ):
             return web.Response(status=403, headers=HEADERS)
         return web.Response(
@@ -113,7 +113,7 @@ class DownloadView(HomeAssistantView):
 
     async def get(self, request: web.Request, entry_id: str, document_id: str, kind: str):
         user = request.get(KEY_HASS_USER)
-        if user is None or not user.is_admin or not user.is_active:
+        if not can_access(self.hass, entry_id, user):
             return web.Response(status=403, headers=HEADERS)
         if (
             kind not in {"pdf", "original"}
@@ -126,11 +126,20 @@ class DownloadView(HomeAssistantView):
         client = self.hass.data.get(DOMAIN, {}).get(entry_id)
         if client is None:
             return web.Response(status=404, headers=HEADERS)
+        refresh_id = request.get(KEY_HASS_REFRESH_TOKEN_ID)
+
+        def authorized() -> bool:
+            return can_access(self.hass, entry_id, user) and (
+                not refresh_id or self.hass.auth.async_get_refresh_token(refresh_id) is not None
+            )
+
         stream = None
         try:
             async with client.download(int(document_id), kind) as (upstream, prefix):
                 if self.hass.data.get(DOMAIN, {}).get(entry_id) is not client:
                     return web.Response(status=404, headers=HEADERS)
+                if not authorized():
+                    return web.Response(status=403, headers=HEADERS)
                 disposition = upstream.content_disposition
                 filename = download_filename(
                     disposition.filename if disposition else None, int(document_id), kind
@@ -151,17 +160,16 @@ class DownloadView(HomeAssistantView):
                     stream.content_length = upstream.content_length
                 await stream.prepare(request)
                 if prefix:
+                    if (
+                        not authorized()
+                        or self.hass.data.get(DOMAIN, {}).get(entry_id) is not client
+                    ):
+                        raise ConnectionError("Download access revoked")
                     await stream.write(prefix)
-                refresh_id = request.get(KEY_HASS_REFRESH_TOKEN_ID)
                 async for chunk in upstream.content.iter_chunked(65536):
                     if (
                         self.hass.data.get(DOMAIN, {}).get(entry_id) is not client
-                        or not user.is_active
-                        or not user.is_admin
-                        or (
-                            refresh_id
-                            and self.hass.auth.async_get_refresh_token(refresh_id) is None
-                        )
+                        or not authorized()
                     ):
                         raise ConnectionError("Download access revoked")
                     await stream.write(chunk)
@@ -172,7 +180,7 @@ class DownloadView(HomeAssistantView):
                 if request.transport:
                     request.transport.close()
                 return stream
-            if isinstance(error, InvalidAuth):
+            if isinstance(error, InvalidAuth) and user.is_admin:
                 if entry := self.hass.config_entries.async_get_entry(entry_id):
                     entry.async_start_reauth(self.hass)
             status = (

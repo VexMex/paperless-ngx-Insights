@@ -20,18 +20,19 @@ nicht unter der HA-Origin angezeigt. Dateinamen werden von Pfaden, Steuerzeichen
 und Header-Syntax bereinigt. PDF-Downloads prüfen MIME-Typ und PDF-Signatur.
 
 Reload/Unload schließt laufende Upstream-Antworten. Während eines Transfers werden
-geladene Verbindung, aktive Adminrechte und vorhandene HA-Anmeldung erneut geprüft.
+die geladene Verbindung, die aktuelle Benutzerfreigabe und die vorhandene
+HA-Anmeldung erneut geprüft.
 Abbruch/Übertragungsfehler beendet die Verbindung. Kein automatisches Wiederholen
 und keine Byte-Range-/Resume-Unterstützung in dieser Ausbaustufe.
 
 Normale Download-Links senden keinen HA-Bearer-Header. Der Button fordert deshalb
-per Admin-WebSocket einen **30 Sekunden gültigen** HA-Link für genau Dokument und
+per WebSocket einen **30 Sekunden gültigen** HA-Link für genau Dokument und
 Downloadart an. Er ist an die aktuelle HA-Anmeldung gebunden und nutzt die
 [HA-Pfadsignatur](https://github.com/home-assistant/core/blob/2026.10.4/homeassistant/components/http/auth.py).
 Der Link ist ein kurzlebiger Zugriffsbeleg: Wer ihn während seiner Gültigkeit kennt,
 kann denselben Transfer starten. Kein dauerhafter öffentlicher Freigabelink und
 niemals der Paperless-Schlüssel. Ablauf, manipulierte Pfade/Parameter, entfernte
-Anmeldung und fehlende Adminrechte verhindern neue Abrufe. Bereits begonnene
+Anmeldung und fehlende Berechtigung für die Verbindung verhindern neue Abrufe. Bereits begonnene
 Transfers dürfen nach Ablauf weiterlaufen, maximal bis zum Download-Timeout.
 Signierte URLs werden von der Integration weder gespeichert noch protokolliert.
 
@@ -50,7 +51,7 @@ Größenmeldung mit beiden Downloads, erlaubte HA-URLs und veraltete Antworten.
 Tatsächliche CI-/Live-Ergebnisse stehen in todo.md.
 
 Am 01.11.2026 vollständig grüne CI: 103 Client-Tests pro Python-Version,
-37 HA-Frameworktests und 19 Frontendtests. Auf ha-test beide Downloadarten vollständig
+37 HA-Frameworktests und 19 Frontendtests. auf der isolierten Testinstanz beide Downloadarten vollständig
 gestreamt abgerufen, Attachment/no-store geprüft; ohne gültige Anmeldung/Signatur
 jeweils abgewiesen. Vorschau, Thumbnail und Suche weiterhin erfolgreich.
 Im Browser beide Buttons sichtbar und PDF-Klick mit Übergabestatus geprüft.

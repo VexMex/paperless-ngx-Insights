@@ -1,12 +1,10 @@
 """Real HA framework tests: config flow, lifecycle, diagnostics and access gates."""
 
-from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
 import pytest
 from homeassistant.config_entries import SOURCE_REAUTH, SOURCE_RECONFIGURE, SOURCE_USER
 from homeassistant.data_entry_flow import FlowResultType
-from homeassistant.exceptions import Unauthorized
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.paperless_ngx_insights.client import (
@@ -15,9 +13,8 @@ from custom_components.paperless_ngx_insights.client import (
     InvalidAuth,
     InvalidResponse,
 )
-from custom_components.paperless_ngx_insights.const import DOMAIN
+from custom_components.paperless_ngx_insights.const import CONF_ALLOWED_USERS, DOMAIN
 from custom_components.paperless_ngx_insights.diagnostics import async_get_config_entry_diagnostics
-from custom_components.paperless_ngx_insights.websocket import websocket_entries, websocket_search
 
 DATA = {"url": "http://paperless.test:8810", "token": "fixture-token", "web_url": ""}
 VALIDATE = f"custom_components.{DOMAIN}.client.PaperlessClient.validate_connection"
@@ -84,16 +81,62 @@ async def test_setup_unload_and_diagnostics(hass):
         await client.search("invoice")
 
 
-@pytest.mark.parametrize("user", [None, SimpleNamespace(is_admin=False)])
-@pytest.mark.parametrize("handler", [websocket_entries, websocket_search])
-def test_commands_reject_non_admin(user, handler):
-    with pytest.raises(Unauthorized):
-        handler(None, SimpleNamespace(user=user), {"id": 1})
+async def test_search_and_entry_list_respect_sharing(
+    hass, hass_ws_client, hass_read_only_access_token, hass_read_only_user
+):
+    shared = MockConfigEntry(
+        domain=DOMAIN,
+        data=DATA,
+        options={CONF_ALLOWED_USERS: [hass_read_only_user.id]},
+    )
+    private = MockConfigEntry(domain=DOMAIN, data=DATA)
+    with patch(VALIDATE, new_callable=AsyncMock):
+        for entry in (shared, private):
+            entry.add_to_hass(hass)
+            assert await hass.config_entries.async_setup(entry.entry_id)
+    ws = await hass_ws_client(hass, access_token=hass_read_only_access_token)
+
+    async def command(number, kind, **kwargs):
+        await ws.send_json({"id": number, "type": f"{DOMAIN}/{kind}", **kwargs})
+        return await ws.receive_json()
+
+    listed = await command(1, "entries")
+    assert listed["result"] == [{"entry_id": shared.entry_id, "title": shared.title}]
+    denied = await command(2, "search", entry_id=private.entry_id, text="")
+    assert denied["error"]["code"] == "unauthorized"
+
+    class SearchResult:
+        def as_dict(self):
+            return {"count": 0, "documents": []}
+
+    async def revoke_during_search(*args, **kwargs):
+        hass.config_entries.async_update_entry(shared, options={})
+        return SearchResult()
+
+    client = hass.data[DOMAIN][shared.entry_id]
+    with patch.object(client, "search", return_value=SearchResult()):
+        assert (await command(3, "search", entry_id=shared.entry_id, text=""))["success"]
+    with patch.object(client, "search", side_effect=revoke_during_search):
+        denied = await command(4, "search", entry_id=shared.entry_id, text="")
+        assert denied["error"]["code"] == "unauthorized"
+    assert (await command(5, "entries"))["result"] == []
 
 
-@pytest.mark.parametrize("source", [SOURCE_REAUTH, SOURCE_RECONFIGURE])
-async def test_reauth_and_reconfigure(hass, source):
-    entry = MockConfigEntry(domain=DOMAIN, unique_id=DATA["url"], data=DATA)
+@pytest.mark.parametrize(
+    ("source", "change"),
+    [
+        (SOURCE_REAUTH, {"token": "replacement-token"}),
+        (SOURCE_RECONFIGURE, {"token": "replacement-token"}),
+        (SOURCE_RECONFIGURE, {"url": "http://new-paperless.test"}),
+    ],
+)
+async def test_reauth_and_reconfigure(hass, source, change):
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id=DATA["url"],
+        data=DATA,
+        options={CONF_ALLOWED_USERS: ["shared-user"]},
+    )
     entry.add_to_hass(hass)
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
@@ -101,8 +144,8 @@ async def test_reauth_and_reconfigure(hass, source):
         data=DATA if source == SOURCE_REAUTH else None,
     )
     assert result["type"] is FlowResultType.FORM
-    new_data = {**DATA, "token": "replacement-token"}
-    user_input = {"token": "replacement-token"} if source == SOURCE_REAUTH else new_data
+    new_data = {**DATA, **change}
+    user_input = change if source == SOURCE_REAUTH else new_data
     with (
         patch(VALIDATE, new_callable=AsyncMock),
         patch.object(hass.config_entries, "async_reload", return_value=True),
@@ -110,12 +153,18 @@ async def test_reauth_and_reconfigure(hass, source):
         result = await hass.config_entries.flow.async_configure(result["flow_id"], user_input)
         await hass.async_block_till_done()
     assert result["type"] is FlowResultType.ABORT
-    assert entry.data["token"] == "replacement-token"
+    assert entry.data == new_data
+    assert CONF_ALLOWED_USERS not in entry.options
 
 
 @pytest.mark.parametrize("token", [None, "", "   "])
 async def test_reconfigure_can_retain_secret(hass, token):
-    entry = MockConfigEntry(domain=DOMAIN, unique_id=DATA["url"], data=DATA)
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id=DATA["url"],
+        data=DATA,
+        options={CONF_ALLOWED_USERS: ["shared-user"]},
+    )
     entry.add_to_hass(hass)
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_RECONFIGURE, "entry_id": entry.entry_id}
@@ -132,6 +181,7 @@ async def test_reconfigure_can_retain_secret(hass, token):
     assert result["type"] is FlowResultType.ABORT
     assert entry.data["token"] == DATA["token"]
     assert entry.data["web_url"] == values["web_url"]
+    assert entry.options[CONF_ALLOWED_USERS] == ["shared-user"]
 
 
 @pytest.mark.parametrize("source", [SOURCE_RECONFIGURE, SOURCE_REAUTH])

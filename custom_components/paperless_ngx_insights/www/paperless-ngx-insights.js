@@ -29,8 +29,8 @@ const PAPERLESS_TEXT = {
     "default_documents_title": "Paperless · Dokumentübersicht",
     "search_prompt": "Suchbegriff eingeben und Suchen drücken.",
     "select_entry": "Bitte entry_id in der Karte festlegen.",
-    "not_configured": "Paperless-Integration ist nicht eingerichtet.",
-    "admin_required": "Kein Zugriff. Bitte als HA-Administrator anmelden.",
+    "not_configured": "Keine Paperless-Verbindung für dieses Konto verfügbar.",
+    "access_denied": "Diese Paperless-Verbindung ist für dein Konto nicht freigegeben.",
     "searching": "Dokumente werden gesucht …",
     "untitled": "Dokument ohne Titel",
     "document": "Dokument",
@@ -65,8 +65,8 @@ const PAPERLESS_TEXT = {
     "thumbnails": "Vorschaubilder in der Trefferliste",
     "editor_hint": "Der API-Schlüssel wird ausschließlich in der Integration verwaltet. PDF-Vorschauen bis 20 MiB; Anzeige abhängig vom Browser.",
     "automatic": "Automatisch (bei genau einer Verbindung)",
-    "no_entries": "Keine geladene Paperless-Verbindung gefunden. Bitte zuerst die Integration einrichten.",
-    "entries_failed": "Verbindungen konnten nicht geladen werden. HA-Administratorrechte und Integration prüfen.",
+    "no_entries": "Keine Paperless-Verbindung für dieses Konto verfügbar.",
+    "entries_failed": "Paperless-Verbindungen konnten nicht geladen werden.",
     "range": "{start}–{end} von {count}",
     "open_external_aria": "{title} in Paperless öffnen (neuer Tab)",
     "open_preview_aria": "{title} als Vorschau öffnen",
@@ -106,8 +106,8 @@ const PAPERLESS_TEXT = {
     "default_documents_title": "Paperless · Document overview",
     "search_prompt": "Enter a search term and press Search.",
     "select_entry": "Please select a Paperless connection in the card settings.",
-    "not_configured": "The Paperless integration is not configured.",
-    "admin_required": "Access denied. Please sign in as a Home Assistant administrator.",
+    "not_configured": "No Paperless connection is available to this account.",
+    "access_denied": "This Paperless connection has not been shared with your account.",
     "searching": "Searching documents …",
     "untitled": "Untitled document",
     "document": "Document",
@@ -142,8 +142,8 @@ const PAPERLESS_TEXT = {
     "thumbnails": "Thumbnails in the results",
     "editor_hint": "The API token is managed only in the integration. PDF previews up to 20 MiB; display depends on your browser.",
     "automatic": "Automatic (when exactly one connection is available)",
-    "no_entries": "No loaded Paperless connection found. Please set up the integration first.",
-    "entries_failed": "Could not load connections. Check your Home Assistant administrator permissions and the integration.",
+    "no_entries": "No Paperless connection is available to this account.",
+    "entries_failed": "Could not load Paperless connections.",
     "range": "{start}–{end} of {count}",
     "open_external_aria": "Open {title} in Paperless (new tab)",
     "open_preview_aria": "Open preview of {title}",
@@ -427,7 +427,7 @@ class PaperlessInsightsSearchCard extends HTMLElement {
         this._message(entries.length ? "select_entry" : "not_configured", true);
       }
     } catch (_) {
-      if (sequence === this._sequence) this._message("admin_required", true);
+      if (sequence === this._sequence) this._message("entries_failed", true);
     } finally {
       if (sequence === this._sequence) {
         this._connecting = false;
@@ -505,11 +505,11 @@ class PaperlessInsightsSearchCard extends HTMLElement {
       this._documents = [];
       this._count = 0;
       this._list.replaceChildren();
-      const message = error.code === "invalid_auth"
-        ? "renew_token"
-        : error.code === "invalid_search"
-          ? "invalid_search"
-          : "search_failed";
+      const message = {
+        invalid_auth: "renew_token",
+        invalid_search: "invalid_search",
+        unauthorized: "access_denied",
+      }[error.code] || "search_failed";
       this._message(message, true);
     } finally {
       if (sequence === this._sequence) {

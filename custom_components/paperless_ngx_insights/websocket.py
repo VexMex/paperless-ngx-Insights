@@ -1,4 +1,4 @@
-"""On-demand search API. Admin-only until explicit user sharing is implemented."""
+"""On-demand document API with per-connection access checks."""
 
 from datetime import timedelta
 from typing import Any
@@ -9,6 +9,7 @@ from homeassistant.components import websocket_api
 from homeassistant.components.http.auth import async_sign_path
 from homeassistant.core import HomeAssistant, callback
 
+from .access import can_access
 from .client import InvalidAuth, PaperlessError
 from .const import CONF_URL, CONF_WEB_URL, DOMAIN, MAX_PAGE_SIZE, MAX_SEARCH_LENGTH
 
@@ -21,7 +22,6 @@ def async_register_commands(hass: HomeAssistant) -> None:
 
 
 @websocket_api.websocket_command({probatio.Required("type"): f"{DOMAIN}/entries"})
-@websocket_api.require_admin
 def websocket_entries(
     hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
 ) -> None:
@@ -32,7 +32,7 @@ def websocket_entries(
         [
             {"entry_id": entry.entry_id, "title": entry.title}
             for entry in hass.config_entries.async_entries(DOMAIN)
-            if entry.entry_id in loaded
+            if entry.entry_id in loaded and can_access(hass, entry.entry_id, connection.user)
         ],
     )
 
@@ -49,13 +49,16 @@ def websocket_entries(
         ),
     }
 )
-@websocket_api.require_admin
 @websocket_api.async_response
 async def websocket_search(
     hass: HomeAssistant, connection: websocket_api.ActiveConnection, msg: dict[str, Any]
 ) -> None:
     """Execute an isolated search; never store document content as entity state."""
-    client = hass.data.get(DOMAIN, {}).get(msg["entry_id"])
+    entry_id = msg["entry_id"]
+    if not can_access(hass, entry_id, connection.user):
+        connection.send_error(msg["id"], "unauthorized", "No access to this Paperless connection")
+        return
+    client = hass.data.get(DOMAIN, {}).get(entry_id)
     if client is None:
         connection.send_error(msg["id"], "not_loaded", "Paperless integration is not loaded")
         return
@@ -64,8 +67,9 @@ async def websocket_search(
             msg["text"], mode=msg["mode"], page=msg["page"], page_size=msg["page_size"]
         )
     except InvalidAuth:
-        if entry := hass.config_entries.async_get_entry(msg["entry_id"]):
-            entry.async_start_reauth(hass)
+        if connection.user.is_admin:
+            if entry := hass.config_entries.async_get_entry(entry_id):
+                entry.async_start_reauth(hass)
         connection.send_error(msg["id"], "invalid_auth", "Paperless authentication required")
         return
     except ValueError:
@@ -79,11 +83,14 @@ async def websocket_search(
         connection.send_error(msg["id"], "search_failed", "Unable to search Paperless documents")
         return
     # A reload/unload during the request must not send a stale entry's results.
-    if hass.data.get(DOMAIN, {}).get(msg["entry_id"]) is not client:
+    if not can_access(hass, entry_id, connection.user):
+        connection.send_error(msg["id"], "unauthorized", "No access to this Paperless connection")
+        return
+    if hass.data.get(DOMAIN, {}).get(entry_id) is not client:
         connection.send_error(msg["id"], "not_loaded", "Paperless integration was reloaded")
         return
     payload = result.as_dict()
-    entry = hass.config_entries.async_get_entry(msg["entry_id"])
+    entry = hass.config_entries.async_get_entry(entry_id)
     payload["web_url"] = entry.data.get(CONF_WEB_URL) or entry.data[CONF_URL]
     connection.send_result(msg["id"], payload)
 
@@ -96,9 +103,11 @@ async def websocket_search(
         probatio.Optional("kind", default="pdf"): probatio.In(["pdf", "original"]),
     }
 )
-@websocket_api.require_admin
 def websocket_download(hass, connection, msg):
     """Issue a 30-second path bound to this HA login, never a Paperless token."""
+    if not can_access(hass, msg["entry_id"], connection.user):
+        connection.send_error(msg["id"], "unauthorized", "No access to this Paperless connection")
+        return
     if type(msg["document_id"]) is not int or not connection.refresh_token_id:
         connection.send_error(msg["id"], "invalid_download", "A regular HA login is required")
         return

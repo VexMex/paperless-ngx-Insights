@@ -52,7 +52,8 @@ For a dedicated dashboard tab, use a **Panel** view with the document overview a
 
 ## Notes
 
-- Currently, only **Home Assistant administrators** can access documents.
+- By default, only **Home Assistant administrators** can access documents. To share a connection, open **Settings → Devices & services → Paperless-ngx Insights → Configure → Document access** and select additional users. An empty list limits access to administrators.
+- Shared users can search, preview and download every document the configured Paperless account can read. Change that account's permissions in Paperless to restrict the available documents. Changing the Paperless address or API token clears the sharing list.
 - PDF previews are limited to **20 MiB**. Larger PDFs can be downloaded.
 - If your browser cannot display a PDF directly, you can show the first page as an image.
 - The API token stays in the integration configuration. Do not put it in the card configuration.

@@ -1,26 +1,24 @@
 # Entwicklungsplan: paperless-ngx-Insights
 
-Stand: 01.11.2026
+Stand: 08.11.2026
 Repository: https://github.com/VexMex/paperless-ngx-Insights
 Ziel: Home-Assistant-Integration für die Suche und Anzeige von Paperless-ngx-Dokumenten.
 
-## Prioritäten nach Nutzerentscheidung
+## Dokumentzugriff für ausgewählte Benutzer
 
-Benutzerfreigaben und persönliche Paperless-API-Schlüssel werden ausdrücklich ganz
-ans Ende der Agenda verschoben und nur bei tatsächlichem Bedarf umgesetzt.
-Der Eigentümer nutzt das System normalerweise allein. Die bestehende serverseitige
-Beschränkung auf HA-Administratoren sowie die Prüfung der Paperless-Dokumentrechte
-bleiben erhalten; diese Sicherheitsprüfungen werden nicht zurückgestellt.
-
-Einrichtung/Schlüsselwechsel, Updates und Downloads sind live abgesichert.
-HACS-Auslieferung einschließlich Installations-/Updateprüfung ist abgeschlossen. Erweiterte
-Mehrbenutzerfunktionen sind kein Abschluss- oder Release-Kriterium für diese Version.
+- [x] Freigaben pro Paperless-Verbindung in den Integrationseinstellungen (DE/EN). Eine leere Liste bedeutet Administratorzugriff. Änderungen an API-Adresse oder Token leeren die Liste.
+- [x] Serverseitige Berechtigungsprüfung für Verbindungsliste, Suche, PDF-Vorschau, Vorschaubilder und PDF-/Originaldownload. Offene Sitzungen und bereits signierte Links verlieren den Zugriff nach Entzug der Freigabe.
+- [x] Entwicklungsstand `1.1.4.dev0` ausschließlich auf der isolierten Testinstanz installiert und alle 16 Integrationsdateien abgeglichen. Live über Home Assistants Konfigurations-, WebSocket- und HTTP-Schnittstellen geprüft: Admin-Zugriff, Verweigerung für anonyme und nicht freigegebene Benutzer, erfolgreiche Freigabe, getrennte Rechte bei zwei Verbindungen, sofortiger Entzug und Schutz vor einer veralteten Freigabemaske.
+- [x] Temporäre Benutzer und zweite Verbindung entfernt. Die ursprüngliche Testverbindung ist wieder ausschließlich für Administratoren freigegeben.
+- [x] Lokal bestanden: 103 Python-Clienttests, 25 Frontendtests, Ruff, Formatierung und Kompilierung.
+- [ ] Vor der Veröffentlichung die vollständige GitHub-CI mit den ergänzten Home-Assistant-Frameworktests und HACS/Hassfest ausführen. Die Oberfläche wurde in diesem Durchlauf über ihre Schnittstellen geprüft, ohne manuellen Browsertest.
+- [ ] Persönliche Paperless-Zugangsdaten bleiben optionaler späterer Ausbau. Die Freigabe verwendet die Dokumentrechte des für die Verbindung hinterlegten Paperless-Kontos.
 
 ## HACS-Standardkatalog – Release 1.1.3
 
 - [x] GitHub-Themen gesetzt. HACS-Prüfung ohne Ausnahmen und Hassfest mit einer geprüften Integration und null ungültigen Integrationen bestanden. Auch die Frontend-, Client- und Home-Assistant-Tests waren erfolgreich. [GitHub-Prüflauf](https://github.com/VexMex/paperless-ngx-Insights/actions/runs/41708017644)
 - [x] [Release v1.1.3](https://github.com/VexMex/paperless-ngx-Insights/releases/tag/v1.1.3) nach den erfolgreichen Prüfungen veröffentlicht.
-- [ ] Pull Request für die Aufnahme in `hacs/default` einreichen.
+- [x] Pull Request für die Aufnahme in `hacs/default` eingereicht. Alle 13 automatischen Prüfungen waren bei der Einreichung erfolgreich.
 
 ## Aktueller Entwicklungsstand – Hassfest-Erstprüfung
 
@@ -272,16 +270,13 @@ Für jede Prüfung festhalten: untersuchte Version, Quelle/Schema, Ergebnis, gew
 
 ### R2: Zugriffsmodell
 
-**Zurückgestellt:** Erweiterte Freigaben und unterschiedliche Benutzerzugänge stehen
-am Ende der Agenda (Abschnitt 14). Nachweise für den bestehenden Adminzugriff bleiben
-Teil der normalen Sicherheitsprüfung. Die folgenden offenen Mehrbenutzerpunkte
-blockieren die erste Veröffentlichung nicht.
+Persönliche Paperless-Zugangsdaten bleiben als optionaler Ausbau in Abschnitt 14.
 
-- [ ] Festlegen, welche HA-Benutzer welchen Integrationseintrag benutzen dürfen; serverseitige Prüfung pro Anfrage.
-- [ ] Gemeinsamer Paperless-Schlüssel bedeutet gemeinsame Paperless-Rechte: Auswirkungen dokumentieren.
-- [ ] Dashboard-Sichtbarkeit ausdrücklich nicht als Zugriffsprüfung verwenden.
-- [ ] Verhalten für HA-Administrator, normalen Benutzer, nicht freigeschalteten Benutzer und abgemeldeten Browser definieren.
-- [ ] Nachweisen, dass auch direkte Dokument-ID-Aufrufe, Thumbnails, Vorschau und Download dieselben Rechte prüfen.
+- [x] Festlegen, welche HA-Benutzer welchen Integrationseintrag benutzen dürfen; serverseitige Prüfung pro Anfrage.
+- [x] Gemeinsamer Paperless-Schlüssel bedeutet gemeinsame Paperless-Rechte: Auswirkungen dokumentiert.
+- [x] Zugriffsprüfung unabhängig von der Dashboard-Sichtbarkeit umgesetzt.
+- [x] Verhalten für Admins, freigegebene und nicht freigegebene Benutzer sowie anonyme Anfragen geprüft.
+- [x] Direkte Dokument-ID-Aufrufe, Vorschaubilder, Vorschau und Download prüfen dieselben Rechte.
 - [ ] Paperless-seitige Dokumentrechte mit eingeschränktem Testbenutzer prüfen.
 - [x] Entscheidung für die erste Ausbaustufe: nur HA-Administratoren. Benutzerfreigaben werden vor einer späteren Erweiterung gesondert umgesetzt.
 
@@ -497,7 +492,7 @@ Zugangsschlüssel ausschließlich über sichere Konfiguration bereitstellen; nie
 
 Auf ausdrücklichen Nutzerwunsch nach allen übrigen Arbeitspaketen, nur falls benötigt:
 
-- [ ] Freigabe einzelner Paperless-Verbindungen für ausgewählte normale HA-Benutzer.
+- [x] Freigabe einzelner Paperless-Verbindungen für ausgewählte normale HA-Benutzer.
 - [ ] Persönlicher Paperless-API-Schlüssel je HA-Benutzer, damit dessen eigene Paperless-Dokumentrechte gelten.
 - [ ] Bei Umsetzung: Benutzerzuordnung, sichere Schlüsselverwaltung und -entfernung, Isolation sowie Rechteentzug und Benutzerwechsel testen.
 

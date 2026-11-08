@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Paperless-ngx Insights",
-        "description": "Connect Paperless. Document access is limited to HA administrators. The optional browser address is used for links to the Paperless interface.",
+        "description": "Connect Paperless. By default, only Home Assistant administrators can access documents. The optional browser address is used for links to the Paperless interface.",
         "data": {
           "url": "Paperless address",
           "token": "API token",
@@ -13,7 +13,7 @@
       },
       "reconfigure": {
         "title": "Change connection",
-        "description": "Leave the token blank to retain the current API token. New credentials are checked before saving.",
+        "description": "Leave the token blank to retain the current API token. New credentials are checked before saving. Changing the Paperless address or token removes user sharing for this connection.",
         "data": {
           "url": "Paperless address",
           "token": "API token",
@@ -24,7 +24,8 @@
         "title": "Renew API token",
         "data": {
           "token": "API token"
-        }
+        },
+        "description": "Changing the Paperless address or token removes user sharing for this connection."
       }
     },
     "error": {
@@ -38,6 +39,23 @@
       "already_configured": "This Paperless server is already configured.",
       "reauth_successful": "The API token was updated.",
       "reconfigure_successful": "The connection was updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Document access",
+        "description": "Share this connection with selected Home Assistant users. They can search, preview and download every document the configured Paperless account can read. Leave the list empty for administrators only.",
+        "data": {
+          "allowed_users": "Additional users"
+        }
+      }
+    },
+    "error": {
+      "invalid_user": "Select active Home Assistant users from the list."
+    },
+    "abort": {
+      "access_settings_changed": "The connection or its permissions changed. Open Document access again."
     }
   }
 }

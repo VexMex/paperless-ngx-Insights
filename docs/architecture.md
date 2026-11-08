@@ -11,10 +11,10 @@ Stand: 31.10.2026. Dieses Dokument beschreibt die erste Backend-Ausbaustufe.
 3. UI-Einrichtung und erneute Anmeldung mit einem geheimen Schlüsselfeld.
    Die Integration verwendet die auf HA 2026.10.4 geprüften API-Quellreferenzen
    einschließlich `probatio`. Ältere HA-Versionen sind kein bestätigtes Testziel.
-4. Zunächst nur Administratorzugriff. Die Prüfung findet an jedem
-   WebSocket-Einstiegspunkt statt, unabhängig von Dashboard-Sichtbarkeit.
-   Noch keine Freigaben für normale Benutzer. Die Paperless-Rechte des
-   gemeinsamen Schlüssels werden dadurch nicht pro HA-Benutzer unterschieden.
+4. Standardmäßig Administratorzugriff. Administratoren können einzelne
+   Verbindungen für ausgewählte HA-Benutzer freigeben. WebSocket- und
+   HTTP-Endpunkte prüfen die Rechte unabhängig von der Dashboard-Sichtbarkeit.
+   Alle berechtigten Benutzer teilen die Rechte des hinterlegten Paperless-Kontos.
 5. Suche auf Anforderung, keine periodische Archiv-Synchronisation. Antworten
    werden auf Metadaten reduziert und nicht als Entitätszustände gespeichert.
 6. Einzelwort-/Wortfolgensuche über `title__icontains` bzw. `title_content`.
@@ -40,7 +40,7 @@ Stand: 31.10.2026. Dieses Dokument beschreibt die erste Backend-Ausbaustufe.
 
 - Tatsächliche Paperless-Version, API-Version und Rechte eines Testtokens.
 - Server mit mehreren HA-Benutzern und späterem Freigabemodell praktisch prüfen.
-- Authentifizierte PDF-Auslieferung prototypisch auf ha-test belegen: eingebettete
+- Authentifizierte PDF-Auslieferung prototypisch auf der isolierten Testinstanz belegen: eingebettete
   Viewer und neue Tabs übernehmen keinen beliebigen Bearer-Header automatisch.
 - Dateiformate, Archiv-PDF/Original, Range-Requests und Streaming untersuchen.
 - HACS-Paketierung und versionierte Bereitstellung beider Karten entscheiden.
@@ -49,7 +49,7 @@ Stand: 31.10.2026. Dieses Dokument beschreibt die erste Backend-Ausbaustufe.
 ## Beobachtung am vorgesehenen Paperless-Server
 
 Am 31.10.2026 war das OpenAPI-Schema unter
-`http://192.168.178.10:8810/api/schema/?format=json` lesbar (HTTP 200).
+`/api/schema/?format=json` lesbar (HTTP 200).
 Es meldet `info.version: 6.0.0 (10)`. Das ist zunächst die vom Schema gemeldete
 Versionsangabe; eine separate Bestätigung der installierten Anwendung bleibt offen.
 

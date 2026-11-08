@@ -44,7 +44,7 @@ Ohne IntersectionObserver werden die aktuellen Ergebnisse begrenzt parallel gela
 Ein fehlendes Bild lässt den Titel bedienbar. `show_thumbnails: false` deaktiviert
 Bildanfragen vollständig. Keine globalen Dokumentzustände oder zusätzlichen Caches.
 
-Alle Bilder/PDFs laden über die administrativ geschützten HA-Endpunkte; Tokens
+Alle Bilder/PDFs laden über HA-Endpunkte mit Berechtigungsprüfung; Tokens
 stehen nicht im Frontend. Grenzen aus [PDF-Vorschau](pdf-preview.md) gelten weiter:
 20 MiB pro PDF, 2 MiB pro Bild; native PDF-Anzeige abhängig vom Browser, Bild der
 ersten Seite per Button. Download bezieht sich auf die geladene PDF-Vorschau,
@@ -54,7 +54,8 @@ nicht einen zusätzlichen Originaldatei-Endpunkt.
 
 In der HA-Kartenauswahl heißen die Karten „Paperless-ngx Insights · Suche“ und
 „Paperless-ngx Insights · Dokumentübersicht“. Nach Auswahl erscheint der visuelle
-Editor. Er lädt geladene Verbindungen über den bestehenden Admin-WebSocket-Befehl.
+Editor. Der WebSocket-Befehl liefert nur geladene Verbindungen, für die das Konto
+berechtigt ist.
 Eine derzeit nicht geladene Verbindung bleibt als Auswahl erhalten. Automatische
 Auswahl funktioniert bei genau einer geladenen Verbindung.
 
@@ -76,9 +77,9 @@ mit tatsächlich ausgeführten Ergebnissen ergänzt.
 Weiter offen: Companion-/Safari-/Firefox-Matrix, Screenreader-Abnahme, große PDFs
 mit Streaming und Originaldatei-Download. Diese Version ist kein fertiges Release.
 
-## Live-Abnahme auf ha-test
+## Live-Abnahme auf der isolierten Testinstanz
 
-Am 31.10.2026 ausschließlich auf 192.168.178.147 installiert und im bestehenden
+Am 31.10.2026 ausschließlich auf der isolierten Testinstanz installiert und im bestehenden
 Paperless-Dashboard die Panel-Ansicht `/paperless-test/dokumente` ergänzt. Versionierte
 Ressource dev.5 geladen. Dateiinhalte nach Übertragung vollständig zurückgelesen
 und geprüft; HA-Konfiguration vor Neustart validiert. File editor anschließend

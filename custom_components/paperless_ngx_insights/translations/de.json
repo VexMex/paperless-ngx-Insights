@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Paperless-ngx Insights",
-        "description": "Verbinde Paperless. Der Dokumentzugriff ist auf HA-Administratoren beschränkt. Die optionale Browser-Adresse wird für Links zur Paperless-Oberfläche verwendet.",
+        "description": "Verbinde Paperless. Standardmäßig können nur Home-Assistant-Administratoren auf Dokumente zugreifen. Die optionale Browser-Adresse wird für Links zur Paperless-Oberfläche verwendet.",
         "data": {
           "url": "Paperless-Adresse",
           "token": "API-Schlüssel",
@@ -13,7 +13,7 @@
       },
       "reconfigure": {
         "title": "Verbindung ändern",
-        "description": "Ein leeres Schlüsselfeld behält den vorhandenen API-Schlüssel. Neue Zugangsdaten werden vor dem Speichern geprüft.",
+        "description": "Ein leeres Schlüsselfeld behält den vorhandenen API-Schlüssel. Neue Zugangsdaten werden vor dem Speichern geprüft. Beim Ändern der Paperless-Adresse oder des Tokens werden die Benutzerfreigaben für diese Verbindung entfernt.",
         "data": {
           "url": "Paperless-Adresse",
           "token": "API-Schlüssel",
@@ -24,7 +24,8 @@
         "title": "API-Schlüssel erneuern",
         "data": {
           "token": "API-Schlüssel"
-        }
+        },
+        "description": "Beim Ändern der Paperless-Adresse oder des Tokens werden die Benutzerfreigaben für diese Verbindung entfernt."
       }
     },
     "error": {
@@ -38,6 +39,23 @@
       "already_configured": "Dieser Paperless-Server ist bereits eingerichtet.",
       "reauth_successful": "Der API-Schlüssel wurde aktualisiert.",
       "reconfigure_successful": "Die Verbindung wurde aktualisiert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Dokumentzugriff",
+        "description": "Gib diese Verbindung für ausgewählte Home-Assistant-Benutzer frei. Sie können alle Dokumente suchen, ansehen und herunterladen, die das hinterlegte Paperless-Konto lesen darf. Bei leerer Liste haben nur Administratoren Zugriff.",
+        "data": {
+          "allowed_users": "Weitere Benutzer"
+        }
+      }
+    },
+    "error": {
+      "invalid_user": "Wähle aktive Home-Assistant-Benutzer aus der Liste."
+    },
+    "abort": {
+      "access_settings_changed": "Die Verbindung oder ihre Berechtigungen wurden geändert. Öffne den Dokumentzugriff erneut."
     }
   }
 }

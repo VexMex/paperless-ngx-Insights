@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.paperless_ngx_insights.const import DOMAIN
+from custom_components.paperless_ngx_insights.const import CONF_ALLOWED_USERS, DOMAIN
 from custom_components.paperless_ngx_insights.http import download_filename
 
 
@@ -88,6 +88,29 @@ async def test_non_admin_cannot_sign_or_download(
     assert (await ws.receive_json())["success"] is False
     client = await hass_client(hass_read_only_access_token)
     assert (await client.get(path)).status == 403
+
+
+async def test_shared_download_link_stops_working_when_revoked(
+    hass, hass_ws_client, hass_client_no_auth, hass_read_only_access_token, hass_read_only_user
+):
+    entry, _ = await install(hass)
+    hass.config_entries.async_update_entry(
+        entry, options={CONF_ALLOWED_USERS: [hass_read_only_user.id]}
+    )
+    ws = await hass_ws_client(hass, access_token=hass_read_only_access_token)
+    await ws.send_json(
+        {"id": 1, "type": DOMAIN + "/download", "entry_id": entry.entry_id, "document_id": 42}
+    )
+    answer = await ws.receive_json()
+    assert answer["success"]
+    signed = answer["result"]["url"]
+    client = await hass_client_no_auth()
+    with patch.object(hass.data[DOMAIN][entry.entry_id], "download", synthetic_download):
+        response = await client.get(signed)
+        assert response.status == 200
+        await response.read()
+        hass.config_entries.async_update_entry(entry, options={})
+        assert (await client.get(signed)).status == 403
 
 
 async def test_download_unloaded_entry_and_invalid_id(hass, hass_client, hass_access_token):

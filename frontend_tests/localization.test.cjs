@@ -123,7 +123,7 @@ test("editor translates labels, validation and entry status without discarding e
     const root = editor.shadowRoot;
     assert.equal(root.querySelector('[data-i18n="heading"]').textContent, "Heading");
     assert.equal(root.querySelector('option[value="text"]').textContent, "Title and content");
-    assert.match(root.querySelector(".entries-status").textContent, /No loaded Paperless/);
+    assert.match(root.querySelector(".entries-status").textContent, /No Paperless connection is available to this account/);
     const title = root.querySelector('[name="title"]');
     title.value = "Uncommitted custom heading"; title.focus();
     const number = root.querySelector('[name="page_size"]');
@@ -135,7 +135,7 @@ test("editor translates labels, validation and entry status without discarding e
     assert.equal(title.value, "Uncommitted custom heading");
     assert.equal(root.activeElement, title);
     assert.match(root.querySelector(".validation").textContent, /ganze Zahl zwischen 1 und 50/);
-    assert.match(root.querySelector(".entries-status").textContent, /Keine geladene Paperless/);
+    assert.match(root.querySelector(".entries-status").textContent, /Keine Paperless-Verbindung für dieses Konto verfügbar/);
     assert.equal(root.querySelector('[name="entry_id"]').value, "missing");
     assert.equal(calls.length, count);
     editor.remove();
